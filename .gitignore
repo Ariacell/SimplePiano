@@ -4,4 +4,4 @@ cmake_install.cmake
 
 
 bin
-.vscode
+.vscode/settings.json

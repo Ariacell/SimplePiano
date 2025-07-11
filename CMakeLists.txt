@@ -24,7 +24,7 @@ include_directories(
 file(GLOB SRC_FILES
     "${PROJECT_SOURCE_DIR}/imgui/*.cpp" 
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
-    "${PROJECT_SOURCE_DIR}/lib/**/*.c"
+    "${PROJECT_SOURCE_DIR}/lib/glad.c"
     "${PROJECT_SOURCE_DIR}/lib/**/*.cpp"
 )
 

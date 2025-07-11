@@ -6,12 +6,13 @@
 #include <input/input.h>
 #include <ui/debugUI.h>
 #include <imgui.h>
+#include <imgui_impl_glfw.h>
 
 Input::InputManager inputManager;
 
 static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    // ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods); // forward to ImGui
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods); // forward to ImGui
     inputManager.keyCallback(key, action);
 }
 

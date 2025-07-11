@@ -321,6 +321,30 @@ lib/audio/audio.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimplePiano.dir/build.make CMakeFiles/SimplePiano.dir/lib/audio/audio.cpp.s
 .PHONY : lib/audio/audio.cpp.s
 
+lib/glad.o: lib/glad.c.o
+.PHONY : lib/glad.o
+
+# target to build an object file
+lib/glad.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimplePiano.dir/build.make CMakeFiles/SimplePiano.dir/lib/glad.c.o
+.PHONY : lib/glad.c.o
+
+lib/glad.i: lib/glad.c.i
+.PHONY : lib/glad.i
+
+# target to preprocess a source file
+lib/glad.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimplePiano.dir/build.make CMakeFiles/SimplePiano.dir/lib/glad.c.i
+.PHONY : lib/glad.c.i
+
+lib/glad.s: lib/glad.c.s
+.PHONY : lib/glad.s
+
+# target to generate assembly for a file
+lib/glad.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimplePiano.dir/build.make CMakeFiles/SimplePiano.dir/lib/glad.c.s
+.PHONY : lib/glad.c.s
+
 lib/input/input.o: lib/input/input.cpp.o
 .PHONY : lib/input/input.o
 
@@ -368,30 +392,6 @@ lib/ui/debugUI.s: lib/ui/debugUI.cpp.s
 lib/ui/debugUI.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimplePiano.dir/build.make CMakeFiles/SimplePiano.dir/lib/ui/debugUI.cpp.s
 .PHONY : lib/ui/debugUI.cpp.s
-
-lib/ui/glad.o: lib/ui/glad.c.o
-.PHONY : lib/ui/glad.o
-
-# target to build an object file
-lib/ui/glad.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimplePiano.dir/build.make CMakeFiles/SimplePiano.dir/lib/ui/glad.c.o
-.PHONY : lib/ui/glad.c.o
-
-lib/ui/glad.i: lib/ui/glad.c.i
-.PHONY : lib/ui/glad.i
-
-# target to preprocess a source file
-lib/ui/glad.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimplePiano.dir/build.make CMakeFiles/SimplePiano.dir/lib/ui/glad.c.i
-.PHONY : lib/ui/glad.c.i
-
-lib/ui/glad.s: lib/ui/glad.c.s
-.PHONY : lib/ui/glad.s
-
-# target to generate assembly for a file
-lib/ui/glad.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SimplePiano.dir/build.make CMakeFiles/SimplePiano.dir/lib/ui/glad.c.s
-.PHONY : lib/ui/glad.c.s
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -450,15 +450,15 @@ help:
 	@echo "... lib/audio/audio.o"
 	@echo "... lib/audio/audio.i"
 	@echo "... lib/audio/audio.s"
+	@echo "... lib/glad.o"
+	@echo "... lib/glad.i"
+	@echo "... lib/glad.s"
 	@echo "... lib/input/input.o"
 	@echo "... lib/input/input.i"
 	@echo "... lib/input/input.s"
 	@echo "... lib/ui/debugUI.o"
 	@echo "... lib/ui/debugUI.i"
 	@echo "... lib/ui/debugUI.s"
-	@echo "... lib/ui/glad.o"
-	@echo "... lib/ui/glad.i"
-	@echo "... lib/ui/glad.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
