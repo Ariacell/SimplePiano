@@ -5,6 +5,7 @@
 #include <audio/audio.h>
 #include <input/input.h>
 #include <ui/debugUI.h>
+#include <imgui.h>
 
 Input::InputManager inputManager;
 
@@ -32,14 +33,16 @@ public:
         while (!glfwWindowShouldClose(window))
         {
             glfwPollEvents();
+            debugUi.beginFrame();
+            ImGui::ShowDemoWindow();
 
             // Draw debug window if enabled
             if (inputManager.isDebugWindowVisible())
             {
-                debugUi.beginFrame();
+                std::cout<<("Debug window should be visible!\n");
                 debugUi.renderDebugWindow(inputManager.isDebugWindowVisible());
             }
-
+            
             // Rendering
             // ImGui::Render();
             int display_w, display_h;
@@ -48,7 +51,8 @@ public:
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+            
+            debugUi.endFrame();
             glfwSwapBuffers(window);
         }
     }
