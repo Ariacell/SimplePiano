@@ -12,24 +12,32 @@ find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 
 
-include_directories(${PROJECT_SOURCE_DIR}/lib 
-    ${PROJECT_SOURCE_DIR}/src
+include_directories(
     ${OPENGL_INCLUDE_DIRS}
+    ${PROJECT_SOURCE_DIR}/inc
+    ${PROJECT_SOURCE_DIR}/imgui 
+    ${PROJECT_SOURCE_DIR}/lib 
+    ${PROJECT_SOURCE_DIR}/src
     ${GLUT_INCLUDE_DIRS}
-)
-
+    )
+    
 file(GLOB SRC_FILES
+    "${PROJECT_SOURCE_DIR}/imgui/*.cpp" 
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
+    "${PROJECT_SOURCE_DIR}/lib/**/*.c"
     "${PROJECT_SOURCE_DIR}/lib/**/*.cpp"
 )
 
-link_directories(${CMAKE_SOURCE_DIR}/lib)
+link_directories(
+    ${CMAKE_SOURCE_DIR}/lib
+    ${PROJECT_SOURCE_DIR}/imgui 
+)
 
 add_executable(SimplePiano ${SRC_FILES})
 target_link_libraries(SimplePiano
-glfw
-OpenAL::OpenAL
 OpenGL::OpenGL
 ${GLUT_LIBRARY}
+glfw
+OpenAL::OpenAL
 )
 

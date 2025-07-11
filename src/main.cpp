@@ -1,7 +1,10 @@
+#define GLFW_INCLUDE_NONE
 #include <iostream>
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <audio/audio.h>
 #include <input/input.h>
+#include <ui/debugUI.h>
 
 Input::InputManager inputManager;
 
@@ -15,6 +18,7 @@ class PianoApp
 {
 public:
     Audio::AudioManager audioManager;
+    DebugUiLayer debugUi;
 
     void run()
     {
@@ -22,23 +26,19 @@ public:
         std::cout << ("Finished Init Window\n");
         audioManager.initAudio();
         std::cout << ("Finished Init Audio\n");
+        debugUi.init(window);
+        std::cout << ("Finished Init DebugUi\n");
 
         while (!glfwWindowShouldClose(window))
         {
             glfwPollEvents();
 
-            // Start ImGui frame
-            // ImGui_ImplOpenGL3_NewFrame();
-            // ImGui_ImplGlfw_NewFrame();
-            // ImGui::NewFrame();
-
-            // // Draw debug window if enabled
-            // if (inputManager.isDebugWindowVisible())
-            // {
-            //     ImGui::Begin("Debug Window");
-            //     ImGui::Text("F1 toggled this debug window.");
-            //     ImGui::End();
-            // }
+            // Draw debug window if enabled
+            if (inputManager.isDebugWindowVisible())
+            {
+                debugUi.beginFrame();
+                debugUi.renderDebugWindow(inputManager.isDebugWindowVisible());
+            }
 
             // Rendering
             // ImGui::Render();
@@ -74,9 +74,16 @@ private:
             throw std::runtime_error("Failed to create GLFW window");
         }
 
-        // Set input callbacks
+        glfwMakeContextCurrent( window );
 
+        // Set input callbacks
         glfwSetKeyCallback(window, glfwKeyCallback);
+
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        {
+            std::cout << "Failed to initialize GLAD" << std::endl;
+        }
+
         return window;
     }
 };
