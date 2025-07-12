@@ -34,16 +34,19 @@ void DebugUiLayer::shutdown()
     ImGui::DestroyContext();
 }
 
-void DebugUiLayer::renderDebugWindow(bool show)
+void DebugUiLayer::renderDebugWindow(GLFWwindow *window)
 {
-    if (show)
-    {
-        ImGui::Begin("Debug Window");
-        ImGui::SetWindowSize(ImVec2(1920, 1080), 0);
-        ImGui::SetWindowPos(ImVec2(0, 0));
-        auto draw = ImGui::GetBackgroundDrawList();
-        draw->AddCircle(ImVec2(960, 540), 5, IM_COL32(255, 255, 255, 255), 100, 2.f);
-        ImGui::Text("F1 toggled this debug window.");
-        ImGui::End();
-    }
+    ImGui::Begin("Debug Window");
+    ImGui::SetWindowSize(ImVec2(200, 200), 0);
+    ImGui::SetWindowPos(ImVec2(0, 0));
+    
+    ImGui::Text("F1 toggled this debug window.");
+    ImGui::End();
+}
+
+void DebugUiLayer::drawCentreCrosshair(GLFWwindow *window) {
+    auto draw = ImGui::GetBackgroundDrawList();
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
+    draw->AddCircle(ImVec2(windowWidth/2, windowHeight/2), 5, IM_COL32(255, 255, 255, 255), 100, 2.f);
 }

@@ -5,14 +5,19 @@
 #include <audio/audio.h>
 #include <input/input.h>
 #include <ui/debugUI.h>
+#include <ui/contants.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 
 Input::InputManager inputManager;
 
-static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods); // forward to ImGui
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+        return;
+    }
     inputManager.keyCallback(key, action);
 }
 
@@ -33,26 +38,22 @@ public:
 
         while (!glfwWindowShouldClose(window))
         {
-            glfwPollEvents();
             debugUi.beginFrame();
-            ImGui::ShowDemoWindow();
+            glClearColor(1.f, 0.f, 1.f, 1.f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glfwPollEvents();
 
-            // Draw debug window if enabled
             if (inputManager.isDebugWindowVisible())
             {
-                std::cout<<("Debug window should be visible!\n");
-                debugUi.renderDebugWindow(inputManager.isDebugWindowVisible());
+                debugUi.renderDebugWindow(window);
             }
-            
-            // Rendering
-            // ImGui::Render();
+
             int display_w, display_h;
             glfwGetFramebufferSize(window, &display_w, &display_h);
             glViewport(0, 0, display_w, display_h);
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-            
+
             debugUi.endFrame();
             glfwSwapBuffers(window);
         }
@@ -72,22 +73,27 @@ private:
             fprintf(stderr, "GLFW Error: %s\n", description);
             throw std::runtime_error("Failed to init GLFW");
         }
-        GLFWwindow *window = glfwCreateWindow(1280, 720, "SimplePiano", NULL, NULL);
+        GLFWwindow *window = glfwCreateWindow(ui::WINDOW_DEFAULTS::WINDOW_WIDTH, ui::WINDOW_DEFAULTS::WINDOW_HEIGHT, "SimplePiano", NULL, NULL);
         if (!window)
         {
             glfwTerminate();
             throw std::runtime_error("Failed to create GLFW window");
         }
+        glfwSetWindowSizeLimits(window, 200, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-        glfwMakeContextCurrent( window );
-
-        // Set input callbacks
-        glfwSetKeyCallback(window, glfwKeyCallback);
+        glfwMakeContextCurrent(window);
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             std::cout << "Failed to initialize GLAD" << std::endl;
         }
+        std::cout << "Loaded GLAD" << std::endl;
+
+        // Set the viewport for OpenGL to match our GLFW Window
+        glViewport(0, 0, ui::WINDOW_DEFAULTS::WINDOW_WIDTH, ui::WINDOW_DEFAULTS::WINDOW_HEIGHT);
+
+        // Set up input callbacks (only one for now, need to confirm how I want to decouple the input manager)
+        glfwSetKeyCallback(window, glfwKeyCallback);
 
         return window;
     }
@@ -95,6 +101,7 @@ private:
 
 int main()
 {
+
     PianoApp app;
 
     app.run();

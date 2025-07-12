@@ -4,4 +4,6 @@ cmake_install.cmake
 
 
 bin
+build
 .vscode/settings.json
+**imgui.ini
