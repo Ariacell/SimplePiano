@@ -2,7 +2,21 @@
 # References for working on this project
 
 ## GLFW
+The main input and window management library for the project.
 https://www.glfw.org/GLFWReference276.pdf
+
+## OpenGL Rendering
+The first rendering pipeline implemented - the plan is to use this project to also experiment with hotswappable Vulkan/DX12
+
+https://learnopengl.com
+
+## DX11/12 Rendering
+
+To come once I decide how I want to do hotswapping of the renderer
+
+## Vulkan
+
+To come once I decide how I want to do hotswapping of the renderer
 
 # Building locally
 

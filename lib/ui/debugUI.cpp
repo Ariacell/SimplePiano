@@ -60,12 +60,14 @@ void DebugUiLayer::renderDebugWindow(GLFWwindow *window)
     int windowWidth, windowHeight;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
 
-
-    if(!ImGui::Begin("App Debugger", 0, ImGuiWindowFlags_MenuBar)) { return; }
-    makeDebugWindowMenu();
+    //Optimisation possible here to confirm whether the debug main menu is expanded, but not for today
+    // if(!ImGui::Begin("App Debugger", 0, ImGuiWindowFlags_MenuBar)) { return; }
+    
+    ImGui::Begin("App Debugger", 0, ImGuiWindowFlags_MenuBar);
     ImGui::SetWindowSize(ImVec2(200, 200), 0);
     // ImGui::SetWindowPos(ImVec2(0, 0));
     ImGui::Text("F1 toggled this debug window.");
+    makeDebugWindowMenu();
     DebugUiLayer::drawDot(windowWidth/2, windowHeight/2);
     ImGui::End();
 }

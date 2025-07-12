@@ -6,8 +6,11 @@
 #include <input/input.h>
 #include <ui/debugUI.h>
 #include <ui/contants.h>
+#include <shaders/openGlShaders.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
+#include <rendering/opengl/triangle.h>
+#include <rendering/shapes.h>
 
 Input::InputManager inputManager;
 
@@ -26,6 +29,8 @@ class PianoApp
 public:
     Audio::AudioManager audioManager;
     DebugUiLayer debugUi;
+    OpenGlShaders openGlShaders;
+    Shapes shapes;
 
     void run()
     {
@@ -35,6 +40,10 @@ public:
         std::cout << ("Finished Init Audio\n");
         debugUi.init(window);
         std::cout << ("Finished Init DebugUi\n");
+
+        auto shaderProgram = openGlShaders.loadShaders();
+
+        unsigned int triangleVAO = OpenGlRenderer::bindTriangle(shapes.getTriangleData());
 
         while (!glfwWindowShouldClose(window))
         {
@@ -53,6 +62,10 @@ public:
             glViewport(0, 0, display_w, display_h);
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+
+            glUseProgram(shaderProgram);
+            glBindVertexArray(triangleVAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
             debugUi.endFrame();
             glfwSwapBuffers(window);

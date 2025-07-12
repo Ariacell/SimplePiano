@@ -13,7 +13,6 @@ namespace Audio {
         if (!device)
         {
             fprintf(stderr, "OpenAL Error: %s\n", "Error here");
-            // handle errors
         }
     }
 }

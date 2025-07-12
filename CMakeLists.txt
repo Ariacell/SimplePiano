@@ -20,12 +20,14 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src
     ${GLUT_INCLUDE_DIRS}
     )
-    
+message(OpenGlIncludeDir="${OPENGL_INCLUDE_DIRS}")
+
 file(GLOB SRC_FILES
     "${PROJECT_SOURCE_DIR}/imgui/*.cpp" 
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
     "${PROJECT_SOURCE_DIR}/lib/glad.c"
     "${PROJECT_SOURCE_DIR}/lib/**/*.cpp"
+    "${PROJECT_SOURCE_DIR}/lib/rendering/**/*.cpp"
 )
 
 link_directories(
