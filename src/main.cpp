@@ -7,12 +7,7 @@
 #include <ui/debugUI.h>
 #include <ui/contants.h>
 #include <shaders/openGlShaders.h>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <graphics/opengl/triangle.h>
-#include <graphics/shapes.h>
 #include <engine/RendererFactory.h>
-#include <memory>
 #include <engine/GLFWWindow.h>
 
 static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -33,7 +28,6 @@ public:
     Audio::AudioManager audioManager;
     DebugUiLayer debugUi;
     OpenGlShaders openGlShaders;
-    Shapes shapes;
     RendererFactory rendererFactory;
 
     debugUI::DebugLayerMainWindowData debugWindowData;
@@ -88,52 +82,10 @@ public:
             renderer->Present();
         }
     }
-
-private:
-    GLFWwindow *initWindow()
-    {
-        int major, minor, rev;
-        glfwGetVersion(&major, &minor, &rev);
-
-        printf("GLFW version: %d.%d.%d\n", major, minor, rev);
-        if (!glfwInit())
-        {
-            const char *description;
-            glfwGetError(&description);
-            fprintf(stderr, "GLFW Error: %s\n", description);
-            throw std::runtime_error("Failed to init GLFW");
-        }
-        GLFWwindow *window = glfwCreateWindow(ui::WINDOW_DEFAULTS::WINDOW_WIDTH, ui::WINDOW_DEFAULTS::WINDOW_HEIGHT, "SimplePiano", NULL, NULL);
-        if (!window)
-        {
-            glfwTerminate();
-            throw std::runtime_error("Failed to create GLFW window");
-        }
-        glfwSetWindowSizeLimits(window, 200, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
-
-        glfwMakeContextCurrent(window);
-
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            std::cout << "Failed to initialize GLAD" << std::endl;
-        }
-        std::cout << "Loaded GLAD" << std::endl;
-
-        // Set the viewport for OpenGL to match our GLFW Window
-        glViewport(0, 0, ui::WINDOW_DEFAULTS::WINDOW_WIDTH, ui::WINDOW_DEFAULTS::WINDOW_HEIGHT);
-
-        // Set up input callbacks (only one for now, need to confirm how I want to decouple the input manager)
-        glfwSetKeyCallback(window, glfwKeyCallback);
-
-        return window;
-    }
 };
 
 int main()
 {
-
     PianoApp app;
-
     app.run();
-    // std::cout<<("Hello World");
 }
