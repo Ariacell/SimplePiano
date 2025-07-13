@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(glfw3 3.3 REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
 
 
 include_directories(
@@ -18,7 +17,6 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/imgui 
     ${PROJECT_SOURCE_DIR}/lib 
     ${PROJECT_SOURCE_DIR}/src
-    ${GLUT_INCLUDE_DIRS}
     )
 message(OpenGlIncludeDir="${OPENGL_INCLUDE_DIRS}")
 
@@ -37,7 +35,6 @@ link_directories(
 add_executable(SimplePiano ${SRC_FILES})
 target_link_libraries(SimplePiano
 OpenGL::OpenGL
-${GLUT_LIBRARY}
 glfw
 OpenAL::OpenAL
 )
