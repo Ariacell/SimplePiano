@@ -32,13 +32,15 @@ public:
     OpenGlShaders openGlShaders;
     Shapes shapes;
 
+    debugUI::DebugLayerMainWindowData debugWindowData;
+
     void run()
     {
         auto *window = initWindow();
         std::cout << ("Finished Init Window\n");
         audioManager.initAudio();
         std::cout << ("Finished Init Audio\n");
-        debugUi.init(window);
+        debugUi.init(window, &debugWindowData);
         std::cout << ("Finished Init DebugUi\n");
 
         auto shaderProgram = openGlShaders.loadShaders();
@@ -54,7 +56,7 @@ public:
 
             if (inputManager.isDebugWindowVisible())
             {
-                debugUi.renderDebugWindow(window);
+                debugUi.renderDebugWindow(window, &debugWindowData);
             }
 
             int display_w, display_h;

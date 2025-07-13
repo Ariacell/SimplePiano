@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "buildDefault",
-            "command": "cmake --build --preset default",
+            "command": "cmake --build -DCMAKE_BUILD_TYPE=Debug --preset default",
             "type": "shell"
         }
     ]

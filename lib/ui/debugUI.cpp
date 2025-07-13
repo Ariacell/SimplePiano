@@ -3,12 +3,9 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <vector>
+#include <iostream>
 
-struct DebugLayerMainWindowData {
-    
-};
-
-void DebugUiLayer::init(GLFWwindow *window)
+void DebugUiLayer::init(GLFWwindow *window, debugUI::DebugLayerMainWindowData *debugWindowData)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -20,6 +17,7 @@ void DebugUiLayer::init(GLFWwindow *window)
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
+    this->debugWindowData = debugWindowData;
 }
 
 void DebugUiLayer::beginFrame()
@@ -51,10 +49,9 @@ void DebugUiLayer::shutdown()
     ImGui::DestroyContext();
 }
 
-void DebugUiLayer::renderDebugWindow(GLFWwindow *window)
+void DebugUiLayer::renderDebugWindow(GLFWwindow *window, debugUI::DebugLayerMainWindowData *debugWindowData)
 {
     IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing Dear ImGui context. Refer to examples app!");
-    static DebugLayerMainWindowData debugWindowData;
     // const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     
     int windowWidth, windowHeight;
@@ -67,7 +64,8 @@ void DebugUiLayer::renderDebugWindow(GLFWwindow *window)
     ImGui::SetWindowSize(ImVec2(200, 200), 0);
     // ImGui::SetWindowPos(ImVec2(0, 0));
     ImGui::Text("F1 toggled this debug window.");
-    makeDebugWindowMenu();
+    makeGraphicsMenu(this->debugWindowData);
+    makeDebugWindowMenu(this->debugWindowData);
     DebugUiLayer::drawDot(windowWidth/2, windowHeight/2);
     ImGui::End();
 }
@@ -78,7 +76,19 @@ void DebugUiLayer::drawDot(double x, double y)
     draw->AddCircle(ImVec2(x, y), 5, IM_COL32(255, 255, 255, 255), 100, 2.f);
 }
 
-void DebugUiLayer::makeDebugWindowMenu() {
+bool DebugUiLayer::getIsWireframeDrawingEnabled()
+{
+    return this->debugWindowData->isWireframeRenderingEnabled;
+}
+
+void DebugUiLayer::makeGraphicsMenu(debugUI::DebugLayerMainWindowData *debugWindowData) {
+    if(ImGui::BeginMenu("Graphics")) {
+        ImGui::Checkbox("Wireframe Rendering", &debugWindowData->isWireframeRenderingEnabled);
+        ImGui::EndMenu();
+    }
+}
+
+void DebugUiLayer::makeDebugWindowMenu(debugUI::DebugLayerMainWindowData *debugWindowData) {
     if(ImGui::BeginMenuBar())
     {
         if(ImGui::BeginMenu("File"))
@@ -105,4 +115,9 @@ void DebugUiLayer::makeDebugWindowMenu() {
         ImGui::EndMenuBar();
     }
 
+}
+
+void DebugUiLayer::setWireframeMode(bool shouldUseWireframeMode)
+{
+    DebugUiLayer::debugWindowData->isWireframeRenderingEnabled = shouldUseWireframeMode;
 }

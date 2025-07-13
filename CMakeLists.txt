@@ -15,6 +15,7 @@ include_directories(
     ${OPENGL_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/inc
     ${PROJECT_SOURCE_DIR}/imgui 
+    ${PROJECT_SOURCE_DIR}/glm 
     ${PROJECT_SOURCE_DIR}/lib 
     ${PROJECT_SOURCE_DIR}/src
     )
@@ -29,7 +30,8 @@ file(GLOB_RECURSE SRC_FILES
 
 link_directories(
     ${CMAKE_SOURCE_DIR}/lib
-    ${PROJECT_SOURCE_DIR}/imgui 
+    ${PROJECT_SOURCE_DIR}/imgui
+    ${PROJECT_SOURCE_DIR}/glm
 )
 
 add_executable(SimplePiano ${SRC_FILES})
