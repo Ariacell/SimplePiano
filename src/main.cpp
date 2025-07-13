@@ -40,7 +40,7 @@ public:
 
     void run()
     {
-        // Todo: 
+        // Todo: figure out if this is really the cleanest way to create this window class...
         auto window = std::make_unique<PianoGLFWWindow>();
         window->Create(ui::WINDOW_DEFAULTS::WINDOW_WIDTH, ui::WINDOW_DEFAULTS::WINDOW_HEIGHT, "SimplePiano");
         GLFWwindow *glfwWindow = (GLFWwindow*)(window->GetNativeHandle());
@@ -62,14 +62,12 @@ public:
 
         auto shaderProgram = openGlShaders.loadShaders();
 
-        // unsigned int triangleVAO = OpenGlGraphics::bindRectangle(shapes.getSampleRectangleData());
-
         while (!window->ShouldClose())
         {
+            window->PollEvents();
             debugUi.beginFrame();
             glClearColor(1.f, 0.f, 1.f, 1.f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            window->PollEvents();
 
             if (inputManager.isDebugWindowVisible())
             {
@@ -87,7 +85,7 @@ public:
             renderer->DrawRectangle();
 
             debugUi.endFrame();
-            window->SwapBuffers();
+            renderer->Present();
         }
     }
 

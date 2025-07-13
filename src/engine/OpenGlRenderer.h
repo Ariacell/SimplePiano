@@ -10,13 +10,15 @@ class OpenGlRenderer : public Engine::IRenderer
 private:
     Shapes shapes;
     unsigned int rectangleVAO;
+    Engine::IWindow* window = nullptr;
 
 public:
     /// @brief Initialise the OpenGL window (must occur after window is created)
     /// @param window
     void Initialize(Engine::IWindow *window) override
     {
-         using GLProcAddress = void* (*)(const char*);
+        this->window = window;
+        using GLProcAddress = void* (*)(const char*);
         auto loader = reinterpret_cast<GLProcAddress>(window->GetWindowProcAddress());
         if (!gladLoadGLLoader(loader))
         {
@@ -43,6 +45,9 @@ public:
 
     void Present() override
     {
-        // Swap handled by IWindow for now, not sure if that's the best thing but wip
+        if(!window) {
+            throw std::runtime_error("Attempted to present OpenGL rendered scene without a handle to a running window!");
+        }
+        window->SwapBuffers();
     }
 };
