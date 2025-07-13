@@ -9,8 +9,8 @@
 #include <shaders/openGlShaders.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
-#include <rendering/opengl/triangle.h>
-#include <rendering/shapes.h>
+#include <graphics/opengl/triangle.h>
+#include <graphics/shapes.h>
 
 Input::InputManager inputManager;
 
@@ -43,7 +43,7 @@ public:
 
         auto shaderProgram = openGlShaders.loadShaders();
 
-        unsigned int triangleVAO = OpenGlRenderer::bindTriangle(shapes.getTriangleData());
+        unsigned int triangleVAO = OpenGlRenderer::bindRectangle(shapes.getSampleRectangleData());
 
         while (!glfwWindowShouldClose(window))
         {
