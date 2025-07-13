@@ -3,7 +3,7 @@
 #include <utility>
 #include <array>
 
-unsigned int OpenGlRenderer::bindRectangle(std::pair<std::array<float, 12UL>, std::array<unsigned int, 6UL>> triangleData)
+unsigned int OpenGlGraphics::bindRectangle(std::pair<std::array<float, 12UL>, std::array<unsigned int, 6UL>> triangleData)
 {
     auto triangle = triangleData;
     unsigned int VBO, VAO, EBO;
