@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <vector>
 #include <glm/vec2.hpp>
 
 
@@ -14,6 +15,7 @@ namespace debugUI
     struct DebugLayerMainWindowData
     {
         bool isWireframeRenderingEnabled;
+        std::vector<float> frameTimeData;
         DebugLayerMainWindowData() {
             isWireframeRenderingEnabled = false;
         }
@@ -43,6 +45,7 @@ public:
 private:
     debugUI::DebugLayerMainWindowData *debugWindowData;
 
+    void drawUtilityGraphWidget(int windowHeight, int windowWidth, float deltaTime);
     void makeDebugWindowMenu(debugUI::DebugLayerMainWindowData *debugWindowData);
     void makeGraphicsMenu(debugUI::DebugLayerMainWindowData *debugWindowData);
     void setWireframeMode(bool shouldUseWireframeMode);

@@ -4,19 +4,23 @@
 #include <iostream>
 #include <glad/glad.h>
 
-class PianoGLFWWindow : public Engine::IWindow {
+class PianoGLFWWindow : public Engine::IWindow
+{
 private:
-    GLFWwindow* window = nullptr;
+    GLFWwindow *window = nullptr;
 
 public:
-    ~PianoGLFWWindow() {
-        if (window) {
+    ~PianoGLFWWindow()
+    {
+        if (window)
+        {
             glfwDestroyWindow(window);
         }
         glfwTerminate();
     }
 
-    void Create(int width, int height, const char* title) override {
+    void Create(int width, int height, const char *title) override
+    {
         int major, minor, rev;
         glfwGetVersion(&major, &minor, &rev);
 
@@ -46,27 +50,38 @@ public:
         this->window = window;
     }
 
-    void PollEvents() override {
+    void PollEvents() override
+    {
         glfwPollEvents();
     }
 
-    void GetFrameBufferSize() override {
+    void GetFrameBufferSize() override
+    {
         glfwPollEvents();
     }
 
-    bool ShouldClose() const override {
+    bool ShouldClose() const override
+    {
         return glfwWindowShouldClose(window);
     }
 
-    void SwapBuffers() override {
+    void SetKeyCallback(GLFWkeyfun callback) override
+    {
+        glfwSetKeyCallback(window, callback);
+    }
+
+    void SwapBuffers() override
+    {
         glfwSwapBuffers(window);
     }
 
-    Engine::GLProcAddress GetWindowProcAddress() override {
+    Engine::GLProcAddress GetWindowProcAddress() override
+    {
         return (Engine::GLProcAddress)glfwGetProcAddress;
     }
 
-    void* GetNativeHandle() override {
+    void *GetNativeHandle() override
+    {
         return window;
     }
 };

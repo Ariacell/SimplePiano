@@ -1,14 +1,17 @@
 #include "debugUI.h"
 #include <imgui.h>
+#include <implot.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <vector>
 #include <iostream>
+#include <imgui_internal.h>
 
 void DebugUiLayer::init(GLFWwindow *window, debugUI::DebugLayerMainWindowData *debugWindowData)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGui::StyleColorsDark();
     ImGuiIO &io = ImGui::GetIO();
 
@@ -18,6 +21,10 @@ void DebugUiLayer::init(GLFWwindow *window, debugUI::DebugLayerMainWindowData *d
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
     this->debugWindowData = debugWindowData;
+    // Initialise empty frame rate data times
+    for (int i = 0; i < 60; ++i) {
+        debugWindowData->frameTimeData.push_back(0.f);
+    }
 }
 
 void DebugUiLayer::beginFrame()
@@ -34,7 +41,7 @@ void DebugUiLayer::endFrame()
     ImGuiIO &io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
-        GLFWwindow* backup_current_context = glfwGetCurrentContext();
+        GLFWwindow *backup_current_context = glfwGetCurrentContext();
         // Update and Render additional Platform Windows
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
@@ -46,6 +53,7 @@ void DebugUiLayer::shutdown()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 }
 
@@ -53,21 +61,51 @@ void DebugUiLayer::renderDebugWindow(GLFWwindow *window, debugUI::DebugLayerMain
 {
     IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing Dear ImGui context. Refer to examples app!");
     // const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-    
+
     int windowWidth, windowHeight;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
 
-    //Optimisation possible here to confirm whether the debug main menu is expanded, but not for today
-    // if(!ImGui::Begin("App Debugger", 0, ImGuiWindowFlags_MenuBar)) { return; }
-    
+    float deltaTime = ImGui::GetIO().DeltaTime;
+    debugWindowData->frameTimeData.erase(debugWindowData->frameTimeData.begin());
+    debugWindowData->frameTimeData.push_back(60/deltaTime);
+
+
+    // Optimisation possible here to confirm whether the debug main menu is expanded, but not for today
+    //  if(!ImGui::Begin("App Debugger", 0, ImGuiWindowFlags_MenuBar)) { return; }
+
     ImGui::Begin("App Debugger", 0, ImGuiWindowFlags_MenuBar);
     ImGui::SetWindowSize(ImVec2(200, 200), 0);
     // ImGui::SetWindowPos(ImVec2(0, 0));
     ImGui::Text("F1 toggled this debug window.");
     makeGraphicsMenu(this->debugWindowData);
     makeDebugWindowMenu(this->debugWindowData);
-    DebugUiLayer::drawDot(windowWidth/2, windowHeight/2);
+    DebugUiLayer::drawDot(windowWidth / 2, windowHeight / 2);
     ImGui::End();
+    ImGui::Begin("Utility Info");
+    DebugUiLayer::drawUtilityGraphWidget(windowWidth, windowHeight, deltaTime);
+    ImGui::End();
+}
+
+void DebugUiLayer::drawUtilityGraphWidget(int windowHeight, int windowWidth, float deltaTime)
+{
+    //Todo: Dock this to the upper right corner and improve the styling
+    if (ImPlot::BeginSubplots("Graphed Data", 1, 1, ImVec2(windowWidth / 4, windowHeight / 4)))
+    {
+        if (ImPlot::BeginPlot(""))
+        {
+            ImPlot::SetupAxis(ImAxis_X1, "", ImPlotAxisFlags_AutoFit);
+            ImPlot::SetupAxis(ImAxis_Y1, "Frame Rate", ImPlotAxisFlags_AutoFit);
+            ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 5000);
+
+            std::vector<float> x_axis_labels;
+            for (int i = 0; i<60; i++) {
+                x_axis_labels.push_back(i);
+            }
+            ImPlot::PlotLine("Frame Rate", x_axis_labels.data(), debugWindowData->frameTimeData.data(), debugWindowData->frameTimeData.size());
+            ImPlot::EndPlot();
+        }
+        ImPlot::EndSubplots();
+    }
 }
 
 void DebugUiLayer::drawDot(double x, double y)
@@ -81,19 +119,22 @@ bool DebugUiLayer::getIsWireframeDrawingEnabled()
     return this->debugWindowData->isWireframeRenderingEnabled;
 }
 
-void DebugUiLayer::makeGraphicsMenu(debugUI::DebugLayerMainWindowData *debugWindowData) {
-    if(ImGui::BeginMenu("Graphics")) {
+void DebugUiLayer::makeGraphicsMenu(debugUI::DebugLayerMainWindowData *debugWindowData)
+{
+    if (ImGui::BeginMenu("Graphics"))
+    {
         ImGui::Checkbox("Wireframe Rendering", &debugWindowData->isWireframeRenderingEnabled);
         ImGui::EndMenu();
     }
 }
 
-void DebugUiLayer::makeDebugWindowMenu(debugUI::DebugLayerMainWindowData *debugWindowData) {
-    if(ImGui::BeginMenuBar())
+void DebugUiLayer::makeDebugWindowMenu(debugUI::DebugLayerMainWindowData *debugWindowData)
+{
+    if (ImGui::BeginMenuBar())
     {
-        if(ImGui::BeginMenu("File"))
+        if (ImGui::BeginMenu("File"))
         {
-            if(ImGui::MenuItem("New"))
+            if (ImGui::MenuItem("New"))
             {
                 ImGui::OpenPopup("FilePopup");
 
@@ -104,17 +145,24 @@ void DebugUiLayer::makeDebugWindowMenu(debugUI::DebugLayerMainWindowData *debugW
                 }
             }
 
-            if(ImGui::MenuItem("Load...")) {}
-            if(ImGui::MenuItem("Save...")) {}
-            if(ImGui::MenuItem("Save As...")) {}
-            if(ImGui::MenuItem("Exit")) {}
+            if (ImGui::MenuItem("Load..."))
+            {
+            }
+            if (ImGui::MenuItem("Save..."))
+            {
+            }
+            if (ImGui::MenuItem("Save As..."))
+            {
+            }
+            if (ImGui::MenuItem("Exit"))
+            {
+            }
 
             ImGui::EndMenu();
         }
 
         ImGui::EndMenuBar();
     }
-
 }
 
 void DebugUiLayer::setWireframeMode(bool shouldUseWireframeMode)

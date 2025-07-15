@@ -38,6 +38,7 @@ public:
         auto window = std::make_unique<PianoGLFWWindow>();
         window->Create(ui::WINDOW_DEFAULTS::WINDOW_WIDTH, ui::WINDOW_DEFAULTS::WINDOW_HEIGHT, "SimplePiano");
         GLFWwindow *glfwWindow = (GLFWwindow*)(window->GetNativeHandle());
+        window->SetKeyCallback(glfwKeyCallback);
         std::cout << ("Finished Init Window\n");
 
         Input::InputManager inputManager(glfwWindow);
@@ -46,16 +47,13 @@ public:
 
         debugUi.init(glfwWindow, &debugWindowData);
         inputManager.bindDebugSettings(&debugWindowData);
-        std::cout << ("Finished Init DebugUi\n");
+        std::cout << ("Finished Init Input and DebugUi\n");
 
         auto renderer = rendererFactory.CreateRenderer(RendererType::OpenGL);
         renderer->Initialize(window.get());
-
-        // WIP refactoring out all the glfw logic into the abstract window pattern
-        glfwSetKeyCallback(glfwWindow, glfwKeyCallback);
-
         auto shaderProgram = openGlShaders.loadShaders();
 
+        std::cout << "Starting main application loop\n" << std::endl;
         while (!window->ShouldClose())
         {
             window->PollEvents();

@@ -22,7 +22,7 @@ include_directories(
 message(OpenGlIncludeDir="${OPENGL_INCLUDE_DIRS}")
 
 file(GLOB_RECURSE SRC_FILES
-    "${PROJECT_SOURCE_DIR}/imgui/*.cpp" 
+    "${PROJECT_SOURCE_DIR}/imgui/**" 
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
     "${PROJECT_SOURCE_DIR}/lib/glad.c"
     "${PROJECT_SOURCE_DIR}/lib/*.cpp"
