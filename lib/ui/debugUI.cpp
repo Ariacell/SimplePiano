@@ -67,7 +67,7 @@ void DebugUiLayer::renderDebugWindow(GLFWwindow *window, debugUI::DebugLayerMain
 
     float deltaTime = ImGui::GetIO().DeltaTime;
     debugWindowData->frameTimeData.erase(debugWindowData->frameTimeData.begin());
-    debugWindowData->frameTimeData.push_back(60/deltaTime);
+    debugWindowData->frameTimeData.push_back(1/deltaTime);
 
 
     // Optimisation possible here to confirm whether the debug main menu is expanded, but not for today

@@ -1,5 +1,7 @@
 #pragma once
 #include <ui/debugUI.h>
+#include <chrono>
+
 namespace Input
 {
     class InputManager
@@ -15,6 +17,9 @@ namespace Input
         unsigned int bindDebugSettings(debugUI::DebugLayerMainWindowData *debugSettings);
 
     private:
+        // Will be used to stop inputs going wacko mode, should be config but here for now.
+        std::chrono::milliseconds inputRateLimiter = std::chrono::milliseconds(10);
+
         debugUI::DebugLayerMainWindowData *debugSettings;
         void assertDebugSettingsBoundToInputManager();
         bool debugWindowVisible = false;

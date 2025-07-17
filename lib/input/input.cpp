@@ -10,7 +10,7 @@ namespace Input
         {
             debugWindowVisible = !debugWindowVisible;
         }
-        if (key == GLFW_KEY_W && (mods & GLFW_MOD_CONTROL)) {
+        if (key == GLFW_KEY_W && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)) {
             this->assertDebugSettingsBoundToInputManager();
             this->debugSettings->isWireframeRenderingEnabled = !this->debugSettings->isWireframeRenderingEnabled;
         }
