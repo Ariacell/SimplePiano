@@ -6,8 +6,12 @@
 #include <vector>
 #include <iostream>
 #include <imgui_internal.h>
+#include <components/camera/Camera.h>
+#include <glm/gtx/string_cast.hpp>
+#include <appstate.h>
+#include <engine/input/InputManager.h>
 
-void DebugUiLayer::init(GLFWwindow *window, debugUI::DebugLayerMainWindowData *debugWindowData)
+void DebugUiLayer::init(GLFWwindow *window, Debug::DebugLayerMainWindowData *debugWindowData, Camera * camera)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -21,6 +25,7 @@ void DebugUiLayer::init(GLFWwindow *window, debugUI::DebugLayerMainWindowData *d
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
     this->debugWindowData = debugWindowData;
+    this->cameraToTrack = camera;
     // Initialise empty frame rate data times
     for (int i = 0; i < 60; ++i) {
         debugWindowData->frameTimeData.push_back(0.f);
@@ -57,7 +62,26 @@ void DebugUiLayer::shutdown()
     ImGui::DestroyContext();
 }
 
-void DebugUiLayer::renderDebugWindow(GLFWwindow *window, debugUI::DebugLayerMainWindowData *debugWindowData)
+void makeInputDataMenu(Input::InputState inputState) {
+    if (ImGui::BeginListBox("Input CURRENT keys")) {
+
+        for (auto key : inputState.GetCurrentKeys()) {
+            if(!key.second) {continue;}
+            ImGui::Text(std::to_string(key.first).c_str());
+        }
+     ImGui::EndListBox();   
+    }
+
+    if (ImGui::BeginListBox("Input PRESSED keys")) {
+
+        for (auto key : inputState.GetPressedKeys()) {
+            ImGui::Text(std::to_string(key.first).c_str());
+        }
+     ImGui::EndListBox();   
+    }
+}
+
+void DebugUiLayer::renderDebugWindow(GLFWwindow *window, Debug::DebugLayerMainWindowData *debugWindowData, State::ApplicationState *appState, Input::InputManager *inputMgr)
 {
     IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing Dear ImGui context. Refer to examples app!");
     // const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
@@ -74,10 +98,12 @@ void DebugUiLayer::renderDebugWindow(GLFWwindow *window, debugUI::DebugLayerMain
     //  if(!ImGui::Begin("App Debugger", 0, ImGuiWindowFlags_MenuBar)) { return; }
 
     ImGui::Begin("App Debugger", 0, ImGuiWindowFlags_MenuBar);
-    ImGui::SetWindowSize(ImVec2(200, 200), 0);
+    ImGui::SetWindowSize(ImVec2(500, 500), 0);
     // ImGui::SetWindowPos(ImVec2(0, 0));
     ImGui::Text("F1 toggled this debug window.");
     makeGraphicsMenu(this->debugWindowData);
+    makeLocationDataMenu(this->cameraToTrack);
+    makeInputDataMenu(inputMgr->GetInputState());
     makeDebugWindowMenu(this->debugWindowData);
     DebugUiLayer::drawDot(windowWidth / 2, windowHeight / 2);
     ImGui::End();
@@ -119,7 +145,7 @@ bool DebugUiLayer::getIsWireframeDrawingEnabled()
     return this->debugWindowData->isWireframeRenderingEnabled;
 }
 
-void DebugUiLayer::makeGraphicsMenu(debugUI::DebugLayerMainWindowData *debugWindowData)
+void DebugUiLayer::makeGraphicsMenu(Debug::DebugLayerMainWindowData *debugWindowData)
 {
     if (ImGui::BeginMenu("Graphics"))
     {
@@ -128,7 +154,25 @@ void DebugUiLayer::makeGraphicsMenu(debugUI::DebugLayerMainWindowData *debugWind
     }
 }
 
-void DebugUiLayer::makeDebugWindowMenu(debugUI::DebugLayerMainWindowData *debugWindowData)
+void DebugUiLayer::makeLocationDataMenu(Camera *trackedCamera) {
+    if (ImGui::BeginMenu("Location Info"))
+    {
+            if(ImGui::BeginTable("Camera Details", 2)) {
+                ImGui::TableSetupColumn("Entry", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableHeadersRow();
+
+                ImGui::TableNextRow();
+                auto cameraPos = glm::to_string(trackedCamera->Position).c_str();
+                ImGui::TableSetColumnIndex(0); ImGui::Text(cameraPos);
+                ImGui::EndTable();
+            }
+
+            ImGui::EndMenu();
+    }
+}
+
+void DebugUiLayer::makeDebugWindowMenu(Debug::DebugLayerMainWindowData *debugWindowData)
 {
     if (ImGui::BeginMenuBar())
     {

@@ -1,13 +1,11 @@
-#include <ui/debugUI.h>
+#ifndef APPSTATE_H
+#define APPSTATE_H
+#include <engine/debug/DebugState.h>
 
 namespace State {
-
-    struct DebugState {
-        debugUI::DebugLayerMainWindowData mainDebugWindowData;
-    };
-
-
     struct ApplicationState {
-        State::DebugState debugState;
+        Debug::DebugState debugState;
     };
 }
+
+#endif

@@ -3,36 +3,31 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <glm/vec2.hpp>
-
+#include <components/camera/Camera.h>
+#include <appstate.h>
+#include <engine/input/InputManager.h>
+#include <engine/debug/DebugState.h>
 
 namespace debugUI
 {
-    struct Window {
+    struct Window
+    {
         glm::vec2 location;
         glm::vec2 size;
-    };
-    
-    struct DebugLayerMainWindowData
-    {
-        bool isWireframeRenderingEnabled;
-        std::vector<float> frameTimeData;
-        DebugLayerMainWindowData() {
-            isWireframeRenderingEnabled = false;
-        }
     };
 }
 
 class DebugUiLayer
 {
 public:
-    void init(GLFWwindow *window, debugUI::DebugLayerMainWindowData *debugWindowData);
+    void init(GLFWwindow *window, Debug::DebugLayerMainWindowData *debugWindowData, Camera *camera);
     void beginFrame();
     void endFrame();
     void shutdown();
 
     /// @brief Render the main debug window for the application
     /// @param window
-    void renderDebugWindow(GLFWwindow *window, debugUI::DebugLayerMainWindowData *debugWindowData);
+    void renderDebugWindow(GLFWwindow *window, Debug::DebugLayerMainWindowData *debugWindowData, State::ApplicationState *appState, Input::InputManager *inputMgr);
 
     /// @brief Should usually be only called when the debug layer is being rendered, draws a crosshair to the centre of the window
     /// @param window
@@ -43,10 +38,12 @@ public:
     bool getIsWireframeDrawingEnabled();
 
 private:
-    debugUI::DebugLayerMainWindowData *debugWindowData;
+    Debug::DebugLayerMainWindowData *debugWindowData;
+    Camera *cameraToTrack;
 
     void drawUtilityGraphWidget(int windowHeight, int windowWidth, float deltaTime);
-    void makeDebugWindowMenu(debugUI::DebugLayerMainWindowData *debugWindowData);
-    void makeGraphicsMenu(debugUI::DebugLayerMainWindowData *debugWindowData);
+    void makeDebugWindowMenu(Debug::DebugLayerMainWindowData *debugWindowData);
+    void makeLocationDataMenu(Camera *trackedCamera);
+    void makeGraphicsMenu(Debug::DebugLayerMainWindowData *debugWindowData);
     void setWireframeMode(bool shouldUseWireframeMode);
 };

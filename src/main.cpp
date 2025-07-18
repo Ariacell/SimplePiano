@@ -3,14 +3,14 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <audio/audio.h>
-#include <input/input.h>
-#include <ui/debugUI.h>
+#include <engine/debug/debugUI.h>
 #include <ui/contants.h>
 #include <shaders/openGlShaders.h>
 #include <engine/RendererFactory.h>
 #include <engine/GLFWWindow.h>
 #include <appstate.h>
 #include <util/timer.h>
+#include "engine/input/InputManager.h"
 
 static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
@@ -34,6 +34,8 @@ public:
 
     State::ApplicationState appState;
 
+    Camera mainSceneCamera;
+
     void run()
     {
         // Todo: figure out if this is really the cleanest way to create this window class...
@@ -43,12 +45,12 @@ public:
         window->SetKeyCallback(glfwKeyCallback);
         std::cout << ("Finished Init Window\n");
 
-        Input::InputManager inputManager(glfwWindow);
+        Input::InputManager inputManager(glfwWindow, &mainSceneCamera);
         audioManager.initAudio();
         std::cout << ("Finished Init Audio\n");
 
         auto debugWindowData = &appState.debugState.mainDebugWindowData;
-        debugUi.init(glfwWindow, debugWindowData);
+        debugUi.init(glfwWindow, debugWindowData, &mainSceneCamera);
         inputManager.bindDebugSettings(debugWindowData);
         std::cout << ("Finished Init Input and DebugUi\n");
 
@@ -64,7 +66,7 @@ public:
         appStateTimer.Init(appStateTickRate);
 
         Util::Timer frameRateTimer;
-        float frameRateTargetTickRate = 0.06f;
+        float frameRateTargetTickRate = 0.003f;
         frameRateTimer.Init(frameRateTargetTickRate);
 
         while (!window->ShouldClose())
@@ -73,7 +75,7 @@ public:
 
             // Note both this is currently greedy with no upper bound on the physics catchup ticks, would definitely be an issue for clients that start lagging behind
             // App updates
-            while (appStateTimer.GetElapsedTimeSinceLastTick() > appStateTickRate)
+            if (appStateTimer.GetElapsedTimeSinceLastTick() > appStateTickRate)
             {
                 appStateTimer.TickTimer(); // Todo: this should actually compensate for the overflow from the tickrate but good enough for now
                 // Do physics/app state things
@@ -92,7 +94,7 @@ public:
 
                 if (inputManager.isDebugWindowVisible())
                 {
-                    debugUi.renderDebugWindow(glfwWindow, debugWindowData);
+                    debugUi.renderDebugWindow(glfwWindow, debugWindowData, &appState, &inputManager);
                 }
 
                 int display_w, display_h;
@@ -107,6 +109,7 @@ public:
 
                 debugUi.endFrame();
                 renderer->Present();
+                inputManager.EndFrame();
             }
         }
     }

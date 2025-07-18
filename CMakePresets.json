@@ -8,17 +8,47 @@
     "$comment": "An example CMakePresets.json file",
     "configurePresets": [
         {
-            "name": "default",
-            "displayName": "Default Config",
-            "description": "Default build using Make as the generator",
-            "binaryDir": "${sourceDir}/build/default"
+            "name": "config-base",
+            "displayName": "Base Config",
+            "description": "Base build using Make as the generator",
+            "binaryDir": "${sourceDir}/build/${presetName}"
+        },
+        {
+            "name": "debug",
+            "displayName": "Config Debug",
+            "description": "Sets debug build type",
+            "inherits": "config-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Config Release",
+            "description": "Sets release build type",
+            "inherits": "config-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
         }
     ],
     "buildPresets": [
         {
             "$comment": "Runs something like this command:  /usr/bin/cmake -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/gcc -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ --no-warn-unused-cli -S /home/aria/dev/c++/SimplePiano -B /home/aria/dev/c++/SimplePiano/build -G \"Unix Makefiles\"",
-            "name": "default",
-            "configurePreset": "default"
+            "name": "build-base",
+            "hidden": true,
+            "configurePreset": "debug"
+        },
+        {
+            "name": "debug",
+            "displayName": "Build Debug",
+            "inherits": "build-base"
+        },
+        {
+            "name": "release",
+            "displayName": "Build Release",
+            "inherits": "build-base",
+            "configurePreset": "release"
         }
     ]
 }

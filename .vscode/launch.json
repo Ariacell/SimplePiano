@@ -5,7 +5,7 @@
         "type": "cppdbg",
         "request": "launch",
         "preLaunchTask": "buildDefault",
-        "program": "${workspaceRoot}/build/default/bin/SimplePiano",
+        "program": "${workspaceRoot}/build/debug/bin/SimplePiano",
         "miDebuggerPath": "gdb",
         "args": [],
         "stopAtEntry": false,
