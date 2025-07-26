@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 
 namespace Engine
 {
@@ -9,7 +10,7 @@ namespace Engine
         virtual ~IWindow() = default;
 
         virtual void Create(int width, int height, const char *title) = 0;
-        virtual void SetKeyCallback(GLFWkeyfun callback) = 0;
+        virtual void SetKeyCallback(std::function<void(int key, int action, int mods)> callback) = 0;
         virtual void PollEvents() = 0;
         virtual bool ShouldClose() const = 0;
         virtual void SwapBuffers() = 0;

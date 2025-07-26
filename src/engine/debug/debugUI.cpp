@@ -1,5 +1,6 @@
 #include "debugUI.h"
 #include <imgui.h>
+#include <imgui_stdlib.h>
 #include <implot.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -158,13 +159,13 @@ void DebugUiLayer::makeLocationDataMenu(Camera *trackedCamera) {
     if (ImGui::BeginMenu("Location Info"))
     {
             if(ImGui::BeginTable("Camera Details", 2)) {
-                ImGui::TableSetupColumn("Entry", ImGuiTableColumnFlags_WidthFixed);
-                ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Entry", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
                 ImGui::TableHeadersRow();
 
                 ImGui::TableNextRow();
-                auto cameraPos = glm::to_string(trackedCamera->Position).c_str();
-                ImGui::TableSetColumnIndex(0); ImGui::Text(cameraPos);
+                auto cameraPos = glm::to_string(trackedCamera->Position);
+                ImGui::TableSetColumnIndex(0); ImGui::InputText("CameraPosition", &cameraPos);
                 ImGui::EndTable();
             }
 

@@ -3,13 +3,14 @@
 
 namespace Input
 {
-    InputManager::InputManager(GLFWwindow *window, Camera *camera)
+    InputManager::InputManager(Engine::IWindow *window, Camera *camera)
     {
         // This assumes a separate input manager per window, need to decouple this from glfw still
-        glfwSetWindowUserPointer(window, reinterpret_cast<void *>(this));
+        window->SetKeyCallback([this](int key, int action, int mods)
+                               { this->keyCallback(key, action, mods); });
         int windowWidth, windowHeight;
-        glfwGetWindowSize(window, &windowWidth, &windowHeight);
-        lastMousePosition = glm::vec2(windowWidth / 2, windowHeight / 2);
+        // glfwGetWindowSize(window, &windowWidth, &windowHeight);
+        lastMousePosition = glm::vec2(0, 0);
         currentCamera = camera;
     }
 

@@ -42,16 +42,16 @@ public:
         auto window = std::make_unique<PianoGLFWWindow>();
         window->Create(ui::WINDOW_DEFAULTS::WINDOW_WIDTH, ui::WINDOW_DEFAULTS::WINDOW_HEIGHT, "SimplePiano");
         GLFWwindow *glfwWindow = (GLFWwindow *)(window->GetNativeHandle());
-        window->SetKeyCallback(glfwKeyCallback);
         std::cout << ("Finished Init Window\n");
 
-        Input::InputManager inputManager(glfwWindow, &mainSceneCamera);
+        Input::InputManager inputManager(window.get(), &mainSceneCamera);
         audioManager.initAudio();
         std::cout << ("Finished Init Audio\n");
 
         auto debugWindowData = &appState.debugState.mainDebugWindowData;
         debugUi.init(glfwWindow, debugWindowData, &mainSceneCamera);
         inputManager.bindDebugSettings(debugWindowData);
+
         std::cout << ("Finished Init Input and DebugUi\n");
 
         auto renderer = rendererFactory.CreateRenderer(RendererType::OpenGL);

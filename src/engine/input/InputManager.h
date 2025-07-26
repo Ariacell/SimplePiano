@@ -4,13 +4,14 @@
 #include <GLFW/glfw3.h>
 #include <engine/input/InputState.h>
 #include <engine/debug/DebugState.h>
+#include <engine/IWindow.h>
 
 namespace Input
 {
     class InputManager
     {
     public:
-        InputManager(GLFWwindow *window, Camera *camera);
+        InputManager(Engine::IWindow *window, Camera *camera);
         void keyCallback(int key, int action, int mods);
         void mouse_callback(double xpos, double ypos);
         void scroll_callback(double xoffset, double yoffset);
