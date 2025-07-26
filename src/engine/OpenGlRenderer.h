@@ -1,6 +1,7 @@
 #pragma once
 #include <engine/IRenderer.h>
 #include <graphics/opengl/triangle.h>
+#include <graphics/opengl/cube.h>
 #include <graphics/shapes.h>
 #include <glad/glad.h>
 #include <iostream>
@@ -10,6 +11,7 @@ class OpenGlRenderer : public Engine::IRenderer
 private:
     Shapes shapes;
     unsigned int rectangleVAO;
+    unsigned int cubeVAO;
     Engine::IWindow* window = nullptr;
 
 public:
@@ -25,6 +27,7 @@ public:
             throw std::runtime_error("Failed to load OpenGl via Glad for window");
         }
         this->rectangleVAO = OpenGlGraphics::bindRectangle(shapes.getSampleRectangleData());
+        this->cubeVAO = OpenGlGraphics::bindCube(shapes.getSampleCubeVerts());
 
         std::cout << "OpenGL context initialized\n";
         glViewport(0, 0, 800, 600); // example values
@@ -40,6 +43,13 @@ public:
     {
         glBindVertexArray(this->rectangleVAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // Do more fun things here once I have time.
+    }
+
+    void DrawCube() override
+    {
+        glBindVertexArray(this->cubeVAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+        glDrawArrays(GL_TRIANGLES, 0, 36);
         // Do more fun things here once I have time.
     }
 

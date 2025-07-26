@@ -22,6 +22,7 @@ public:
     bool ShouldClose() const override;
     void SwapBuffers() override;
     void GetFrameBufferSize() override;
+    glm::vec2 GetWindowSize() override;
 
     Engine::GLProcAddress GetWindowProcAddress() override;
     void *GetNativeHandle() override; // platform-specific pointer

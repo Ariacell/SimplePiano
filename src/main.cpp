@@ -12,17 +12,17 @@
 #include <util/timer.h>
 #include "engine/input/InputManager.h"
 
-static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, true);
-        return;
-    }
-    Input::InputManager *handler = reinterpret_cast<Input::InputManager *>(glfwGetWindowUserPointer(window));
-    if (handler)
-        handler->keyCallback(key, action, mods);
-}
+// static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+// {
+//     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+//     {
+//         glfwSetWindowShouldClose(window, true);
+//         return;
+//     }
+//     Input::InputManager *handler = reinterpret_cast<Input::InputManager *>(glfwGetWindowUserPointer(window));
+//     if (handler)
+//         handler->keyCallback(key, action, mods);
+// }
 
 class PianoApp
 {
@@ -59,7 +59,7 @@ public:
         auto shaderProgram = openGlShaders.loadShaders();
 
         std::cout << "Starting main application loop\n"
-                  << std::endl;
+            << std::endl;
 
         Util::Timer appStateTimer;
         float appStateTickRate = 0.033f;
@@ -104,8 +104,14 @@ public:
 
                 renderer->ClearScreen(0.1f, 0.1f, 0.1f, 1.0f);
 
+                auto current_window_size = window.get()->GetWindowSize();
                 glUseProgram(shaderProgram);
+                glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+                glm::mat4 projection = glm::mat4(1.0f);
+                projection = glm::perspective(glm::radians(45.0f), (float)current_window_size.x / (float)current_window_size.y, 0.1f, 100.0f);
+                view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
                 renderer->DrawRectangle();
+                renderer->DrawCube();
 
                 debugUi.endFrame();
                 renderer->Present();

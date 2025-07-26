@@ -1,4 +1,8 @@
+#define GLFW_INCLUDE_NONE
 #include "GLFWWindow.h"
+#include <glm/vec2.hpp>
+#include "IWindow.h"
+#include <GLFW/glfw3.h>
 
 void PianoGLFWWindow::PianoGLFWKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
@@ -66,6 +70,13 @@ void PianoGLFWWindow::PollEvents()
 void PianoGLFWWindow::GetFrameBufferSize()
 {
     glfwPollEvents();
+}
+
+glm::vec2 PianoGLFWWindow::GetWindowSize()
+{
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    return glm::vec2(width, height);
 }
 
 bool PianoGLFWWindow::ShouldClose() const
