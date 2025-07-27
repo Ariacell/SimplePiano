@@ -9,7 +9,7 @@
         "miDebuggerPath": "gdb",
         "args": [],
         "stopAtEntry": false,
-        "cwd": "${fileDirname}",
+        "cwd": "${workspaceRoot}/build/debug/bin/",
         "environment": [],
         "externalConsole": false,
         "MIMode": "gdb",

@@ -34,6 +34,8 @@ link_directories(
     ${PROJECT_SOURCE_DIR}/glm
 )
 
+
+
 add_executable(SimplePiano ${SRC_FILES})
 target_link_libraries(SimplePiano
 OpenGL::OpenGL
@@ -41,3 +43,10 @@ glfw
 OpenAL::OpenAL
 )
 
+# Copying shaders into the build directory for runtime compiling
+add_custom_command(
+         TARGET SimplePiano POST_BUILD
+         COMMAND ${CMAKE_COMMAND} -E copy_directory              
+             ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:SimplePiano>/shaders
+         COMMENT "Copying shaders" VERBATIM
+         )

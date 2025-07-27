@@ -5,12 +5,11 @@ namespace Input
 {
     InputManager::InputManager(Engine::IWindow *window, Camera *camera)
     {
-        // This assumes a separate input manager per window, need to decouple this from glfw still
+        // This pattern doesn't explicitly support separate inputs per window yet, probably very busted if trying to split input
         window->SetKeyCallback([this](int key, int action, int mods)
                                { this->keyCallback(key, action, mods); });
-        int windowWidth, windowHeight;
-        // glfwGetWindowSize(window, &windowWidth, &windowHeight);
-        lastMousePosition = glm::vec2(0, 0);
+        auto windowSize = window->GetWindowSize();
+        lastMousePosition = glm::vec2(windowSize.x/2, windowSize.y/2);
         currentCamera = camera;
     }
 
@@ -52,7 +51,7 @@ namespace Input
 
     Camera *InputManager::bindNewCamera(Camera *cameraToBind)
     {
-        // This shouldn't be necessary once the decoupled input state is being pased around the app update loop
+        // This shouldn't be necessary once the decoupled input state is being passed around the app update loop
         currentCamera = cameraToBind;
         return currentCamera;
     }

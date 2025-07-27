@@ -5,7 +5,7 @@
 #include <audio/audio.h>
 #include <engine/debug/debugUI.h>
 #include <ui/contants.h>
-#include <shaders/openGlShaders.h>
+#include <shaders/OpenGlShader.h>
 #include <engine/RendererFactory.h>
 #include <engine/GLFWWindow.h>
 #include <appstate.h>
@@ -29,7 +29,6 @@ class PianoApp
 public:
     Audio::AudioManager audioManager;
     DebugUiLayer debugUi;
-    OpenGlShaders openGlShaders;
     RendererFactory rendererFactory;
 
     State::ApplicationState appState;
@@ -56,7 +55,7 @@ public:
 
         auto renderer = rendererFactory.CreateRenderer(RendererType::OpenGL);
         renderer->Initialize(window.get());
-        auto shaderProgram = openGlShaders.loadShaders();
+        auto openGlShader = Shaders::OpenGlShader("something", "something");
 
         std::cout << "Starting main application loop\n"
             << std::endl;
@@ -105,13 +104,13 @@ public:
                 renderer->ClearScreen(0.1f, 0.1f, 0.1f, 1.0f);
 
                 auto current_window_size = window.get()->GetWindowSize();
-                glUseProgram(shaderProgram);
-                glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-                glm::mat4 projection = glm::mat4(1.0f);
-                projection = glm::perspective(glm::radians(45.0f), (float)current_window_size.x / (float)current_window_size.y, 0.1f, 100.0f);
-                view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+                openGlShader.use();
+                // glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+                // glm::mat4 projection = glm::mat4(1.0f);
+                // projection = glm::perspective(glm::radians(45.0f), (float)current_window_size.x / (float)current_window_size.y, 0.1f, 100.0f);
+                // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
                 renderer->DrawRectangle();
-                renderer->DrawCube();
+                // renderer->DrawCube();
 
                 debugUi.endFrame();
                 renderer->Present();
