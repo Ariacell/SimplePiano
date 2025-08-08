@@ -12,6 +12,7 @@ namespace Engine
 
         virtual void Create(int width, int height, const char *title) = 0;
         virtual void SetKeyCallback(std::function<void(int key, int action, int mods)> callback) = 0;
+        virtual void SetCursorPosCallback(std::function<void(double xpos, double ypos)> callback) = 0;
         virtual void PollEvents() = 0;
         virtual bool ShouldClose() const = 0;
         virtual void SwapBuffers() = 0;

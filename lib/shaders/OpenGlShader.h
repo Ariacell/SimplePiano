@@ -12,7 +12,8 @@ namespace Shaders{
         OpenGlShader(const char* vertexPath, const char* fragmentPath);
         void use() override;
         void setFloat(const std::string &name, float value) const override;
-        
+        unsigned int GetID() { return ID; }
+
         private:
         unsigned int loadShader();
         GLuint CompileShader(GLuint type, const std::string& source);

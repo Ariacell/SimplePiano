@@ -32,7 +32,12 @@ namespace Util
 
         float GetElapsedTimeSinceLastTick() {
             auto current_time = std::chrono::steady_clock::now();
-            return std::chrono::duration_cast<std::chrono::duration<float>>(current_time - timeAtLastTick).count();
+            auto timeSinceLastTick = std::chrono::duration_cast<std::chrono::duration<float>>(current_time - timeAtLastTick).count();
+            return timeSinceLastTick;
+        }
+
+        float GetTickSize() {
+            return tickSize;
         }
 
         long GetTickCount(){

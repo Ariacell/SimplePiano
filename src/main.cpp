@@ -11,6 +11,8 @@
 #include <appstate.h>
 #include <util/timer.h>
 #include "engine/input/InputManager.h"
+#include <glm/gtc/type_ptr.hpp>
+#include <stb_image/stb_image.h>
 
 // static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 // {
@@ -40,7 +42,7 @@ public:
         // Todo: figure out if this is really the cleanest way to create this window class...
         auto window = std::make_unique<PianoGLFWWindow>();
         window->Create(ui::WINDOW_DEFAULTS::WINDOW_WIDTH, ui::WINDOW_DEFAULTS::WINDOW_HEIGHT, "SimplePiano");
-        GLFWwindow *glfwWindow = (GLFWwindow *)(window->GetNativeHandle());
+        GLFWwindow* glfwWindow = (GLFWwindow*)(window->GetNativeHandle());
         std::cout << ("Finished Init Window\n");
 
         Input::InputManager inputManager(window.get(), &mainSceneCamera);
@@ -62,28 +64,33 @@ public:
 
         Util::Timer appStateTimer;
         float appStateTickRate = 0.033f;
+        // float appStateTickRate = 31250000.0f; // 32*X nanoseconds into each second
         appStateTimer.Init(appStateTickRate);
 
         Util::Timer frameRateTimer;
-        float frameRateTargetTickRate = 0.003f;
+        // float frameRateTargetTickRate = 800000.0f; // ~120*X nanoseconds into each second
+        float frameRateTargetTickRate = .003f; // ~120*X nanoseconds into each second
         frameRateTimer.Init(frameRateTargetTickRate);
 
         while (!window->ShouldClose())
         {
             window->PollEvents();
 
+
             // Note both this is currently greedy with no upper bound on the physics catchup ticks, would definitely be an issue for clients that start lagging behind
             // App updates
             if (appStateTimer.GetElapsedTimeSinceLastTick() > appStateTickRate)
             {
+                std::cout<< "Server Ticks so far: " << appStateTimer.GetTickCount() << std::endl;
                 appStateTimer.TickTimer(); // Todo: this should actually compensate for the overflow from the tickrate but good enough for now
                 // Do physics/app state things
             }
 
             // Since the physics update is greedy, this can probably not be greedy? but I just want to experiment with things working first.
             // Rendering the updated app at the decoupled target framerate (hopefully haHA, arithmetic is hard)
-            if (frameRateTimer.GetElapsedTimeSinceLastTick() > frameRateTargetTickRate)
+            if(frameRateTimer.GetElapsedTimeSinceLastTick() > frameRateTargetTickRate)
             {
+                std::cout<< "Frame Ticks so far: " << frameRateTimer.GetTickCount() << std::endl;
                 frameRateTimer.TickTimer();
                 // Render whatever the app state is, maybe some fancy interpolation here later
 
@@ -96,6 +103,8 @@ public:
                     debugUi.renderDebugWindow(glfwWindow, debugWindowData, &appState, &inputManager);
                 }
 
+                mainSceneCamera.ProcessInput(inputManager.GetInputState(), frameRateTimer.GetTickSize());
+
                 int display_w, display_h;
                 glfwGetFramebufferSize(glfwWindow, &display_w, &display_h);
                 glViewport(0, 0, display_w, display_h);
@@ -105,13 +114,29 @@ public:
 
                 auto current_window_size = window.get()->GetWindowSize();
                 openGlShader.use();
-                // glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-                // glm::mat4 projection = glm::mat4(1.0f);
-                // projection = glm::perspective(glm::radians(45.0f), (float)current_window_size.x / (float)current_window_size.y, 0.1f, 100.0f);
-                // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-                renderer->DrawRectangle();
-                // renderer->DrawCube();
 
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+                glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+                // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+                view = glm::lookAt(mainSceneCamera.Position, mainSceneCamera.Position + mainSceneCamera.Front, mainSceneCamera.WorldUp);
+                glm::mat4 projection = glm::mat4(1.0f);
+                projection = glm::perspective(glm::radians(45.0f), (float)current_window_size.x / (float)current_window_size.y, 0.1f, 100.0f);
+
+                glEnable(GL_DEPTH_TEST);
+                // retrieve the matrix uniform locations
+                unsigned int modelLoc = glGetUniformLocation(openGlShader.GetID(), "model");
+                unsigned int viewLoc = glGetUniformLocation(openGlShader.GetID(), "view");
+                unsigned int projLoc = glGetUniformLocation(openGlShader.GetID(), "projection");
+                // pass them to the shaders (3 different ways)
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+                glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+                // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+                glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
+
+                
+                // renderer->DrawRectangle();
+                renderer->DrawCube();
                 debugUi.endFrame();
                 renderer->Present();
                 inputManager.EndFrame();

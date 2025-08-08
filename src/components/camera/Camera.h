@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <engine/input/InputState.h>
 
 enum Camera_Movement {
     FORWARD,
@@ -32,7 +33,7 @@ public:
            float pitch = 0.0f);
 
     glm::mat4 GetViewMatrix();
-    void ProcessKeyboard(Camera_Movement direction, float deltaTime);
+    void ProcessInput(Input::InputState inputState,float deltaTime);
     void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
     void ProcessMouseScroll(float yoffset);
 

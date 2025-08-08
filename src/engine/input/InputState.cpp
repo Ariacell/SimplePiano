@@ -1,6 +1,6 @@
 #include <engine/input/InputState.h>
 
-void Input::InputState ::PressKey(int key) {
+void Input::InputState::PressKey(int key) {
     if (!currentKeys[key]) {
         pressedKeys[key] = true;  // only true on the frame it's first pressed
     }
@@ -12,13 +12,13 @@ void Input::InputState::ReleaseKey(int key) {
 }
 
 bool Input::InputState::IsKeyDown(int key) const {
-    auto it = currentKeys.find(key);
-    return it != currentKeys.end() && it->second;
+    auto isKeyDown = currentKeys.find(key);
+    return isKeyDown != currentKeys.end() && isKeyDown->second;
 }
 
 bool Input::InputState::WasKeyPressed(int key) const {
-    auto it = pressedKeys.find(key);
-    return it != pressedKeys.end() && it->second;
+    auto wasKeyPressed = pressedKeys.find(key);
+    return wasKeyPressed != pressedKeys.end() && wasKeyPressed->second;
 }
 
 void Input::InputState::EndFrame() {

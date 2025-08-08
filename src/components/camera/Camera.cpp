@@ -1,4 +1,5 @@
 #include <components/camera/Camera.h>
+#include <engine/input/InputKeys.h>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
     : Front(glm::vec3(0.0f, 0.0f, -1.0f)),
@@ -10,6 +11,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
     WorldUp = up;
     Yaw = yaw;
     Pitch = pitch;
+    MovementSpeed = .2f;
     updateCameraVectors();
 }
 
@@ -17,16 +19,22 @@ glm::mat4 Camera::GetViewMatrix() {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
-void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
+void Camera::ProcessInput(Input::InputState inputState, float deltaTime) {
     float velocity = MovementSpeed * deltaTime;
-    if (direction == FORWARD)
-        Position += Front * velocity;
-    if (direction == BACKWARD)
-        Position -= Front * velocity;
-    if (direction == LEFT)
-        Position -= Right * velocity;
-    if (direction == RIGHT)
-        Position += Right * velocity;
+    glm::vec3 movementVector = glm::vec3(0,0,0);
+    if (inputState.IsKeyDown(Input::APP_KEY_W))
+        movementVector += Front;
+    if (inputState.IsKeyDown(Input::APP_KEY_S))
+        movementVector -= Front;
+    if (inputState.IsKeyDown(Input::APP_KEY_A))
+        movementVector -= Right;
+    if (inputState.IsKeyDown(Input::APP_KEY_D))
+        movementVector += Right;
+    if(movementVector != glm::vec3(0,0,0))
+        Position += glm::normalize(movementVector) * velocity;
+    float x,y = .0f;
+    inputState.GetMouseDelta(x,y);
+    ProcessMouseMovement(x,y, true);
 }
 
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch) {

@@ -50,3 +50,10 @@ add_custom_command(
              ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:SimplePiano>/shaders
          COMMENT "Copying shaders" VERBATIM
          )
+
+add_custom_command(
+    TARGET SimplePiano POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory              
+        ${CMAKE_SOURCE_DIR}/textures $<TARGET_FILE_DIR:SimplePiano>/textures
+    COMMENT "Copying textures" VERBATIM
+    )

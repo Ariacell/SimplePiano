@@ -5,7 +5,6 @@ namespace Shaders {
     class IShader {
         public:
             unsigned int ID;
-
             IShader(){};
 
             virtual ~IShader(){};
@@ -14,6 +13,8 @@ namespace Shaders {
             virtual void use() = 0;
 
             virtual void setFloat(const std::string &name, float value) const = 0;
+
+            unsigned int GetID() { return ID; }
     };
 }
 

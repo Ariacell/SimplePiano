@@ -7,6 +7,6 @@ using namespace std;
 class Shapes
 {
 public:
-    pair<array<float, 12>, array<unsigned int, 6>> getSampleRectangleData();
+    pair<array<float, 36>, array<unsigned int, 6>> getSampleRectangleData();
     array<float, 180> getSampleCubeVerts();
 };

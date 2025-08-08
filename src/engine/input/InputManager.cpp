@@ -1,4 +1,5 @@
 #include <engine/input/InputManager.h>
+#include <engine/input/InputKeys.h>
 #include <GLFW/glfw3.h>
 
 namespace Input
@@ -8,6 +9,8 @@ namespace Input
         // This pattern doesn't explicitly support separate inputs per window yet, probably very busted if trying to split input
         window->SetKeyCallback([this](int key, int action, int mods)
                                { this->keyCallback(key, action, mods); });
+        window->SetCursorPosCallback([this](double xpos, double ypos)
+                        { this->mouse_callback(xpos, ypos); });
         auto windowSize = window->GetWindowSize();
         lastMousePosition = glm::vec2(windowSize.x/2, windowSize.y/2);
         currentCamera = camera;
@@ -15,24 +18,28 @@ namespace Input
 
     void InputManager::keyCallback(int key, int action, int mods)
     {
-        if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
+        // Depending on the type of window it would be good to abstract away the GLFW specific keypresses a bit more elegantly
+        // For now I map specific keys to the application layer
+        auto internalKeyId = AppKeyFromGlfwKey(key);
+        auto internalKeyAction = AppKeyActionFromGlfwAction(action);
+        if (internalKeyId == APP_KEY_F1 && action == APP_KEY_PRESS)
         {
             debugWindowVisible = !debugWindowVisible;
         }
-        if (key == GLFW_KEY_W && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL))
+        if (internalKeyId == APP_KEY_W && action == APP_KEY_PRESS && (mods & GLFW_MOD_CONTROL))
         {
             this->assertDebugSettingsBoundToInputManager();
             this->debugSettings->isWireframeRenderingEnabled = !this->debugSettings->isWireframeRenderingEnabled;
         }
 
         // Transitioning to a decoupled input state structure that can be fed into my other components as needed to avoid spaghetti here
-        if (action == GLFW_PRESS)
+        if (action == APP_KEY_PRESS)
         {
-            inputState.PressKey(key);
+            inputState.PressKey(internalKeyId);
         }
-        else if (action == GLFW_RELEASE)
+        else if (action == APP_KEY_RELEASE)
         {
-            inputState.ReleaseKey(key);
+            inputState.ReleaseKey(internalKeyId);
         }
     }
 

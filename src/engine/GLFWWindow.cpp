@@ -6,11 +6,19 @@
 
 void PianoGLFWWindow::PianoGLFWKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    // Retrieve the instance associated with this window
     PianoGLFWWindow *instance = static_cast<PianoGLFWWindow *>(glfwGetWindowUserPointer(window));
     if (instance && instance->keyCallback_)
     {
         instance->keyCallback_(key, action, mods);
+    }
+}
+
+void PianoGLFWWindow::PianoGLFWCursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
+{
+    PianoGLFWWindow *instance = static_cast<PianoGLFWWindow *>(glfwGetWindowUserPointer(window));
+    if (instance && instance->cursorPosCallback_)
+    {
+        instance->cursorPosCallback_(xPos, yPos);
     }
 }
 
@@ -53,6 +61,7 @@ void PianoGLFWWindow::Create(int width, int height, const char *title)
     glfwSetWindowUserPointer(window, reinterpret_cast<void *>(this));
 
     glfwSetKeyCallback(window, PianoGLFWKeyCallback);
+    glfwSetCursorPosCallback(window, PianoGLFWCursorPositionCallback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -87,6 +96,11 @@ bool PianoGLFWWindow::ShouldClose() const
 void PianoGLFWWindow::SetKeyCallback(std::function<void(int, int, int)> callback)
 {
     keyCallback_ = callback;
+}
+
+void PianoGLFWWindow::SetCursorPosCallback(std::function<void(double, double)> callback)
+{
+    cursorPosCallback_ = callback;
 }
 
 void PianoGLFWWindow::SwapBuffers()
