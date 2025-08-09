@@ -11,8 +11,10 @@ private:
     GLFWwindow *window = nullptr;
 
     static void PianoGLFWKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+    static void PianoGLFWMouseButtonCallback(GLFWwindow *window, int key, int action, int mods);
     static void PianoGLFWCursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
     std::function<void(int, int, int)> keyCallback_ = 0;
+    std::function<void(int, int, int)> mouseButtonCallback_ = 0;
     std::function<void(double, double)> cursorPosCallback_ = 0;
 
 public:

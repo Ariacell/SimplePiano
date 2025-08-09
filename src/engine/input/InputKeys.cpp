@@ -20,6 +20,28 @@ namespace Input {
         {
         case GLFW_KEY_F1:
             return AppKey::APP_KEY_F1;
+        case GLFW_KEY_F2:
+            return AppKey::APP_KEY_F2;
+        case GLFW_KEY_F3:
+            return AppKey::APP_KEY_F3;
+        case GLFW_KEY_F4:
+            return AppKey::APP_KEY_F4;
+
+        case GLFW_MOUSE_BUTTON_1:
+            return AppKey::APP_KEY_MOUSE_1;
+        case GLFW_MOUSE_BUTTON_2:
+            return AppKey::APP_KEY_MOUSE_2;
+
+
+        case GLFW_KEY_SPACE:
+            return AppKey::APP_KEY_SPACE;
+        case GLFW_KEY_LEFT_CONTROL:
+            return APP_KEY_LCTRL;
+
+        case GLFW_KEY_Q:
+            return AppKey::APP_KEY_Q;
+        case GLFW_KEY_E:
+            return AppKey::APP_KEY_E;
         case GLFW_KEY_W:
             return AppKey::APP_KEY_W;
         case GLFW_KEY_A:

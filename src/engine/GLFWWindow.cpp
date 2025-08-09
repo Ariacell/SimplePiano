@@ -13,6 +13,15 @@ void PianoGLFWWindow::PianoGLFWKeyCallback(GLFWwindow *window, int key, int scan
     }
 }
 
+void PianoGLFWWindow::PianoGLFWMouseButtonCallback(GLFWwindow *window, int key, int action, int mods)
+{
+    PianoGLFWWindow *instance = static_cast<PianoGLFWWindow *>(glfwGetWindowUserPointer(window));
+    if (instance && instance->keyCallback_)
+    {
+        instance->keyCallback_(key, action, mods);
+    }
+}
+
 void PianoGLFWWindow::PianoGLFWCursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
 {
     PianoGLFWWindow *instance = static_cast<PianoGLFWWindow *>(glfwGetWindowUserPointer(window));
@@ -61,6 +70,7 @@ void PianoGLFWWindow::Create(int width, int height, const char *title)
     glfwSetWindowUserPointer(window, reinterpret_cast<void *>(this));
 
     glfwSetKeyCallback(window, PianoGLFWKeyCallback);
+    glfwSetMouseButtonCallback(window, PianoGLFWMouseButtonCallback);
     glfwSetCursorPosCallback(window, PianoGLFWCursorPositionCallback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

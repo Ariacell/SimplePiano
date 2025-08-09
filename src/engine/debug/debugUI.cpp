@@ -164,8 +164,12 @@ void DebugUiLayer::makeLocationDataMenu(Camera *trackedCamera) {
                 ImGui::TableHeadersRow();
 
                 ImGui::TableNextRow();
-                auto cameraPos = glm::to_string(trackedCamera->Position);
-                ImGui::TableSetColumnIndex(0); ImGui::InputText("CameraPosition", &cameraPos);
+                auto cameraPosX = std::to_string(trackedCamera->Position.x);
+                auto cameraPosY = std::to_string(trackedCamera->Position.y);
+                auto cameraPosZ = std::to_string(trackedCamera->Position.z);
+                ImGui::TableSetColumnIndex(0); ImGui::InputText("CameraPosition X", &cameraPosX);
+                ImGui::TableSetColumnIndex(0); ImGui::InputText("CameraPosition Y", &cameraPosY);
+                ImGui::TableSetColumnIndex(0); ImGui::InputText("CameraPosition Z", &cameraPosZ);
                 ImGui::EndTable();
             }
 
