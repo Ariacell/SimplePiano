@@ -3,9 +3,9 @@
 #include <engine/debug/DebugState.h>
 
 namespace State {
-    struct ApplicationState {
-        Debug::DebugState debugState;
-    };
-}
+struct ApplicationState {
+    Debug::DebugState debugState;
+};
+}  // namespace State
 
 #endif

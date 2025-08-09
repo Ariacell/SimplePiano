@@ -1,17 +1,16 @@
 #pragma once
-#include <engine/OpenGlRenderer.h>
 #include <engine/IRenderer.h>
+#include <engine/OpenGlRenderer.h>
+
 #include <memory>
 #include <string>
 
-enum class RendererType {
-    OpenGL,
-    DirectX
-};
+enum class RendererType { OpenGL, DirectX };
 
 class RendererFactory {
 public:
-    static std::unique_ptr<Engine::IRenderer> CreateRenderer(RendererType type) {
+    static std::unique_ptr<Engine::IRenderer> CreateRenderer(
+        RendererType type) {
         switch (type) {
             case RendererType::OpenGL:
                 return std::make_unique<OpenGlRenderer>();

@@ -3,10 +3,9 @@
 
 Camera::Camera(glm::vec3 position, glm::vec3 up)
     : Front(glm::vec3(0.0f, 0.0f, -1.0f)),
-    MovementSpeed(2.5f),
-    MouseSensitivity(0.001f),
-    Zoom(45.0f)
-{
+      MovementSpeed(2.5f),
+      MouseSensitivity(0.001f),
+      Zoom(45.0f) {
     Position = position;
     WorldUp = up;
     MovementSpeed = .2f;
@@ -38,12 +37,11 @@ void Camera::ProcessInput(Input::InputState inputState, float deltaTime) {
     ProcessPitchYawRoll(inputState, deltaTime, true);
 }
 
-
-void Camera::ProcessPitchYawRoll(Input::InputState inputState, float deltaTime, bool constrainPitch) {
-
-    if(inputState.IsKeyDown(Input::APP_KEY_E))
+void Camera::ProcessPitchYawRoll(Input::InputState inputState, float deltaTime,
+                                 bool constrainPitch) {
+    if (inputState.IsKeyDown(Input::APP_KEY_E))
         ApplyRoll(RollSpeed);
-    if(inputState.IsKeyDown(Input::APP_KEY_Q))
+    if (inputState.IsKeyDown(Input::APP_KEY_Q))
         ApplyRoll(-RollSpeed);
 
     // Rotation if rotate keybind pressed
@@ -56,7 +54,6 @@ void Camera::ProcessPitchYawRoll(Input::InputState inputState, float deltaTime, 
         // glm::vec3 localUp = glm::vec3(Orientation[1]);
         // glm::vec3 localRight = glm::vec3(Orientation[0]);
 
-
         glm::mat4 yawRot = glm::rotate(glm::mat4(1.0f), xoffset, Up);
         glm::mat4 pitchRot = glm::rotate(glm::mat4(1.0f), yoffset, Right);
 
@@ -68,18 +65,14 @@ void Camera::ProcessPitchYawRoll(Input::InputState inputState, float deltaTime, 
         //     if (Pitch < -89.0f)
         //         Pitch = -89.0f;
         // }
-
     }
     updateCameraVectors();
-
 }
 
 void Camera::ApplyRoll(float deltaRoll) {
     glm::mat4 rollRotation = glm::rotate(glm::mat4(1.0f), deltaRoll, Front);
     Orientation = rollRotation * Orientation;
 }
-
-
 
 void Camera::ProcessMouseScroll(float yoffset) {
     Zoom -= yoffset;
