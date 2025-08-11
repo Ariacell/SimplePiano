@@ -1,4 +1,5 @@
-const char *fragmentShaderSource = "#version 330 core\n"
+const char *fragmentShaderSource =
+    "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"

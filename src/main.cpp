@@ -1,14 +1,14 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <application/contants.h>
 #include <appstate.h>
-#include <audio/audio.h>
 #include <engine/GLFWWindow.h>
 #include <engine/RendererFactory.h>
+#include <engine/audio/audio.h>
 #include <engine/debug/debugUI.h>
+#include <engine/shaders/OpenGlShader.h>
 #include <glad/glad.h>
-#include <shaders/OpenGlShader.h>
 #include <stb_image/stb_image.h>
-#include <ui/contants.h>
 #include <util/timer.h>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -16,19 +16,6 @@
 #include <thread>
 
 #include "engine/input/InputManager.h"
-
-// static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int
-// action, int mods)
-// {
-//     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-//     {
-//         glfwSetWindowShouldClose(window, true);
-//         return;
-//     }
-//     Input::InputManager *handler = reinterpret_cast<Input::InputManager
-//     *>(glfwGetWindowUserPointer(window)); if (handler)
-//         handler->keyCallback(key, action, mods);
-// }
 
 class PianoApp {
 public:
@@ -44,8 +31,9 @@ public:
         // Todo: figure out if this is really the cleanest way to create this
         // window class...
         auto window = std::make_unique<PianoGLFWWindow>();
-        window->Create(ui::WINDOW_DEFAULTS::WINDOW_WIDTH,
-                       ui::WINDOW_DEFAULTS::WINDOW_HEIGHT, "SimplePiano");
+        window->Create(Application::WINDOW_DEFAULTS::WINDOW_WIDTH,
+                       Application::WINDOW_DEFAULTS::WINDOW_HEIGHT,
+                       "SimplePiano");
         GLFWwindow* glfwWindow = (GLFWwindow*)(window->GetNativeHandle());
         std::cout << ("Finished Init Window\n");
 
@@ -67,17 +55,12 @@ public:
 
         Util::Timer appStateTimer;
         float appStateTickRateMs = 31.25f;
-        // float appStateTickRate = 31250000.0f; // 32*X nanoseconds into each
-        // second
         appStateTimer.Init(appStateTickRateMs);
 
         Util::Timer frameRateTimer;
-        // float frameRateTargetTickRate = 800000.0f; // ~120*X nanoseconds into
-        // each second
-        float targetFramerate = 60.0f;  // ~120*X nanoseconds into each second
-        float targetFrameTime =
-            1 / targetFramerate;  // ~120*X nanoseconds into each second
-        frameRateTimer.Init(targetFrameTime);
+        float targetFramerate = 70.0f;
+        float targetFrameTimeMs = (1 / targetFramerate) * 1000;
+        frameRateTimer.Init(targetFrameTimeMs);
 
         while (!window->ShouldClose()) {
             auto frameStart = std::chrono::steady_clock::now();
@@ -106,9 +89,9 @@ public:
             frameRateTimer.TickTimer(
                 [&]() {
                     mainSceneCamera.ProcessInput(inputManager.GetInputState(),
-                                                 appStateTimer.GetTickSize());
+                                                 frameRateTimer.GetTickSize());
                     std::cout << "Framerate time Ticks so far: "
-                              << appStateTimer.GetTickCount() << std::endl;
+                              << frameRateTimer.GetTickCount() << std::endl;
                 },
                 5);
 
@@ -167,21 +150,24 @@ public:
             // practice to set it outside the main loop only once.
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
-            // renderer->DrawRectangle();
-            renderer->DrawCube();
+            renderer->DrawRectangle();
+            // renderer->DrawCube();
             debugUi.endFrame();
             renderer->Present();
             inputManager.EndFrame();
 
             auto frameEnd = std::chrono::steady_clock::now();
-            float frameTime =
-                std::chrono::duration<float>(frameEnd - frameStart).count();
+            float frameTimeMs =
+                std::chrono::duration<float>(frameEnd - frameStart).count() *
+                1000;
 
-            if (frameTime < targetFrameTime) {
-                float sleepTime = targetFrameTime - frameTime;
+            if (frameTimeMs < targetFrameTimeMs) {
+                float sleepTimeMs = targetFrameTimeMs - frameTimeMs;
                 std::this_thread::sleep_for(
-                    std::chrono::duration<float>(sleepTime));
+                    std::chrono::duration<float, milli>(sleepTimeMs));
             }
+            cout << "Current FPS: " << to_string(1.0f / frameTimeMs * 1000)
+                 << endl;
 #pragma endregion Rendering Logic
         }
     }

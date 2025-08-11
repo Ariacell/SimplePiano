@@ -9,28 +9,26 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(glfw3 3.3 REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OpenGL REQUIRED)
+add_definitions(-D GLM_ENABLE_EXPERIMENTAL)
 
 
 include_directories(
     ${OPENGL_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/inc
-    ${PROJECT_SOURCE_DIR}/imgui 
-    ${PROJECT_SOURCE_DIR}/glm 
-    ${PROJECT_SOURCE_DIR}/lib 
+    ${PROJECT_SOURCE_DIR}/lib/imgui
+    ${PROJECT_SOURCE_DIR}/lib
     ${PROJECT_SOURCE_DIR}/src
     )
 message(OpenGlIncludeDir="${OPENGL_INCLUDE_DIRS}")
 
 file(GLOB_RECURSE SRC_FILES
-    "${PROJECT_SOURCE_DIR}/imgui/**" 
+    "${PROJECT_SOURCE_DIR}/lib/imgui/**" 
     "${PROJECT_SOURCE_DIR}/src/*.cpp"
     "${PROJECT_SOURCE_DIR}/lib/glad.c"
-    "${PROJECT_SOURCE_DIR}/lib/*.cpp"
 )
 
 link_directories(
     ${CMAKE_SOURCE_DIR}/lib
-    ${PROJECT_SOURCE_DIR}/imgui
     ${PROJECT_SOURCE_DIR}/glm
 )
 
@@ -47,13 +45,13 @@ OpenAL::OpenAL
 add_custom_command(
          TARGET SimplePiano POST_BUILD
          COMMAND ${CMAKE_COMMAND} -E copy_directory              
-             ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:SimplePiano>/shaders
+             ${CMAKE_SOURCE_DIR}/resources/shaders $<TARGET_FILE_DIR:SimplePiano>/shaders
          COMMENT "Copying shaders" VERBATIM
          )
 
 add_custom_command(
     TARGET SimplePiano POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory              
-        ${CMAKE_SOURCE_DIR}/textures $<TARGET_FILE_DIR:SimplePiano>/textures
+        ${CMAKE_SOURCE_DIR}/resources/textures $<TARGET_FILE_DIR:SimplePiano>/textures
     COMMENT "Copying textures" VERBATIM
     )

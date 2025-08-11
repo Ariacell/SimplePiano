@@ -8,7 +8,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up)
       Zoom(45.0f) {
     Position = position;
     WorldUp = up;
-    MovementSpeed = .2f;
+    MovementSpeed = 1.0f;
     RollSpeed = .01f;
     updateCameraVectors();
 }

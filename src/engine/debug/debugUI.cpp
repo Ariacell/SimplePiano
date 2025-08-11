@@ -36,6 +36,7 @@ void DebugUiLayer::init(GLFWwindow *window,
     }
 }
 
+/// @brief Starts a new frame for the Imgui library ecosystem
 void DebugUiLayer::beginFrame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
