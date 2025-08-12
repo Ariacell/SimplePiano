@@ -1,9 +1,9 @@
 #include "shapes.h"
+
 #include <vector>
 using namespace std;
 
-pair<vector<float>,vector<unsigned int>>
-Shapes::getSampleRectangleData() {
+pair<vector<float>, vector<unsigned int>> Shapes::getSampleRectangleData() {
     vector<float> vertices = {
         // positions          // colors           // texture coords
         0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // top right

@@ -16,6 +16,7 @@
 #include <thread>
 
 #include "engine/input/InputManager.h"
+#include "engine/graphics/VertexArray.h"
 
 class PianoApp {
 public:
@@ -62,6 +63,26 @@ public:
         float targetFrameTimeMs = (1 / targetFramerate) * 1000;
         frameRateTimer.Init(targetFrameTimeMs);
 
+        Shapes shapes;
+
+        // Set up rectangle buffers
+        auto triangle =    shapes.getSampleRectangleData();
+        Renderer::VertexArray va;
+
+        Renderer::VertexBuffer rectangleVertexBuffer(
+            triangle.first.data(), sizeof(float) * triangle.first.size());
+        Renderer::IndexBuffer rectangleIndexBuffer(triangle.second.data(),
+                                                triangle.second.size());
+
+        Renderer::VertexBufferLayout layout;
+        layout.Push<float>(3);
+        layout.Push<float>(3);
+        layout.Push<float>(2);
+        va.AddBuffer(rectangleVertexBuffer, layout);
+        rectangleIndexBuffer.Bind();
+
+
+
         while (!window->ShouldClose()) {
             auto frameStart = std::chrono::steady_clock::now();
             window->PollEvents();
@@ -77,8 +98,8 @@ public:
                 [&]() {
                     // blah
                     //  Do physics/app state things
-                    std::cout << "Application Ticks so far: "
-                              << appStateTimer.GetTickCount() << std::endl;
+                    // std::cout << "Application Ticks so far: "
+                    //           << appStateTimer.GetTickCount() << std::endl;
                 },
                 5);  // Todo: this should actually compensate for the overflow
             // from the tickrate but good enough for now
@@ -90,15 +111,13 @@ public:
                 [&]() {
                     mainSceneCamera.ProcessInput(inputManager.GetInputState(),
                                                  frameRateTimer.GetTickSize());
-                    std::cout << "Framerate time Ticks so far: "
-                              << frameRateTimer.GetTickCount() << std::endl;
+                    // std::cout << "Framerate time Ticks so far: "
+                    //           << frameRateTimer.GetTickCount() << std::endl;
                 },
                 5);
 
 #pragma region Rendering Logic
             debugUi.beginFrame();
-            glClearColor(1.f, 0.f, 1.f, 1.f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             if (inputManager.isDebugWindowVisible()) {
                 debugUi.renderDebugWindow(glfwWindow, debugWindowData,
@@ -134,7 +153,6 @@ public:
                 (float)current_window_size.x / (float)current_window_size.y,
                 0.1f, 100.0f);
 
-            glEnable(GL_DEPTH_TEST);
             // retrieve the matrix uniform locations
             unsigned int modelLoc =
                 glGetUniformLocation(openGlShader.GetID(), "model");
@@ -143,14 +161,12 @@ public:
             unsigned int projLoc =
                 glGetUniformLocation(openGlShader.GetID(), "projection");
             // pass them to the shaders (3 different ways)
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-            // note: currently we set the projection matrix each frame, but
-            // since the projection matrix rarely changes it's often best
-            // practice to set it outside the main loop only once.
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
-            renderer->DrawRectangle();
+            // renderer->DrawRectangle();
+            renderer->DrawObject(va.GetRendererId(), rectangleIndexBuffer, openGlShader);
             // renderer->DrawCube();
             debugUi.endFrame();
             renderer->Present();
@@ -166,8 +182,8 @@ public:
                 std::this_thread::sleep_for(
                     std::chrono::duration<float, milli>(sleepTimeMs));
             }
-            cout << "Current FPS: " << to_string(1.0f / frameTimeMs * 1000)
-                 << endl;
+            // cout << "Current FPS: " << to_string(1.0f / frameTimeMs * 1000)
+            //      << endl;
 #pragma endregion Rendering Logic
         }
     }

@@ -13,5 +13,9 @@ public:
 
     void Bind() const;
     void UnBind() const;
+
+    const int GetIndiceCount() const {
+        return indiceCount;
+    }
 };
 }  // namespace Renderer

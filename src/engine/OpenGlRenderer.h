@@ -1,5 +1,6 @@
 #pragma once
 #include <engine/IRenderer.h>
+#include <engine/graphics/IndexBuffer.h>
 #include <engine/graphics/opengl/cube.h>
 #include <engine/graphics/opengl/triangle.h>
 #include <engine/graphics/shapes.h>
@@ -27,7 +28,8 @@ public:
 
     void ClearScreen(float r, float g, float b, float a) override;
 
-    void DrawObject(const int& vertexArray, const int& indexBuffer,
+    void DrawObject(const int& vertexArray,
+                    const Renderer::IndexBuffer& indexBuffer,
                     const Shaders::IShader& shader) const override;
 
     void DrawRectangle() override;

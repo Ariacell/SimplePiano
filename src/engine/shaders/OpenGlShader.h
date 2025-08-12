@@ -5,7 +5,7 @@
 #include "IShader.h"
 
 namespace Shaders {
-class OpenGlShader : IShader {
+class OpenGlShader : public IShader {
 public:
     /// @brief compiles and links OpenGL shaders
     /// @return The shader program ID from the loaded shaders for use in OpenGL
