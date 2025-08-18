@@ -32,7 +32,7 @@ public:
     void PollEvents() override;
     bool ShouldClose() const override;
     void SwapBuffers() override;
-    void GetFrameBufferSize() override;
+    void GetFrameBufferSize(int &frameWidth, int &frameHeight) override;
     glm::vec2 GetWindowSize() override;
 
     Engine::GLProcAddress GetWindowProcAddress() override;

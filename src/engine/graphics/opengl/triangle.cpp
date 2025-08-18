@@ -2,9 +2,9 @@
 
 #include <GLES3/gl32.h>
 #include <engine/graphics/IndexBuffer.h>
+#include <engine/graphics/VertexArray.h>
 #include <engine/graphics/VertexBuffer.h>
 #include <engine/graphics/VertexBufferLayout.h>
-#include <engine/graphics/VertexArray.h>
 
 #include <array>
 #include <utility>
@@ -15,7 +15,8 @@
 //     auto triangle = triangleData;
 //     unsigned int VBO, EBO, VAO;
 //     // glGenVertexArrays(1, &VAO);
-//     // // // bind the Vertex Array Object first, then bind and set vertex buffer(s),
+//     // // // bind the Vertex Array Object first, then bind and set vertex
+//     buffer(s),
 //     // // // and then configure vertex attributes(s).
 //     // glBindVertexArray(VAO);
 //     Renderer::VertexArray va;
@@ -46,8 +47,10 @@
 //                           (void*)(6 * sizeof(float)));
 //     glEnableVertexAttribArray(2);
 
-//     // note that this is allowed, the call to glVertexAttribPointer registered
-//     // VBO as the vertex attribute's bound vertex buffer object so afterwards we
+//     // note that this is allowed, the call to glVertexAttribPointer
+//     registered
+//     // VBO as the vertex attribute's bound vertex buffer object so afterwards
+//     we
 //     // can safely unbind
 //     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -55,9 +58,12 @@
 //     // element buffer object IS stored in the VAO; keep the EBO bound.
 //     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-//     // You can unbind the VAO afterwards so other VAO calls won't accidentally
-//     // modify this VAO, but this rarely happens. Modifying other VAOs requires a
-//     // call to glBindVertexArray anyways so we generally don't unbind VAOs (nor
+//     // You can unbind the VAO afterwards so other VAO calls won't
+//     accidentally
+//     // modify this VAO, but this rarely happens. Modifying other VAOs
+//     requires a
+//     // call to glBindVertexArray anyways so we generally don't unbind VAOs
+//     (nor
 //     // VBOs) when it's not directly necessary.
 //     glBindVertexArray(0);
 //     return va.GetRendererId();

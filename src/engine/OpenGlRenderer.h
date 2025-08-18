@@ -28,6 +28,8 @@ public:
 
     void ClearScreen(float r, float g, float b, float a) override;
 
+    void SetWireframeRendering(bool shouldRenderWireframe) override;
+
     void DrawObject(const int& vertexArray,
                     const Renderer::IndexBuffer& indexBuffer,
                     const Shaders::IShader& shader) const override;

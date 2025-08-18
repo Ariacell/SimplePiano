@@ -17,6 +17,8 @@ public:
     void Bind() const;
     void UnBind() const;
 
-    inline const unsigned int GetRendererId() { return associatedRendererId; }
+    inline const unsigned int GetRendererId() {
+        return associatedRendererId;
+    }
 };
 }  // namespace Renderer

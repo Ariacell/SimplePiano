@@ -84,8 +84,8 @@ void PianoGLFWWindow::PollEvents() {
     glfwPollEvents();
 }
 
-void PianoGLFWWindow::GetFrameBufferSize() {
-    glfwPollEvents();
+void PianoGLFWWindow::GetFrameBufferSize(int &frameWidth, int &frameHeight) {
+    glfwGetFramebufferSize(window, &frameWidth, &frameHeight);
 }
 
 glm::vec2 PianoGLFWWindow::GetWindowSize() {

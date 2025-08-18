@@ -15,8 +15,8 @@
 #include <iostream>
 #include <thread>
 
-#include "engine/input/InputManager.h"
 #include "engine/graphics/VertexArray.h"
+#include "engine/input/InputManager.h"
 
 class PianoApp {
 public:
@@ -66,13 +66,13 @@ public:
         Shapes shapes;
 
         // Set up rectangle buffers
-        auto triangle =    shapes.getSampleRectangleData();
+        auto triangle = shapes.getSampleRectangleData();
         Renderer::VertexArray va;
 
         Renderer::VertexBuffer rectangleVertexBuffer(
             triangle.first.data(), sizeof(float) * triangle.first.size());
         Renderer::IndexBuffer rectangleIndexBuffer(triangle.second.data(),
-                                                triangle.second.size());
+                                                   triangle.second.size());
 
         Renderer::VertexBufferLayout layout;
         layout.Push<float>(3);
@@ -80,8 +80,6 @@ public:
         layout.Push<float>(2);
         va.AddBuffer(rectangleVertexBuffer, layout);
         rectangleIndexBuffer.Bind();
-
-
 
         while (!window->ShouldClose()) {
             auto frameStart = std::chrono::steady_clock::now();
@@ -124,13 +122,8 @@ public:
                                           &appState, &inputManager);
             }
 
-            int display_w, display_h;
-            glfwGetFramebufferSize(glfwWindow, &display_w, &display_h);
-            glViewport(0, 0, display_w, display_h);
-            glPolygonMode(GL_FRONT_AND_BACK,
-                          debugWindowData->isWireframeRenderingEnabled
-                              ? GL_LINE
-                              : GL_FILL);
+            renderer->SetWireframeRendering(
+                debugWindowData->isWireframeRenderingEnabled);
 
             renderer->ClearScreen(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -166,7 +159,8 @@ public:
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
             // renderer->DrawRectangle();
-            renderer->DrawObject(va.GetRendererId(), rectangleIndexBuffer, openGlShader);
+            renderer->DrawObject(va.GetRendererId(), rectangleIndexBuffer,
+                                 openGlShader);
             // renderer->DrawCube();
             debugUi.endFrame();
             renderer->Present();
