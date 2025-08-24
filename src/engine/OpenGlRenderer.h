@@ -32,7 +32,9 @@ public:
 
     void DrawObject(const int& vertexArray,
                     const Renderer::IndexBuffer& indexBuffer,
-                    const Shaders::IShader& shader) const override;
+                    Shaders::IShader& shader) const override;
+
+    void DrawObject(Component::GameObject* objectToDraw) const override;
 
     void DrawRectangle() override;
 
@@ -42,3 +44,5 @@ public:
 
     void Present() override;
 };
+
+void CheckOpenGlError(std::string callLocation);

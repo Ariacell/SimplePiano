@@ -10,17 +10,18 @@ namespace Component {
 
 class ModelComponent : public Component {
 public:
-    ModelComponent(Mesh mesh, Material mat) : mesh(mesh), mat(mat){};
+    ModelComponent(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> mat)
+        : mesh(mesh), mat(mat){};
 
-    const Mesh GetMesh() const {
-        return mesh;
+    Mesh* GetMesh() const {
+        return mesh.get();
     }
-    const Material GetTexture() const {
-        return mat;
+    Material* GetTexture() const {
+        return mat.get();
     }
 
 private:
-    Mesh mesh;
-    Material mat;
+    std::shared_ptr<Mesh> mesh;
+    std::shared_ptr<Material> mat;
 };
 }  // namespace Component

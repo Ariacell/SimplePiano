@@ -70,45 +70,51 @@
 //     // return va.GetRendererId();
 // }
 
-unsigned int OpenGlGraphics::bindRectangle(
-    std::pair<std::vector<float>, std::vector<unsigned int>> triangleData) {
-    auto triangle = triangleData;
-    unsigned int VBO, EBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s),
-    // and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
+// unsigned int OpenGlGraphics::bindRectangle(
+//     std::pair<std::vector<float>, std::vector<unsigned int>> triangleData) {
+//     auto triangle = triangleData;
+//     unsigned int VBO, EBO, VAO;
+//     glGenVertexArrays(1, &VAO);
+//     // bind the Vertex Array Object first, then bind and set vertex
+//     buffer(s),
+//     // and then configure vertex attributes(s).
+//     glBindVertexArray(VAO);
 
-    Renderer::VertexBuffer rectangleVertexBuffer(
-        triangle.first.data(), sizeof(float) * triangle.first.size());
-    Renderer::IndexBuffer rectangleIndexBuffer(triangle.second.data(),
-                                               triangle.second.size());
+//     Renderer::VertexBuffer rectangleVertexBuffer(
+//         triangle.first.data(), sizeof(float) * triangle.first.size());
+//     Renderer::IndexBuffer rectangleIndexBuffer(triangle.second.data(),
+//                                                triangle.second.size());
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                          (void*)0);
-    glEnableVertexAttribArray(0);
+//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+//                           (void*)0);
+//     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                          (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+//     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+//                           (void*)(3 * sizeof(float)));
+//     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                          (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+//     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+//                           (void*)(6 * sizeof(float)));
+//     glEnableVertexAttribArray(2);
 
-    // note that this is allowed, the call to glVertexAttribPointer registered
-    // VBO as the vertex attribute's bound vertex buffer object so afterwards we
-    // can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+//     // note that this is allowed, the call to glVertexAttribPointer
+//     registered
+//     // VBO as the vertex attribute's bound vertex buffer object so afterwards
+//     we
+//     // can safely unbind
+//     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // remember: do NOT unbind the EBO while a VAO is active as the bound
-    // element buffer object IS stored in the VAO; keep the EBO bound.
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//     // remember: do NOT unbind the EBO while a VAO is active as the bound
+//     // element buffer object IS stored in the VAO; keep the EBO bound.
+//     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally
-    // modify this VAO, but this rarely happens. Modifying other VAOs requires a
-    // call to glBindVertexArray anyways so we generally don't unbind VAOs (nor
-    // VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
-    return VAO;
-}
+//     // You can unbind the VAO afterwards so other VAO calls won't
+//     accidentally
+//     // modify this VAO, but this rarely happens. Modifying other VAOs
+//     requires a
+//     // call to glBindVertexArray anyways so we generally don't unbind VAOs
+//     (nor
+//     // VBOs) when it's not directly necessary.
+//     glBindVertexArray(0);
+//     return VAO;
+// }

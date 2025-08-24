@@ -1,9 +1,22 @@
+#include "OpenGlRenderer.h"
+
 #include <engine/OpenGlRenderer.h>
+#include <game/components/ModelComponent.h>
 
 #include <filesystem>
 #include <iostream>
 
 #include "graphics/VertexArray.h"
+
+void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
+                                GLenum severity, GLsizei length,
+                                const GLchar* message, const void* userParam) {
+std:
+    cerr << "GL CALLBACK: "
+         << (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "") << std::hex
+         << " type = " << type << " severity = " << severity
+         << " message = " << message << std::endl;
+}
 
 /// @brief Initialise the OpenGL window (must occur after window is created)
 /// @param window
@@ -15,8 +28,8 @@ void OpenGlRenderer::Initialize(Engine::IWindow* window) {
     if (!gladLoadGLLoader(loader)) {
         throw std::runtime_error("Failed to load OpenGl via Glad for window");
     }
-    this->rectangleVAO =
-        OpenGlGraphics::bindRectangle(shapes.getSampleRectangleData());
+    // this->rectangleVAO =
+    // OpenGlGraphics::bindRectangle(shapes.getSampleRectangleData());
     this->cubeVAO = OpenGlGraphics::bindCube(shapes.getSampleCubeVerts());
 
     printf("Vendor graphic card: %s\n", glGetString(GL_VENDOR));
@@ -26,6 +39,10 @@ void OpenGlRenderer::Initialize(Engine::IWindow* window) {
 
     std::cout << "OpenGL context initialized\n";
     LoadRectangleTexture();
+
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(MessageCallback, 0);
 
     int display_w, display_h;
     window->GetFrameBufferSize(display_w, display_h);
@@ -44,12 +61,37 @@ void OpenGlRenderer::ClearScreen(float r, float g, float b, float a) {
 
 void OpenGlRenderer::DrawObject(const int& vertexArray,
                                 const Renderer::IndexBuffer& indexBuffer,
-                                const Shaders::IShader& shader) const {
+                                Shaders::IShader& shader) const {
     glPolygonMode(GL_FRONT_AND_BACK,
                   this->isWireframeRenderingEnabled ? GL_LINE : GL_FILL);
+    GLint isVAO = 0;
+    bool isVAOValid = glIsVertexArray(vertexArray);
     glBindVertexArray(vertexArray);
+    indexBuffer.Bind();
+    shader.use();
     glDrawElements(GL_TRIANGLES, indexBuffer.GetIndiceCount(), GL_UNSIGNED_INT,
                    0);
+}
+
+void OpenGlRenderer::DrawObject(Component::GameObject* objectToDraw) const {
+    auto* model = objectToDraw->GetComponent<Component::ModelComponent>();
+    if (model == nullptr) {
+        std::cout << "Nothing to render for gameobejct" << std::endl;
+        return;
+    }
+    glEnable(GL_DEBUG_OUTPUT);
+
+    CheckOpenGlError("Start DrawObject");
+    glPolygonMode(GL_FRONT_AND_BACK,
+                  this->isWireframeRenderingEnabled ? GL_LINE : GL_FILL);
+
+    model->GetMesh()->GetVertexArray()->Bind();
+    CheckOpenGlError("After Bind vertex array");
+    model->GetMesh()->GetIndexBuffer()->Bind();
+    model->GetTexture()->GetShader()->use();
+    glDrawElements(GL_TRIANGLES,
+                   model->GetMesh()->GetIndexBuffer()->GetIndiceCount(),
+                   GL_UNSIGNED_INT, 0);
 }
 
 void OpenGlRenderer::SetWireframeRendering(bool shouldRenderWireframe) {
@@ -64,6 +106,13 @@ void OpenGlRenderer::DrawRectangle() {
     // so to keep things a bit more organized
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     // Do more fun things here once I have time.
+}
+void CheckOpenGlError(std::string callLocation) {
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR) {
+        std::cerr << "OpenGL Error at callsite " << callLocation << " : "
+                  << std::hex << err << std::endl;
+    }
 }
 
 void OpenGlRenderer::DrawCube() {

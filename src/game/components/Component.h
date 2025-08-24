@@ -1,9 +1,9 @@
 #pragma once
 
 // Forward dec for GameObject to simplify the include structure
-class GameObject;
 
 namespace Component {
+class GameObject;
 
 class Component {
 public:

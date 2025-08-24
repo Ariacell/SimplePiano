@@ -2,6 +2,7 @@
 #include <engine/IWindow.h>
 #include <engine/graphics/IndexBuffer.h>
 #include <engine/shaders/IShader.h>
+#include <game/components/GameObject.h>
 
 namespace Engine {
 
@@ -15,7 +16,9 @@ public:
 
     virtual void DrawObject(const int& vertexArray,
                             const Renderer::IndexBuffer& indexBuffer,
-                            const Shaders::IShader& shader) const = 0;
+                            Shaders::IShader& shader) const = 0;
+
+    virtual void DrawObject(Component::GameObject* objectToDraw) const = 0;
     virtual void DrawRectangle() = 0;
     virtual void DrawCube() = 0;
     virtual void Present() = 0;

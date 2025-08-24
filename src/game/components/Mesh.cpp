@@ -1,19 +1,30 @@
 #include "Mesh.h"
 
-Component::Mesh::Mesh(Renderer::VertexBuffer vertexBuffer,
-                      Renderer::IndexBuffer indexBuffer,
-                      Renderer::VertexBufferLayout layout) {
-    vertexBuffer = vertexBuffer;
-    indexBuffer = indexBuffer;
-    layout = layout;
+Component::Mesh::Mesh(Renderer::VertexArray* va,
+                      Renderer::VertexBufferArgs vertexBufferData,
+                      Renderer::IndexBufferArgs indexBufferData,
+                      Renderer::VertexBufferLayout layout)
+    : vertexBuffer(vertexBufferData),
+      indexBuffer(indexBufferData),
+      layout(layout) {
+    vertexArray = va;
+    va->Bind();
+    std::cout << "Bound VAO ID: " << va->GetRendererId() << std::endl;
+    va->AddBuffer(vertexBuffer, layout);
+    indexBuffer.Bind();
+    std::cout << "Bound mesh to VAO ID: " << va->GetRendererId() << std::endl;
 }
 
-Renderer::VertexBuffer Component::Mesh::GetVertexBuffer() {
-    return vertexBuffer;
+Renderer::VertexArray* Component::Mesh::GetVertexArray() {
+    return vertexArray;
 }
-Renderer::IndexBuffer Component::Mesh::GetIndexBuffer() {
-    return indexBuffer;
+
+Renderer::VertexBuffer* Component::Mesh::GetVertexBuffer() {
+    return &vertexBuffer;
 }
-Renderer::VertexBufferLayout Component::Mesh::GetBufferLayout() {
-    return layout;
+Renderer::IndexBuffer* Component::Mesh::GetIndexBuffer() {
+    return &indexBuffer;
+}
+Renderer::VertexBufferLayout* Component::Mesh::GetBufferLayout() {
+    return &layout;
 }
