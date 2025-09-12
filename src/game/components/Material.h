@@ -1,3 +1,5 @@
+#pragma once
+
 #include <engine/shaders/IShader.h>
 
 #include <memory>

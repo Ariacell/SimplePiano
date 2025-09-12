@@ -29,6 +29,7 @@ file(GLOB_RECURSE SRC_FILES
 
 link_directories(
     ${CMAKE_SOURCE_DIR}/lib
+    ${CMAKE_SOURCE_DIR}/lib/assimp
     ${PROJECT_SOURCE_DIR}/glm
 )
 
@@ -39,9 +40,10 @@ target_link_libraries(SimplePiano
 OpenGL::OpenGL
 glfw
 OpenAL::OpenAL
+assimp
 )
 
-# Copying shaders into the build directory for runtime compiling
+# Copying shaders and textures into the build directory for runtime compiling
 add_custom_command(
          TARGET SimplePiano POST_BUILD
          COMMAND ${CMAKE_COMMAND} -E copy_directory              

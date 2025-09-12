@@ -67,6 +67,7 @@ public:
         float targetFrameTimeMs = (1 / targetFramerate) * 1000;
         frameRateTimer.Init(targetFrameTimeMs);
 
+#pragma region Temporary setup for scene geometry, to remove once Scene abstraction is ready
         Shapes shapes;
 
         // Set up rectangle buffers
@@ -74,11 +75,11 @@ public:
         auto cube = shapes.getSampleCubeVerts();
 
         Renderer::VertexArray va;
-        Renderer::VertexBufferArgs rectVbData;
+        Renderer::VertexBufferData rectVbData;
         rectVbData.data = (const void*)(triangle.first.data());
         rectVbData.size = (unsigned int)(sizeof(float) * triangle.first.size());
 
-        Renderer::IndexBufferArgs rectIbData;
+        Renderer::IndexBufferData rectIbData;
         rectIbData.data = triangle.second.data();
         rectIbData.count = triangle.second.size();
 
@@ -88,15 +89,15 @@ public:
         layout.Push<float>(2);
 
         Component::GameObject cloudObj;
-        std::shared_ptr<Component::Mesh> rectMesh(
-            new Component::Mesh(&va, rectVbData, rectIbData, layout));
+        std::shared_ptr<Component::Mesh1> rectMesh(
+            new Component::Mesh1(&va, rectVbData, rectIbData, layout));
         std::shared_ptr<Component::Material> cloudMat(
             new Component::Material(openGlShader, "path"));
         auto cloudQuadModel = cloudObj.AddComponent<Component::ModelComponent>(
             rectMesh, cloudMat);
 
         Renderer::VertexArray cubeVa;
-        Renderer::VertexBufferArgs cubeVbData;
+        Renderer::VertexBufferData cubeVbData;
         const unsigned int cubeIndices[6 * 6] = {
             // front and back
 
@@ -105,7 +106,7 @@ public:
         cubeVbData.data = (const void*)(cube.data());
         cubeVbData.size = (unsigned int)(sizeof(float) * cube.size());
 
-        Renderer::IndexBufferArgs cubeIbData;
+        Renderer::IndexBufferData cubeIbData;
         cubeIbData.data = cubeIndices;
         cubeIbData.count = 36;
 
@@ -113,20 +114,20 @@ public:
         cubeLayout.Push<float>(3);
         cubeLayout.Push<float>(2);
         Component::GameObject cubeObj;
-        std::shared_ptr<Component::Mesh> cubeMesh(
-            new Component::Mesh(&cubeVa, cubeVbData, cubeIbData, cubeLayout));
+        std::shared_ptr<Component::Mesh1> cubeMesh(
+            new Component::Mesh1(&cubeVa, cubeVbData, cubeIbData, cubeLayout));
         std::shared_ptr<Component::Material> cubeMat(
             new Component::Material(openGlShader, "path"));
         auto cubeModel =
             cubeObj.AddComponent<Component::ModelComponent>(cubeMesh, cubeMat);
+#pragma endregion
+
+        float frameTimeMs = 0.0f;
 
         while (!window->ShouldClose()) {
             auto frameStart = std::chrono::steady_clock::now();
             window->PollEvents();
 
-            // Note both this is currently greedy with no upper bound on the
-            // physics catchup ticks, would definitely be an issue for clients
-            // that start lagging behind App updates
             appStateTimer.Update();
             frameRateTimer.Update();
             priorAppState = appState;
@@ -138,8 +139,7 @@ public:
                     // std::cout << "Application Ticks so far: "
                     //           << appStateTimer.GetTickCount() << std::endl;
                 },
-                5);  // Todo: this should actually compensate for the overflow
-            // from the tickrate but good enough for now
+                5);
 
             // This probably doesn't need to be on a timer? Just want it to be
             // smooth but not sure if the 3rd person camera should be in app or
@@ -167,11 +167,6 @@ public:
             renderer->ClearScreen(0.1f, 0.1f, 0.1f, 1.0f);
 
             auto current_window_size = window.get()->GetWindowSize();
-            // auto* cloudModel =
-            //     cloudObj.GetComponent<Component::ModelComponent>();
-            // std::shared_ptr<Shaders::IShader> cloudShader =
-            //     cloudModel->GetTexture().GetShader();
-            openGlShader.get()->use();
 
             glm::mat4 model = glm::mat4(1.0f);
             // model =
@@ -179,9 +174,7 @@ public:
             //     glm::radians(50.0f),
             // glm::vec3(0.5f, 1.0f, 0.0f));
             model = glm::rotate(model, 0.0f, glm::vec3(0.5f, 1.0f, 0.0f));
-            glm::mat4 view = glm::mat4(1.0f);  // make sure to initialize matrix
-            // to identity matrix first
-            // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+            glm::mat4 view = glm::mat4(1.0f);
             view = glm::lookAt(mainSceneCamera.Position,
                                mainSceneCamera.Position + mainSceneCamera.Front,
                                mainSceneCamera.Up);
@@ -191,35 +184,28 @@ public:
                 (float)current_window_size.x / (float)current_window_size.y,
                 0.1f, 100.0f);
 
-            // retrieve the matrix uniform locations
+            // retrieve the matrix uniform locations and set up shaders
             unsigned int modelLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "model");
             unsigned int viewLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "view");
             unsigned int projLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "projection");
-            // pass them to the shaders (3 different ways)
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
-            // renderer->DrawRectangle();
-            // renderer->DrawObject(va.GetRendererId(), rectangleIndexBuffer,
-            //                      *openGlShader.get());
-            // renderer->DrawObject(va.GetRendererId(),
-            // rectangleIndexBuffer,
-            //                      *openGlShader.get());
-
             renderer->DrawObject(&cloudObj);
-            // renderer->DrawObject(&cubeObj);
+            // Cube broken due to vertex order but doesn't really matter, just a
+            // counting issue the mechanics of reading in different objects are
+            // working! renderer->DrawObject(&cubeObj);
 
-            // renderer->DrawCube();
             debugUi.endFrame();
             renderer->Present();
             inputManager.EndFrame();
 
             auto frameEnd = std::chrono::steady_clock::now();
-            float frameTimeMs =
+            frameTimeMs =
                 std::chrono::duration<float>(frameEnd - frameStart).count() *
                 1000;
 

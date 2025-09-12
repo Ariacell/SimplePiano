@@ -2,7 +2,7 @@
 
 namespace Renderer {
 
-struct IndexBufferArgs {
+struct IndexBufferData {
     const unsigned int* data;
     unsigned int count;
 };
@@ -13,7 +13,7 @@ private:
     unsigned indiceCount;
 
 public:
-    IndexBuffer(IndexBufferArgs bufferData);
+    IndexBuffer(IndexBufferData bufferData);
     IndexBuffer(const unsigned int* data, unsigned int count);
     ~IndexBuffer();
 

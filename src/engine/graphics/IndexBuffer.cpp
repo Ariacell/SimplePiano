@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-Renderer::IndexBuffer::IndexBuffer(IndexBufferArgs bufferData)
+Renderer::IndexBuffer::IndexBuffer(IndexBufferData bufferData)
     : indiceCount(bufferData.count) {
     glGenBuffers(1, &associatedRendererId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, associatedRendererId);

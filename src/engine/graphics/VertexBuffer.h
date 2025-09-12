@@ -1,7 +1,7 @@
 #pragma once
 
 namespace Renderer {
-struct VertexBufferArgs {
+struct VertexBufferData {
     const void* data;
     unsigned int size;
 };
@@ -11,7 +11,7 @@ private:
     unsigned associatedRendererId;
 
 public:
-    VertexBuffer(VertexBufferArgs bufferData);
+    VertexBuffer(VertexBufferData bufferData);
     VertexBuffer(const void* data, unsigned int size);
     ~VertexBuffer();
 

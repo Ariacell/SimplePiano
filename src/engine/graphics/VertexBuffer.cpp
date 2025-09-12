@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-Renderer::VertexBuffer::VertexBuffer(VertexBufferArgs bufferData) {
+Renderer::VertexBuffer::VertexBuffer(VertexBufferData bufferData) {
     glGenBuffers(1, &associatedRendererId);
     glBindBuffer(GL_ARRAY_BUFFER, associatedRendererId);
     glBufferData(GL_ARRAY_BUFFER, bufferData.size, bufferData.data,
