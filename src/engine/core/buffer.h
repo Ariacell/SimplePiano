@@ -1,273 +1,308 @@
 #pragma once
 
+#include <engine/core/assert.h>
+
 #include <cstring>
 #include <initializer_list>
 
-
-#include <engine/core/assert.h>
-
 namespace PianoCore {
 
-template<typename T>
+template <typename T>
 class Buffer {
 public:
-	Buffer() = default;
-	Buffer(uint64_t maxCount)
-		: m_MaxCount(maxCount)
-	{
-		if(maxCount)
-			m_Data = (T*)malloc(GetMaxSize());
-	}
-	Buffer(Buffer&& other)
-		: m_MaxCount(other.GetMaxCount()), m_Count(other.GetCount())
-	{
-		std::swap(m_Data, other.m_Data);
-	}
-	Buffer(const std::initializer_list<T>& list)
-		: m_MaxCount(list.size())
-	{
-		if(!m_MaxCount)
-			return;
+    Buffer() = default;
+    Buffer(uint64_t maxCount) : m_MaxCount(maxCount) {
+        if (maxCount)
+            m_Data = (T*)malloc(GetMaxSize());
+    }
+    Buffer(Buffer&& other)
+        : m_MaxCount(other.GetMaxCount()), m_Count(other.GetCount()) {
+        std::swap(m_Data, other.m_Data);
+    }
+    Buffer(const std::initializer_list<T>& list) : m_MaxCount(list.size()) {
+        if (!m_MaxCount)
+            return;
 
-		m_Data = (T*)malloc(GetMaxSize());
-		Set(list.begin(), list.size());
-	}
-	Buffer(T* data, uint64_t count, uint64_t maxCount = 0)
-		: m_Data(data), m_MaxCount(maxCount), m_Count(count)
-	{
-		if(!m_MaxCount)
-			m_MaxCount = count;
-	}
+        m_Data = (T*)malloc(GetMaxSize());
+        Set(list.begin(), list.size());
+    }
+    Buffer(T* data, uint64_t count, uint64_t maxCount = 0)
+        : m_Data(data), m_MaxCount(maxCount), m_Count(count) {
+        if (!m_MaxCount)
+            m_MaxCount = count;
+    }
 
-	~Buffer() {
-		Delete();
-	}
+    ~Buffer() {
+        Delete();
+    }
 
-	operator bool() const { return m_Data && m_Count; }
+    operator bool() const {
+        return m_Data && m_Count;
+    }
 
-	Buffer& operator =(const Buffer& other) = delete;
+    Buffer(const Buffer& other)
+        : m_MaxCount(other.m_MaxCount), m_Count(other.m_Count) {
+        if (m_MaxCount) {
+            m_Data = (T*)malloc(GetMaxSize());
+            memcpy(m_Data, other.m_Data, GetSize());
+        }
+    }
 
-	Buffer& operator =(Buffer&& other) {
-		std::swap(m_Data, other.m_Data);
-		m_MaxCount = other.m_MaxCount;
-		m_Count = other.m_Count;
-		return *this;
-	}
+    Buffer& operator=(const Buffer& other) {
+        if (this == &other)
+            return *this;
 
-	Buffer& operator =(const std::initializer_list<T>& list) {
-		if(m_MaxCount < list.size()) {
-			free(m_Data);
-			m_MaxCount = list.size();
-			m_Data = (T*)malloc(GetMaxSize());
-		}
+        if (m_MaxCount < other.m_Count) {
+            free(m_Data);
+            m_MaxCount = other.m_MaxCount;
+            m_Data = (T*)malloc(GetMaxSize());
+        }
 
-		m_Count = list.size();
-		memcpy(m_Data, list.begin(), GetSize());
-		return *this;
-	}
+        m_Count = other.m_Count;
+        memcpy(m_Data, other.m_Data, GetSize());
 
-	T* Get(uint64_t i = 0) const {
-		PIANOCORE_ASSERT((i == 0 && !m_Data) || (i < m_MaxCount));
-		return m_Data + i;
-	}
+        return *this;
+    }
 
-	uint64_t GetCount()	   const { return m_Count; }
-	uint64_t GetMaxCount() const { return m_MaxCount; }
-	uint64_t GetSize()	   const { return m_Count	 * sizeof(T); }
-	uint64_t GetMaxSize()  const { return m_MaxCount * sizeof(T); }
+    Buffer& operator=(Buffer&& other) {
+        std::swap(m_Data, other.m_Data);
+        m_MaxCount = other.m_MaxCount;
+        m_Count = other.m_Count;
+        return *this;
+    }
 
-	Buffer<T> Copy() const {
-		T* newData = (T*)malloc(GetSize());
-		memcpy(newData, m_Data, GetSize());
-		return Buffer<T>(newData, GetCount());
-	}
+    Buffer& operator=(const std::initializer_list<T>& list) {
+        if (m_MaxCount < list.size()) {
+            free(m_Data);
+            m_MaxCount = list.size();
+            m_Data = (T*)malloc(GetMaxSize());
+        }
 
-	void Add(const T& element) {
-		if(m_Count >= m_MaxCount)
-			return;
+        m_Count = list.size();
+        memcpy(m_Data, list.begin(), GetSize());
+        return *this;
+    }
 
-		m_Data[m_Count++] = element;
-	}
-	void Add(const Buffer& buffer) {
-		Set(buffer.Get(), buffer.GetCount(), m_Count);
-	}
+    T* Get(uint64_t i = 0) const {
+        PIANOCORE_ASSERT((i == 0 && !m_Data) || (i < m_MaxCount));
+        return m_Data + i;
+    }
 
-	void Add(const void* data, uint64_t count) {
-		Set(data, count, m_Count);
-	}
+    uint64_t GetCount() const {
+        return m_Count;
+    }
+    uint64_t GetMaxCount() const {
+        return m_MaxCount;
+    }
+    uint64_t GetSize() const {
+        return m_Count * sizeof(T);
+    }
+    uint64_t GetMaxSize() const {
+        return m_MaxCount * sizeof(T);
+    }
 
-	void Set(uint64_t idx, const T& data) {
-		Set(&data, 1, idx);
-	}
+    Buffer<T> Copy() const {
+        T* newData = (T*)malloc(GetSize());
+        memcpy(newData, m_Data, GetSize());
+        return Buffer<T>(newData, GetCount());
+    }
 
-	void Set(const void* data, uint64_t count, uint64_t offset = 0) {
-		if(offset >= m_MaxCount)
-			return;
-		if(offset + count >= m_MaxCount)
-			count = m_MaxCount - offset;
+    void Add(const T& element) {
+        if (m_Count >= m_MaxCount)
+            return;
 
-		memcpy(m_Data + offset, data, count * sizeof(T));
+        m_Data[m_Count++] = element;
+    }
+    void Add(const Buffer& buffer) {
+        Set(buffer.Get(), buffer.GetCount(), m_Count);
+    }
 
-		if(offset + count > m_Count)
-			m_Count = offset + count;
-	}
+    void Add(const void* data, uint64_t count) {
+        Set(data, count, m_Count);
+    }
 
-	void Add() {
-		m_Count++;
-		PIANOCORE_ASSERT(m_Count <= m_MaxCount);
-	}
+    void Set(uint64_t idx, const T& data) {
+        Set(&data, 1, idx);
+    }
 
-	void AddRange(uint64_t count) {
-		m_Count += count;
-		PIANOCORE_ASSERT(m_Count <= m_MaxCount);
-	}
+    void Set(const void* data, uint64_t count, uint64_t offset = 0) {
+        if (offset >= m_MaxCount)
+            return;
+        if (offset + count >= m_MaxCount)
+            count = m_MaxCount - offset;
 
-	void Remove() {
-		PIANOCORE_ASSERT(m_Count > 0);
-		m_Count--;
-	}
+        memcpy(m_Data + offset, data, count * sizeof(T));
 
-	void Clear() {
-		m_Count = 0;
-	}
+        if (offset + count > m_Count)
+            m_Count = offset + count;
+    }
 
-	void Delete() {
-		free(m_Data);
-		m_Data = nullptr;
-		m_Count = 0;
-		m_MaxCount = 0;
-	}
+    void Add() {
+        m_Count++;
+        PIANOCORE_ASSERT(m_Count <= m_MaxCount);
+    }
 
-	void Reallocate(uint64_t additional) {
-		Allocate(m_MaxCount + additional);
-	}
+    void AddRange(uint64_t count) {
+        m_Count += count;
+        PIANOCORE_ASSERT(m_Count <= m_MaxCount);
+    }
 
-	void Allocate(uint64_t count) {
-		if(count <= m_MaxCount)
-			return;
+    void Remove() {
+        PIANOCORE_ASSERT(m_Count > 0);
+        m_Count--;
+    }
 
-		m_MaxCount = count;
-		T* newData = (T*)malloc(GetMaxSize());
-		if(m_Data) {
-			memcpy(newData, m_Data, GetSize());
-			free(m_Data);
-		}
+    void Clear() {
+        m_Count = 0;
+    }
 
-		m_Data = newData;
-	}
+    void Delete() {
+        free(m_Data);
+        m_Data = nullptr;
+        m_Count = 0;
+        m_MaxCount = 0;
+    }
+
+    void Reallocate(uint64_t additional) {
+        Allocate(m_MaxCount + additional);
+    }
+
+    void Allocate(uint64_t count) {
+        if (count <= m_MaxCount)
+            return;
+
+        m_MaxCount = count;
+        T* newData = (T*)malloc(GetMaxSize());
+        if (m_Data) {
+            memcpy(newData, m_Data, GetSize());
+            free(m_Data);
+        }
+
+        m_Data = newData;
+    }
 
 private:
-	T* m_Data = nullptr;
-	uint64_t m_MaxCount = 0;
-	uint64_t m_Count = 0;
+    T* m_Data = nullptr;
+    uint64_t m_MaxCount = 0;
+    uint64_t m_Count = 0;
 };
 
-template<>
+template <>
 class Buffer<void> {
 public:
-	Buffer() = default;
-	Buffer(uint64_t size, uint64_t maxCount)
-		: m_SizeT(size), m_MaxCount(maxCount)
-	{
-		PIANOCORE_ASSERT(size != 0);
-		if(maxCount)
-			m_Data = malloc(GetMaxSize());
-	}
-	Buffer(Buffer&& other)
-		: m_SizeT(other.m_SizeT),
-			m_MaxCount(other.GetMaxCount()), m_Count(other.GetCount())
-	{
-		std::swap(m_Data, other.m_Data);
-	}
-	Buffer(void* data, uint64_t size, uint64_t count)
-		: m_SizeT(size), m_MaxCount(count), m_Count(count), m_Data(data)
-	{
-		if(!m_MaxCount)
-			m_MaxCount = count;
-	}
+    Buffer() = default;
+    Buffer(uint64_t size, uint64_t maxCount)
+        : m_SizeT(size), m_MaxCount(maxCount) {
+        PIANOCORE_ASSERT(size != 0);
+        if (maxCount)
+            m_Data = malloc(GetMaxSize());
+    }
+    Buffer(Buffer&& other)
+        : m_SizeT(other.m_SizeT),
+          m_MaxCount(other.GetMaxCount()),
+          m_Count(other.GetCount()) {
+        std::swap(m_Data, other.m_Data);
+    }
+    Buffer(void* data, uint64_t size, uint64_t count)
+        : m_SizeT(size), m_MaxCount(count), m_Count(count), m_Data(data) {
+        if (!m_MaxCount)
+            m_MaxCount = count;
+    }
 
-	~Buffer() {
-		Delete();
-	}
+    ~Buffer() {
+        Delete();
+    }
 
-	operator bool() const { return m_Data && m_Count; }
+    operator bool() const {
+        return m_Data && m_Count;
+    }
 
-	Buffer& operator =(const Buffer& other) = delete;
+    Buffer& operator=(const Buffer& other) = delete;
 
-	Buffer& operator =(Buffer&& other) {
-		std::swap(m_Data, other.m_Data);
-		m_SizeT = other.m_SizeT;
-		m_MaxCount = other.m_MaxCount;
-		m_Count = other.m_Count;
-		return *this;
-	}
+    Buffer& operator=(Buffer&& other) {
+        std::swap(m_Data, other.m_Data);
+        m_SizeT = other.m_SizeT;
+        m_MaxCount = other.m_MaxCount;
+        m_Count = other.m_Count;
+        return *this;
+    }
 
-	void* Get(uint64_t i = 0) const {
-		PIANOCORE_ASSERT((i == 0 && !m_Data) || (i < m_MaxCount));
-		return (char*)m_Data + i;
-	}
+    void* Get(uint64_t i = 0) const {
+        PIANOCORE_ASSERT((i == 0 && !m_Data) || (i < m_MaxCount));
+        return (char*)m_Data + i;
+    }
 
-	uint64_t GetCount()	   const { return m_Count; }
-	uint64_t GetMaxCount() const { return m_MaxCount; }
-	uint64_t GetSize()	   const { return m_Count	 * m_SizeT; }
-	uint64_t GetMaxSize()  const { return m_MaxCount * m_SizeT; }
-	uint64_t GetSizeT() const { return m_SizeT; }
+    uint64_t GetCount() const {
+        return m_Count;
+    }
+    uint64_t GetMaxCount() const {
+        return m_MaxCount;
+    }
+    uint64_t GetSize() const {
+        return m_Count * m_SizeT;
+    }
+    uint64_t GetMaxSize() const {
+        return m_MaxCount * m_SizeT;
+    }
+    uint64_t GetSizeT() const {
+        return m_SizeT;
+    }
 
-	Buffer<void> Copy() {
-		void* newData = malloc(GetSize());
-		memcpy(newData, m_Data, GetSize());
-		return Buffer<void>(newData, m_SizeT, GetCount());
-	}
+    Buffer<void> Copy() {
+        void* newData = malloc(GetSize());
+        memcpy(newData, m_Data, GetSize());
+        return Buffer<void>(newData, m_SizeT, GetCount());
+    }
 
-	void Add(const Buffer& buffer) {
-		if(m_Count + buffer.GetCount() >= m_MaxCount)
-			return;
+    void Add(const Buffer& buffer) {
+        if (m_Count + buffer.GetCount() >= m_MaxCount)
+            return;
 
-		Set(buffer.Get(), buffer.GetCount(), m_Count);
-	}
+        Set(buffer.Get(), buffer.GetCount(), m_Count);
+    }
 
-	void Add(const void* data, uint64_t count) {
-		Set(data, count, m_Count);
-	}
+    void Add(const void* data, uint64_t count) {
+        Set(data, count, m_Count);
+    }
 
-	void Set(const void* data, uint64_t count, uint64_t offset = 0) {
-		if(offset >= m_MaxCount)
-			return;
-		if(offset + count >= m_MaxCount)
-			count = m_MaxCount - offset;
+    void Set(const void* data, uint64_t count, uint64_t offset = 0) {
+        if (offset >= m_MaxCount)
+            return;
+        if (offset + count >= m_MaxCount)
+            count = m_MaxCount - offset;
 
-		memcpy((char*)m_Data + offset * m_SizeT, data, count * m_SizeT);
+        memcpy((char*)m_Data + offset * m_SizeT, data, count * m_SizeT);
 
-		if(offset + count > m_Count)
-			m_Count = offset + count;
-	}
+        if (offset + count > m_Count)
+            m_Count = offset + count;
+    }
 
-	void Clear() {
-		m_Count = 0;
-	}
+    void Clear() {
+        m_Count = 0;
+    }
 
-	void Delete() {
-		free(m_Data);
-		m_Data = nullptr;
-		m_SizeT = 0;
-		m_MaxCount = 0;
-		m_Count = 0;
-	}
+    void Delete() {
+        free(m_Data);
+        m_Data = nullptr;
+        m_SizeT = 0;
+        m_MaxCount = 0;
+        m_Count = 0;
+    }
 
-	void Reallocate(uint64_t surplus) {
-		m_MaxCount += surplus;
+    void Reallocate(uint64_t surplus) {
+        m_MaxCount += surplus;
 
-		void* newData = malloc(m_MaxCount);
-		memcpy(newData, m_Data, GetSize());
-		free(m_Data);
-		m_Data = newData;
-	}
+        void* newData = malloc(m_MaxCount);
+        memcpy(newData, m_Data, GetSize());
+        free(m_Data);
+        m_Data = newData;
+    }
 
 private:
-	void* m_Data = nullptr;
-	uint64_t m_SizeT = 0;
-	uint64_t m_MaxCount = 0;
-	uint64_t m_Count = 0;
+    void* m_Data = nullptr;
+    uint64_t m_SizeT = 0;
+    uint64_t m_MaxCount = 0;
+    uint64_t m_Count = 0;
 };
 
-}
+}  // namespace PianoCore

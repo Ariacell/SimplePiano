@@ -92,6 +92,11 @@ void OpenGlRenderer::DrawObject(Component::GameObject* objectToDraw) const {
     glDrawElements(GL_TRIANGLES,
                    model->GetMesh()->GetIndexBuffer()->GetIndiceCount(),
                    GL_UNSIGNED_INT, 0);
+
+    Component::Mesh mesh = Component::Mesh(Component::MeshType::Cube);
+    // glDrawElements(GL_TRIANGLES,
+    //                mesh.vertices.size(),
+    //                GL_UNSIGNED_INT, 0);
 }
 
 void OpenGlRenderer::SetWireframeRendering(bool shouldRenderWireframe) {

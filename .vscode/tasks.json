@@ -3,7 +3,12 @@
     "tasks": [
         {
             "label": "buildDefault",
-            "command": "cmake --build . --preset debug ",
+            "command": "cmake",
+            "args": [
+                "--build",
+                ".",
+                "--preset debug"
+            ],
             "type": "shell"
         }
     ]

@@ -11,6 +11,7 @@
 #include <stb_image/stb_image.h>
 #include <util/timer.h>
 
+#include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <thread>
@@ -19,6 +20,7 @@
 #include "engine/graphics/VertexArray.h"
 #include "engine/input/InputManager.h"
 #include "game/components/GameObject.h"
+#include "game/components/Model.h"
 #include "game/components/ModelComponent.h"
 
 class PianoApp {
@@ -93,8 +95,11 @@ public:
             new Component::Mesh1(&va, rectVbData, rectIbData, layout));
         std::shared_ptr<Component::Material> cloudMat(
             new Component::Material(openGlShader, "path"));
+
         auto cloudQuadModel = cloudObj.AddComponent<Component::ModelComponent>(
             rectMesh, cloudMat);
+
+        Component::Model ourModel("models/backpack/backpack.obj");
 
         Renderer::VertexArray cubeVa;
         Renderer::VertexBufferData cubeVbData;
@@ -184,17 +189,18 @@ public:
                 (float)current_window_size.x / (float)current_window_size.y,
                 0.1f, 100.0f);
 
-            // retrieve the matrix uniform locations and set up shaders
-            unsigned int modelLoc =
+                // retrieve the matrix uniform locations and set up shaders
+                unsigned int modelLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "model");
-            unsigned int viewLoc =
+                unsigned int viewLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "view");
-            unsigned int projLoc =
+                unsigned int projLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "projection");
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-            glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
-
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
+                glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+                glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
+                
+            ourModel.Draw(openGlShader);
             renderer->DrawObject(&cloudObj);
             // Cube broken due to vertex order but doesn't really matter, just a
             // counting issue the mechanics of reading in different objects are

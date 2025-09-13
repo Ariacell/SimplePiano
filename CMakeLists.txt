@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(glfw3 3.3 REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(ZLIB REQUIRED)
 add_definitions(-D GLM_ENABLE_EXPERIMENTAL)
 
 
@@ -41,6 +42,7 @@ OpenGL::OpenGL
 glfw
 OpenAL::OpenAL
 assimp
+ZLIB::ZLIB
 )
 
 # Copying shaders and textures into the build directory for runtime compiling
