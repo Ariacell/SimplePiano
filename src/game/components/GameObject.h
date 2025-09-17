@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Component.h"
+#include "Transform.h"
 
 namespace Component {
 class GameObject {
@@ -37,11 +38,16 @@ public:
         return nullptr;  // Not found
     }
 
+    Transform* GetTransform() {
+        return &transform;
+    }
+
     void Update(float deltaTime);
     void Render();
 
 private:
     std::vector<std::unique_ptr<Component>> components;
+    Transform transform;
 };
 
 }  // namespace Component

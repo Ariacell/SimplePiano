@@ -4,6 +4,7 @@
 #include <game/components/ModelComponent.h>
 
 #include <filesystem>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 #include "graphics/VertexArray.h"
@@ -85,18 +86,25 @@ void OpenGlRenderer::DrawObject(Component::GameObject* objectToDraw) const {
     glPolygonMode(GL_FRONT_AND_BACK,
                   this->isWireframeRenderingEnabled ? GL_LINE : GL_FILL);
 
-    model->GetMesh()->GetVertexArray()->Bind();
-    CheckOpenGlError("After Bind vertex array");
-    model->GetMesh()->GetIndexBuffer()->Bind();
-    model->GetTexture()->GetShader()->use();
-    glDrawElements(GL_TRIANGLES,
-                   model->GetMesh()->GetIndexBuffer()->GetIndiceCount(),
-                   GL_UNSIGNED_INT, 0);
-
-    Component::Mesh mesh = Component::Mesh(Component::MeshType::Cube);
+    glm::mat4 modelmat = glm::mat4(1.0f);
+    // model =
+    //     glm::rotate(model, (float)glfwGetTime() *
+    //     glm::radians(50.0f),
+    // glm::vec3(0.5f, 1.0f, 0.0f));
+    modelmat = glm::rotate(modelmat, 0.0f, glm::vec3(0.5f, 1.0f, 0.0f));
+    modelmat = glm::translate(modelmat, objectToDraw->GetTransform()->position);
+    unsigned int modelLoc =
+        glGetUniformLocation(model->GetShader()->GetID(), "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelmat[0][0]);
+    // model->GetMesh()->GetVertexArray()->Bind();
+    // CheckOpenGlError("After Bind vertex array");
+    // model->GetMesh()->GetIndexBuffer()->Bind();
+    // model->GetTexture()->GetShader()->use();
     // glDrawElements(GL_TRIANGLES,
-    //                mesh.vertices.size(),
+    //                model->GetMesh()->GetIndexBuffer()->GetIndiceCount(),
     //                GL_UNSIGNED_INT, 0);
+    model->GetShader().get()->use();
+    model->Draw(model->GetShader());
 }
 
 void OpenGlRenderer::SetWireframeRendering(bool shouldRenderWireframe) {

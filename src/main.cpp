@@ -7,6 +7,7 @@
 #include <engine/audio/audio.h>
 #include <engine/debug/debugUI.h>
 #include <engine/shaders/OpenGlShader.h>
+#include <game/components/Mesh.h>
 #include <glad/glad.h>
 #include <stb_image/stb_image.h>
 #include <util/timer.h>
@@ -22,7 +23,6 @@
 #include "game/components/GameObject.h"
 #include "game/components/Model.h"
 #include "game/components/ModelComponent.h"
-#include <game/components/Mesh.h>
 
 class PianoApp {
 public:
@@ -92,16 +92,24 @@ public:
         layout.Push<float>(2);
 
         Component::GameObject cloudObj;
+        Component::GameObject cloudQuadObj;
         std::shared_ptr<Component::Mesh1> rectMesh(
             new Component::Mesh1(&va, rectVbData, rectIbData, layout));
         std::shared_ptr<Component::Material> cloudMat(
             new Component::Material(openGlShader, "path"));
 
-        auto cloudQuadModel = cloudObj.AddComponent<Component::ModelComponent>(
-            rectMesh, cloudMat);
-
         Component::Model ourModel("models/backpack/backpack.obj");
-        Component::Model cubeOpenGlModel(Component::MeshType::Cube);
+        std::shared_ptr<Component::Model> cubeOpenGlModel(
+            new Component::Model(Component::MeshType::Cube));
+
+        std::shared_ptr<Component::Model> quadOpenGlModel(
+            new Component::Model(Component::MeshType::Quad));
+
+        auto cloudCubeModel = cloudObj.AddComponent<Component::ModelComponent>(
+            cubeOpenGlModel, openGlShader);
+        auto cloudQuadModel =
+            cloudQuadObj.AddComponent<Component::ModelComponent>(
+                quadOpenGlModel, openGlShader);
 
         Renderer::VertexArray cubeVa;
         Renderer::VertexBufferData cubeVbData;
@@ -121,12 +129,7 @@ public:
         cubeLayout.Push<float>(3);
         cubeLayout.Push<float>(2);
         Component::GameObject cubeObj;
-        std::shared_ptr<Component::Mesh1> cubeMesh(
-            new Component::Mesh1(&cubeVa, cubeVbData, cubeIbData, cubeLayout));
-        std::shared_ptr<Component::Material> cubeMat(
-            new Component::Material(openGlShader, "path"));
-        auto cubeModel =
-            cubeObj.AddComponent<Component::ModelComponent>(cubeMesh, cubeMat);
+
 #pragma endregion
 
         float frameTimeMs = 0.0f;
@@ -145,6 +148,8 @@ public:
                     //  Do physics/app state things
                     // std::cout << "Application Ticks so far: "
                     //           << appStateTimer.GetTickCount() << std::endl;
+                    cloudObj.GetTransform()->translate(
+                        glm::vec3(.05f, .0f, .0f));
                 },
                 5);
 
@@ -175,12 +180,6 @@ public:
 
             auto current_window_size = window.get()->GetWindowSize();
 
-            glm::mat4 model = glm::mat4(1.0f);
-            // model =
-            //     glm::rotate(model, (float)glfwGetTime() *
-            //     glm::radians(50.0f),
-            // glm::vec3(0.5f, 1.0f, 0.0f));
-            model = glm::rotate(model, 0.0f, glm::vec3(0.5f, 1.0f, 0.0f));
             glm::mat4 view = glm::mat4(1.0f);
             view = glm::lookAt(mainSceneCamera.Position,
                                mainSceneCamera.Position + mainSceneCamera.Front,
@@ -192,19 +191,18 @@ public:
                 0.1f, 100.0f);
 
             // retrieve the matrix uniform locations and set up shaders
-            unsigned int modelLoc =
-                glGetUniformLocation(openGlShader.get()->GetID(), "model");
+
             unsigned int viewLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "view");
             unsigned int projLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "projection");
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
             // ourModel.Draw(openGlShader);
-            cubeOpenGlModel.Draw(openGlShader);
+            // cubeOpenGlModel.Draw(openGlShader);
             renderer->DrawObject(&cloudObj);
+            renderer->DrawObject(&cloudQuadObj);
             // Cube broken due to vertex order but doesn't really matter, just a
             // counting issue the mechanics of reading in different objects are
             // working! renderer->DrawObject(&cubeObj);

@@ -5,23 +5,26 @@
 #include "Component.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "Model.h"
 
 namespace Component {
 
 class ModelComponent : public Component {
 public:
-    ModelComponent(std::shared_ptr<Mesh1> mesh, std::shared_ptr<Material> mat)
-        : mesh(mesh), mat(mat){};
+    ModelComponent(Ref<Model> model,
+                   const std::shared_ptr<Shaders::IShader> &shader)
+        : model(model), modelShader(shader){};
 
-    Mesh1* GetMesh() const {
-        return mesh.get();
+    void Draw(const std::shared_ptr<Shaders::IShader> &shader) {
+        model.get()->Draw(modelShader);
     }
-    Material* GetTexture() const {
-        return mat.get();
+
+    Ref<Shaders::IShader> GetShader() {
+        return modelShader;
     }
 
 private:
-    std::shared_ptr<Mesh1> mesh;
-    std::shared_ptr<Material> mat;
+    Ref<Model> model;
+    Ref<Shaders::IShader> modelShader;
 };
 }  // namespace Component
