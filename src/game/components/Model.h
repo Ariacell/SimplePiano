@@ -41,6 +41,11 @@ public:
         loadModel(path);
     }
 
+    // constructor for default shapes
+    Model(MeshType type) : gammaCorrection(gamma) {
+        loadModel(type);
+    }
+
     // draws the model, and thus all its meshes
     void Draw(const std::shared_ptr<Shaders::IShader> &shader) {
         for (unsigned int i = 0; i < meshes.size(); i++)
@@ -48,6 +53,86 @@ public:
     }
 
 private:
+    void loadModel(MeshType type) {
+        std::vector<Renderer::Vertex> vertices;
+        std::vector<uint32_t> indices;
+        vector<Texture> textures;
+
+        Texture texture;
+        texture.id = TextureFromFile("sky.jpg", "textures");
+        texture.type = "texture_diffuse";
+        texture.path = "sky.jpg";
+        textures.push_back(texture);
+
+        switch (type) {
+            case MeshType::Cube: {
+                vertices = {
+                    {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
+                    {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
+                    {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
+                    {{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
+                    {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+                    {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+                    {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+                    {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+
+                    {{-0.5f, 0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+                    {{-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+                    {{-0.5f, -0.5f, 0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+                    {{-0.5f, 0.5f, 0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+                    {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+                    {{0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+                    {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+                    {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+
+                    {{-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
+                    {{0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
+                    {{0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
+                    {{-0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
+                    {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                    {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+                    {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
+                    {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+                };
+
+                indices = {0,  3,  2,  // Front
+                           2,  1,  0,
+
+                           4,  5,  6,  // Back
+                           6,  7,  4,
+
+                           11, 8,  9,  // Left
+                           9,  10, 11,
+
+                           12, 13, 14,  // Right
+                           14, 15, 12,
+
+                           16, 17, 18,  // Bottom
+                           18, 19, 16,
+
+                           20, 21, 22,  // Top
+                           22, 23, 20};
+
+                break;
+            }
+
+            case MeshType::Quad: {
+                vertices = {
+                    {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                    {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+                    {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+                    {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+                };
+
+                indices = {
+                    0, 2, 3, 3, 1, 0,
+                };
+
+                break;
+            }
+        }
+        meshes.push_back(Mesh(vertices, indices, textures));
+    }
     // loads a model with supported ASSIMP extensions from file and stores the
     // resulting meshes in the meshes vector.
     void loadModel(string const &path) {

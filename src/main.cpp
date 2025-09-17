@@ -22,6 +22,7 @@
 #include "game/components/GameObject.h"
 #include "game/components/Model.h"
 #include "game/components/ModelComponent.h"
+#include <game/components/Mesh.h>
 
 class PianoApp {
 public:
@@ -100,6 +101,7 @@ public:
             rectMesh, cloudMat);
 
         Component::Model ourModel("models/backpack/backpack.obj");
+        Component::Model cubeOpenGlModel(Component::MeshType::Cube);
 
         Renderer::VertexArray cubeVa;
         Renderer::VertexBufferData cubeVbData;
@@ -189,18 +191,19 @@ public:
                 (float)current_window_size.x / (float)current_window_size.y,
                 0.1f, 100.0f);
 
-                // retrieve the matrix uniform locations and set up shaders
-                unsigned int modelLoc =
+            // retrieve the matrix uniform locations and set up shaders
+            unsigned int modelLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "model");
-                unsigned int viewLoc =
+            unsigned int viewLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "view");
-                unsigned int projLoc =
+            unsigned int projLoc =
                 glGetUniformLocation(openGlShader.get()->GetID(), "projection");
-                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
-                glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-                glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
-                
-            ourModel.Draw(openGlShader);
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
+            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+            glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
+
+            // ourModel.Draw(openGlShader);
+            cubeOpenGlModel.Draw(openGlShader);
             renderer->DrawObject(&cloudObj);
             // Cube broken due to vertex order but doesn't really matter, just a
             // counting issue the mechanics of reading in different objects are

@@ -40,8 +40,8 @@ private:
 };
 
 struct SubMesh {
-    PianoCore::Buffer<Renderer::Vertex> Vertices;
-    PianoCore::Buffer<uint32_t> Indices;
+    std::vector<Renderer::Vertex> Vertices;
+    std::vector<uint32_t> Indices;
     uint32_t MaterialIndex;
 };
 
@@ -60,10 +60,8 @@ public:
          std::vector<unsigned int> indices,
          std::vector<Renderer::Texture> textures);
     Ref<Mesh> Create(MeshType type, const Material& material);
-    Ref<Mesh> Create(MeshType type,
-                     PianoCore::Buffer<Renderer::Vertex>&& vertices,
-                     PianoCore::Buffer<uint32_t>&& indices,
-                     const Material& material);
+    Ref<Mesh> Create(MeshType type, std::vector<Renderer::Vertex>&& vertices,
+                     std::vector<uint32_t>&& indices, const Material& material);
 
     void Draw(const std::shared_ptr<Shaders::IShader>& shader);
 
