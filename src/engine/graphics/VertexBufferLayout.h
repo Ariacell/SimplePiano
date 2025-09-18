@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace Renderer {
+namespace PianoCore {
 
 struct VertexBufferElement {
     unsigned int type;

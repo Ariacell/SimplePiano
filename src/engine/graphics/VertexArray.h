@@ -2,7 +2,7 @@
 #include <engine/graphics/VertexBuffer.h>
 #include <engine/graphics/VertexBufferLayout.h>
 
-namespace Renderer {
+namespace PianoCore {
 
 class VertexArray {
 private:

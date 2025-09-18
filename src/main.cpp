@@ -77,16 +77,16 @@ public:
         auto triangle = shapes.getSampleRectangleData();
         auto cube = shapes.getSampleCubeVerts();
 
-        Renderer::VertexArray va;
-        Renderer::VertexBufferData rectVbData;
+        PianoCore::VertexArray va;
+        PianoCore::VertexBufferData rectVbData;
         rectVbData.data = (const void*)(triangle.first.data());
         rectVbData.size = (unsigned int)(sizeof(float) * triangle.first.size());
 
-        Renderer::IndexBufferData rectIbData;
+        PianoCore::IndexBufferData rectIbData;
         rectIbData.data = triangle.second.data();
         rectIbData.count = triangle.second.size();
 
-        Renderer::VertexBufferLayout layout;
+        PianoCore::VertexBufferLayout layout;
         layout.Push<float>(3);
         layout.Push<float>(3);
         layout.Push<float>(2);
@@ -111,8 +111,8 @@ public:
             cloudQuadObj.AddComponent<Component::ModelComponent>(
                 quadOpenGlModel, openGlShader);
 
-        Renderer::VertexArray cubeVa;
-        Renderer::VertexBufferData cubeVbData;
+        PianoCore::VertexArray cubeVa;
+        PianoCore::VertexBufferData cubeVbData;
         const unsigned int cubeIndices[6 * 6] = {
             // front and back
 
@@ -121,11 +121,11 @@ public:
         cubeVbData.data = (const void*)(cube.data());
         cubeVbData.size = (unsigned int)(sizeof(float) * cube.size());
 
-        Renderer::IndexBufferData cubeIbData;
+        PianoCore::IndexBufferData cubeIbData;
         cubeIbData.data = cubeIndices;
         cubeIbData.count = 36;
 
-        Renderer::VertexBufferLayout cubeLayout;
+        PianoCore::VertexBufferLayout cubeLayout;
         cubeLayout.Push<float>(3);
         cubeLayout.Push<float>(2);
         Component::GameObject cubeObj;

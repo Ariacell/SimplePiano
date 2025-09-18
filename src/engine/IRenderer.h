@@ -15,7 +15,7 @@ public:
     virtual void SetWireframeRendering(bool shouldRenderWireframe) = 0;
 
     virtual void DrawObject(const int& vertexArray,
-                            const Renderer::IndexBuffer& indexBuffer,
+                            const PianoCore::IndexBuffer& indexBuffer,
                             Shaders::IShader& shader) const = 0;
 
     virtual void DrawObject(Component::GameObject* objectToDraw) const = 0;

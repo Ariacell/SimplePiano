@@ -31,7 +31,7 @@ public:
     void SetWireframeRendering(bool shouldRenderWireframe) override;
 
     void DrawObject(const int& vertexArray,
-                    const Renderer::IndexBuffer& indexBuffer,
+                    const PianoCore::IndexBuffer& indexBuffer,
                     Shaders::IShader& shader) const override;
 
     void DrawObject(Component::GameObject* objectToDraw) const override;

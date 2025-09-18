@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Renderer {
+namespace PianoCore {
 
 struct IndexBufferData {
     const unsigned int* data;

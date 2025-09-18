@@ -1,9 +1,9 @@
 #include "Mesh.h"
 
-Component::Mesh1::Mesh1(Renderer::VertexArray* va,
-                        Renderer::VertexBufferData vertexBufferData,
-                        Renderer::IndexBufferData indexBufferData,
-                        Renderer::VertexBufferLayout layout)
+Component::Mesh1::Mesh1(PianoCore::VertexArray* va,
+                        PianoCore::VertexBufferData vertexBufferData,
+                        PianoCore::IndexBufferData indexBufferData,
+                        PianoCore::VertexBufferLayout layout)
     : vertexBuffer(vertexBufferData),
       indexBuffer(indexBufferData),
       layout(layout) {
@@ -15,23 +15,23 @@ Component::Mesh1::Mesh1(Renderer::VertexArray* va,
     std::cout << "Bound mesh to VAO ID: " << va->GetRendererId() << std::endl;
 }
 
-Renderer::VertexArray* Component::Mesh1::GetVertexArray() {
+PianoCore::VertexArray* Component::Mesh1::GetVertexArray() {
     return vertexArray;
 }
 
-Renderer::VertexBuffer* Component::Mesh1::GetVertexBuffer() {
+PianoCore::VertexBuffer* Component::Mesh1::GetVertexBuffer() {
     return &vertexBuffer;
 }
-Renderer::IndexBuffer* Component::Mesh1::GetIndexBuffer() {
+PianoCore::IndexBuffer* Component::Mesh1::GetIndexBuffer() {
     return &indexBuffer;
 }
-Renderer::VertexBufferLayout* Component::Mesh1::GetBufferLayout() {
+PianoCore::VertexBufferLayout* Component::Mesh1::GetBufferLayout() {
     return &layout;
 }
 
-Component::Mesh::Mesh(std::vector<Renderer::Vertex> vertices,
+Component::Mesh::Mesh(std::vector<PianoCore::Vertex> vertices,
                       std::vector<unsigned int> indices,
-                      std::vector<Renderer::Texture> textures)
+                      std::vector<PianoCore::Texture> textures)
     : Type(MeshType::Model) {
     this->vertices = vertices;
     this->indices = indices;
@@ -89,7 +89,7 @@ void Component::Mesh::setupMesh() {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Renderer::Vertex),
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(PianoCore::Vertex),
                  &vertices[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -98,16 +98,16 @@ void Component::Mesh::setupMesh() {
 
     // vertex positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Renderer::Vertex),
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PianoCore::Vertex),
                           (void*)0);
     // vertex normals
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Renderer::Vertex),
-                          (void*)offsetof(Renderer::Vertex, Normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PianoCore::Vertex),
+                          (void*)offsetof(PianoCore::Vertex, Normal));
     // vertex texture coords
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer::Vertex),
-                          (void*)offsetof(Renderer::Vertex, TexCoords));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(PianoCore::Vertex),
+                          (void*)offsetof(PianoCore::Vertex, TexCoords));
 
     glBindVertexArray(0);
 }

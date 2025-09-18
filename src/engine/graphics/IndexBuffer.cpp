@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-Renderer::IndexBuffer::IndexBuffer(IndexBufferData bufferData)
+PianoCore::IndexBuffer::IndexBuffer(IndexBufferData bufferData)
     : indiceCount(bufferData.count) {
     glGenBuffers(1, &associatedRendererId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, associatedRendererId);
@@ -11,14 +11,14 @@ Renderer::IndexBuffer::IndexBuffer(IndexBufferData bufferData)
                  GL_STATIC_DRAW);
 }
 
-Renderer::IndexBuffer::~IndexBuffer() {
+PianoCore::IndexBuffer::~IndexBuffer() {
     glDeleteBuffers(1, &associatedRendererId);
 }
 
-void Renderer::IndexBuffer::Bind() const {
+void PianoCore::IndexBuffer::Bind() const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, associatedRendererId);
 }
 
-void Renderer::IndexBuffer::UnBind() const {
+void PianoCore::IndexBuffer::UnBind() const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

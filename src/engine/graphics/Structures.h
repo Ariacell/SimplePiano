@@ -5,7 +5,7 @@
 
 #define MAX_BONE_INFLUENCE 4
 
-namespace Renderer {
+namespace PianoCore {
 struct Vertex {
     glm::vec3 Position;
     glm::vec3 Normal;

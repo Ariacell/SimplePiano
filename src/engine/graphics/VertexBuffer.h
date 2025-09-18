@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Renderer {
+namespace PianoCore {
 struct VertexBufferData {
     const void* data;
     unsigned int size;

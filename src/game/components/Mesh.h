@@ -22,25 +22,25 @@ enum class MeshType { Cube, Quad, Model };
 
 class Mesh1 {
 public:
-    Mesh1(Renderer::VertexArray* va,
-          Renderer::VertexBufferData vertexBufferData,
-          Renderer::IndexBufferData indexBufferData,
-          Renderer::VertexBufferLayout layout);
+    Mesh1(PianoCore::VertexArray* va,
+          PianoCore::VertexBufferData vertexBufferData,
+          PianoCore::IndexBufferData indexBufferData,
+          PianoCore::VertexBufferLayout layout);
 
-    Renderer::VertexArray* GetVertexArray();
-    Renderer::VertexBuffer* GetVertexBuffer();
-    Renderer::IndexBuffer* GetIndexBuffer();
-    Renderer::VertexBufferLayout* GetBufferLayout();
+    PianoCore::VertexArray* GetVertexArray();
+    PianoCore::VertexBuffer* GetVertexBuffer();
+    PianoCore::IndexBuffer* GetIndexBuffer();
+    PianoCore::VertexBufferLayout* GetBufferLayout();
 
 private:
-    Renderer::VertexArray* vertexArray;
-    Renderer::VertexBuffer vertexBuffer;
-    Renderer::IndexBuffer indexBuffer;
-    Renderer::VertexBufferLayout layout;
+    PianoCore::VertexArray* vertexArray;
+    PianoCore::VertexBuffer vertexBuffer;
+    PianoCore::IndexBuffer indexBuffer;
+    PianoCore::VertexBufferLayout layout;
 };
 
 struct SubMesh {
-    std::vector<Renderer::Vertex> Vertices;
+    std::vector<PianoCore::Vertex> Vertices;
     std::vector<uint32_t> Indices;
     uint32_t MaterialIndex;
 };
@@ -48,19 +48,19 @@ struct SubMesh {
 class Mesh {
 public:
     // mesh data
-    std::vector<Renderer::Vertex> vertices;
+    std::vector<PianoCore::Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<Renderer::Texture> textures;
+    std::vector<PianoCore::Texture> textures;
 
     Mesh(MeshType type) : Type(type) {
     }
     ~Mesh() = default;
 
-    Mesh(std::vector<Renderer::Vertex> vertices,
+    Mesh(std::vector<PianoCore::Vertex> vertices,
          std::vector<unsigned int> indices,
-         std::vector<Renderer::Texture> textures);
+         std::vector<PianoCore::Texture> textures);
     Ref<Mesh> Create(MeshType type, const Material& material);
-    Ref<Mesh> Create(MeshType type, std::vector<Renderer::Vertex>&& vertices,
+    Ref<Mesh> Create(MeshType type, std::vector<PianoCore::Vertex>&& vertices,
                      std::vector<uint32_t>&& indices, const Material& material);
 
     void Draw(const std::shared_ptr<Shaders::IShader>& shader);

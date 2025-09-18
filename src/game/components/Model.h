@@ -21,7 +21,7 @@
 namespace Component {
 
 using namespace std;
-using namespace Renderer;
+using namespace PianoCore;
 
 unsigned int TextureFromFile(const char *path, const string &directory,
                              bool gamma = false);
@@ -29,7 +29,7 @@ unsigned int TextureFromFile(const char *path, const string &directory,
 class Model {
 public:
     // model data
-    vector<Renderer::Texture>
+    vector<PianoCore::Texture>
         textures_loaded;  // stores all the textures loaded so far, optimization
                           // to make sure textures aren't loaded more than once.
     vector<Mesh> meshes;
@@ -54,7 +54,7 @@ public:
 
 private:
     void loadModel(MeshType type) {
-        std::vector<Renderer::Vertex> vertices;
+        std::vector<PianoCore::Vertex> vertices;
         std::vector<uint32_t> indices;
         vector<Texture> textures;
 

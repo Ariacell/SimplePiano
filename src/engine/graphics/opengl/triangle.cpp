@@ -19,14 +19,14 @@
 //     buffer(s),
 //     // // // and then configure vertex attributes(s).
 //     // glBindVertexArray(VAO);
-//     Renderer::VertexArray va;
+//     PianoCore::VertexArray va;
 
-//     Renderer::VertexBuffer rectangleVertexBuffer(
+//     PianoCore::VertexBuffer rectangleVertexBuffer(
 //         triangle.first.data(), sizeof(float) * triangle.first.size());
-//     Renderer::IndexBuffer rectangleIndexBuffer(triangle.second.data(),
+//     PianoCore::IndexBuffer rectangleIndexBuffer(triangle.second.data(),
 //                                                triangle.second.size());
 
-//     Renderer::VertexBufferLayout layout;
+//     PianoCore::VertexBufferLayout layout;
 //     // layout.Push<float>(3);
 //     // layout.Push<float>(3);
 //     // layout.Push<float>(2);
@@ -80,9 +80,9 @@
 //     // and then configure vertex attributes(s).
 //     glBindVertexArray(VAO);
 
-//     Renderer::VertexBuffer rectangleVertexBuffer(
+//     PianoCore::VertexBuffer rectangleVertexBuffer(
 //         triangle.first.data(), sizeof(float) * triangle.first.size());
-//     Renderer::IndexBuffer rectangleIndexBuffer(triangle.second.data(),
+//     PianoCore::IndexBuffer rectangleIndexBuffer(triangle.second.data(),
 //                                                triangle.second.size());
 
 //     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),

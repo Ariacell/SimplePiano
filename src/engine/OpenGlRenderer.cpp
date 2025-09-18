@@ -61,7 +61,7 @@ void OpenGlRenderer::ClearScreen(float r, float g, float b, float a) {
 }
 
 void OpenGlRenderer::DrawObject(const int& vertexArray,
-                                const Renderer::IndexBuffer& indexBuffer,
+                                const PianoCore::IndexBuffer& indexBuffer,
                                 Shaders::IShader& shader) const {
     glPolygonMode(GL_FRONT_AND_BACK,
                   this->isWireframeRenderingEnabled ? GL_LINE : GL_FILL);

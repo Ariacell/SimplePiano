@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-Renderer::VertexArray::VertexArray() {
+PianoCore::VertexArray::VertexArray() {
     glGenVertexArrays(1, &associatedRendererId);
     GLenum err = glGetError();
     if (err != GL_NO_ERROR) {
@@ -14,7 +14,7 @@ Renderer::VertexArray::VertexArray() {
     glBindVertexArray(associatedRendererId);
 }
 
-void Renderer::VertexArray::AddBuffer(const VertexBuffer& data,
+void PianoCore::VertexArray::AddBuffer(const VertexBuffer& data,
                                       const VertexBufferLayout& layout) {
     Bind();
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
@@ -30,14 +30,14 @@ void Renderer::VertexArray::AddBuffer(const VertexBuffer& data,
     glEnableVertexAttribArray(2);
 }
 
-Renderer::VertexArray::~VertexArray() {
+PianoCore::VertexArray::~VertexArray() {
     glDeleteVertexArrays(1, &associatedRendererId);
 }
 
-void Renderer::VertexArray::Bind() const {
+void PianoCore::VertexArray::Bind() const {
     glBindVertexArray(associatedRendererId);
 }
 
-void Renderer::VertexArray::UnBind() const {
+void PianoCore::VertexArray::UnBind() const {
     glBindVertexArray(0);
 }
