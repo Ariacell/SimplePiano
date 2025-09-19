@@ -1,8 +1,8 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <appstate.h>
 #include <components/camera/Camera.h>
+#include <engine/application/ApplicationState.h>
 #include <engine/debug/DebugState.h>
 #include <engine/input/InputManager.h>
 
@@ -28,7 +28,7 @@ public:
     /// @param window
     void renderDebugWindow(GLFWwindow *window,
                            Debug::DebugLayerMainWindowData *debugWindowData,
-                           State::ApplicationState *appState,
+                           PianoCore::ApplicationState *appState,
                            Input::InputManager *inputMgr);
 
     /// @brief Should usually be only called when the debug layer is being

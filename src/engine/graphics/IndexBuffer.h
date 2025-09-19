@@ -24,4 +24,4 @@ public:
         return indiceCount;
     }
 };
-}  // namespace Renderer
+}  // namespace PianoCore

@@ -21,11 +21,11 @@ std:
 
 /// @brief Initialise the OpenGL window (must occur after window is created)
 /// @param window
-void OpenGlRenderer::Initialize(Engine::IWindow* window) {
-    this->window = window;
+void OpenGlRenderer::Initialize(Engine::IWindow& window) {
+    this->window = &window;
     using GLProcAddress = void* (*)(const char*);
     auto loader =
-        reinterpret_cast<GLProcAddress>(window->GetWindowProcAddress());
+        reinterpret_cast<GLProcAddress>(window.GetWindowProcAddress());
     if (!gladLoadGLLoader(loader)) {
         throw std::runtime_error("Failed to load OpenGl via Glad for window");
     }
@@ -46,7 +46,7 @@ void OpenGlRenderer::Initialize(Engine::IWindow* window) {
     glDebugMessageCallback(MessageCallback, 0);
 
     int display_w, display_h;
-    window->GetFrameBufferSize(display_w, display_h);
+    window.GetFrameBufferSize(display_w, display_h);
     glViewport(0, 0, display_w, display_h);
 
     // Setup default renderer options

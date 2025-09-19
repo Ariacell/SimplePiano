@@ -1,7 +1,7 @@
 #include "debugUI.h"
 
-#include <appstate.h>
 #include <components/camera/Camera.h>
+#include <engine/application/ApplicationState.h>
 #include <engine/input/InputManager.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -84,7 +84,7 @@ void makeInputDataMenu(Input::InputState inputState) {
 
 void DebugUiLayer::renderDebugWindow(
     GLFWwindow *window, Debug::DebugLayerMainWindowData *debugWindowData,
-    State::ApplicationState *appState, Input::InputManager *inputMgr) {
+    PianoCore::ApplicationState *appState, Input::InputManager *inputMgr) {
     IM_ASSERT(ImGui::GetCurrentContext() != NULL &&
               "Missing Dear ImGui context. Refer to examples app!");
     // const ImGuiViewport* main_viewport = ImGui::GetMainViewport();

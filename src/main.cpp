@@ -1,9 +1,9 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-#include <application/contants.h>
-#include <appstate.h>
 #include <engine/GLFWWindow.h>
 #include <engine/RendererFactory.h>
+#include <engine/application/ApplicationConstants.h>
+#include <engine/application/ApplicationState.h>
 #include <engine/audio/audio.h>
 #include <engine/debug/debugUI.h>
 #include <engine/shaders/OpenGlShader.h>
@@ -18,6 +18,7 @@
 #include <thread>
 #include <vector>
 
+#include "engine/application/Application.h"
 #include "engine/graphics/VertexArray.h"
 #include "engine/input/InputManager.h"
 #include "game/components/GameObject.h"
@@ -30,21 +31,18 @@ public:
     DebugUiLayer debugUi;
     RendererFactory rendererFactory;
 
-    State::ApplicationState appState, priorAppState;
+    PianoCore::ApplicationState appState, priorAppState;
 
     Camera mainSceneCamera;
 
     void run() {
-        // Todo: figure out if this is really the cleanest way to create this
-        // window class...
-        auto window = std::make_unique<PianoGLFWWindow>();
-        window->Create(Application::WINDOW_DEFAULTS::WINDOW_WIDTH,
-                       Application::WINDOW_DEFAULTS::WINDOW_HEIGHT,
-                       "SimplePiano");
-        GLFWwindow* glfwWindow = (GLFWwindow*)(window->GetNativeHandle());
-        std::cout << ("Finished Init Window\n");
+        PianoCore::Application pianoApp;
 
-        Input::InputManager inputManager(window.get(), &mainSceneCamera);
+        Engine::IWindow& window = *pianoApp.GetApplicationState()->mainWindow;
+        // TODO: This shouldn't be necessary. Very smelly and probably means
+        // I've fuckyduckied my interface somewhat.
+        GLFWwindow* glfwWindow = (GLFWwindow*)window.GetNativeHandle();
+        Input::InputManager inputManager(window, mainSceneCamera);
         audioManager.initAudio();
         std::cout << ("Finished Init Audio\n");
 
@@ -55,7 +53,7 @@ public:
         std::cout << ("Finished Init Input and DebugUi\n");
 
         auto renderer = rendererFactory.CreateRenderer(RendererType::OpenGL);
-        renderer->Initialize(window.get());
+        renderer->Initialize(window);
         std::shared_ptr<Shaders::IShader> openGlShader =
             std::make_shared<Shaders::OpenGlShader>("something", "something");
 
@@ -134,13 +132,12 @@ public:
 
         float frameTimeMs = 0.0f;
 
-        while (!window->ShouldClose()) {
+        while (!window.ShouldClose()) {
             auto frameStart = std::chrono::steady_clock::now();
-            window->PollEvents();
+            window.PollEvents();
 
             appStateTimer.Update();
             frameRateTimer.Update();
-            priorAppState = appState;
 
             appStateTimer.TickTimer(
                 [&]() {
@@ -178,7 +175,7 @@ public:
 
             renderer->ClearScreen(0.1f, 0.1f, 0.1f, 1.0f);
 
-            auto current_window_size = window.get()->GetWindowSize();
+            auto current_window_size = window.GetWindowSize();
 
             glm::mat4 view = glm::mat4(1.0f);
             view = glm::lookAt(mainSceneCamera.Position,

@@ -34,9 +34,8 @@ link_directories(
     ${PROJECT_SOURCE_DIR}/glm
 )
 
-
-
 add_executable(SimplePiano ${SRC_FILES})
+
 target_link_libraries(SimplePiano
 OpenGL::OpenGL
 glfw

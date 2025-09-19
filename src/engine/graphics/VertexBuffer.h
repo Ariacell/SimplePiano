@@ -18,4 +18,4 @@ public:
     void Bind() const;
     void UnBind() const;
 };
-}  // namespace Renderer
+}  // namespace PianoCore

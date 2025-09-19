@@ -24,7 +24,7 @@ private:
 public:
     /// @brief Initialise the OpenGL window (must occur after window is created)
     /// @param window
-    void Initialize(Engine::IWindow* window) override;
+    void Initialize(Engine::IWindow& window) override;
 
     void ClearScreen(float r, float g, float b, float a) override;
 

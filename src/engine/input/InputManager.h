@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <components/camera/Camera.h>
 #include <engine/IWindow.h>
+#include <engine/core/pointer.h>
 #include <engine/debug/DebugState.h>
 #include <engine/input/InputState.h>
 
@@ -10,12 +11,12 @@
 namespace Input {
 class InputManager {
 public:
-    InputManager(Engine::IWindow *window, Camera *camera);
+    InputManager(Engine::IWindow &window, Camera &camera);
     void keyCallback(int key, int action, int mods);
     void mouse_callback(double xpos, double ypos);
     void scroll_callback(double xoffset, double yoffset);
 
-    Camera *bindNewCamera(Camera *cameraToBind);
+    Camera &bindNewCamera(Camera &cameraToBind);
 
     bool isDebugWindowVisible() const;
 
@@ -45,7 +46,7 @@ private:
     Input::InputState inputState;
 
     // Camera this input manager is currently bound to control
-    Camera *currentCamera;
+    Camera &currentCamera;
 
     // Mouse input variables
     glm::vec2 lastMousePosition;
