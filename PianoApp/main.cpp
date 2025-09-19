@@ -8,8 +8,6 @@
 #include <engine/debug/debugUI.h>
 #include <engine/shaders/OpenGlShader.h>
 #include <game/components/Mesh.h>
-#include <glad/glad.h>
-#include <stb_image/stb_image.h>
 #include <util/timer.h>
 
 #include <filesystem>
@@ -18,7 +16,7 @@
 #include <thread>
 #include <vector>
 
-#include "engine/graphics/VertexArray.h"
+#include <engine/graphics/VertexArray.h>
 #include "engine/input/InputManager.h"
 #include "game/components/GameObject.h"
 #include "game/components/Model.h"

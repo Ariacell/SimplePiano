@@ -20,4 +20,4 @@ void PianoCore::VertexBufferLayout::Push<unsigned char>(unsigned int count) {
     elements.push_back(el);
     stride += 1;
 }
-}  // namespace Renderer
+}  // namespace PianoCore

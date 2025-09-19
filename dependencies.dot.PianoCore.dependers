@@ -1,0 +1,8 @@
+digraph "PianoCore" {
+node [
+  fontsize = "12"
+];
+    "node1" [ label = "PianoCore", shape = octagon ];
+    "node0" [ label = "PianoApp", shape = egg ];
+    "node0" -> "node1" [ style = dotted ] // PianoApp -> PianoCore
+}

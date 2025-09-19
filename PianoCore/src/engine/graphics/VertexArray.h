@@ -21,4 +21,4 @@ public:
         return associatedRendererId;
     }
 };
-}  // namespace Renderer
+}  // namespace PianoCore

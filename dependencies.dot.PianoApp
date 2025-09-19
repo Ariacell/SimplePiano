@@ -1,0 +1,16 @@
+digraph "PianoApp" {
+node [
+  fontsize = "12"
+];
+    "node0" [ label = "PianoApp", shape = egg ];
+    "node1" [ label = "PianoCore", shape = octagon ];
+    "node0" -> "node1" [ style = dotted ] // PianoApp -> PianoCore
+    "node2" [ label = "OpenAL::OpenAL", shape = septagon ];
+    "node1" -> "node2" [ style = dotted ] // PianoCore -> OpenAL::OpenAL
+    "node3" [ label = "OpenGL::OpenGL", shape = septagon ];
+    "node1" -> "node3" [ style = dotted ] // PianoCore -> OpenGL::OpenGL
+    "node4" [ label = "ZLIB::ZLIB", shape = septagon ];
+    "node1" -> "node4" [ style = dotted ] // PianoCore -> ZLIB::ZLIB
+    "node5" [ label = "glfw", shape = doubleoctagon ];
+    "node1" -> "node5" [ style = dotted ] // PianoCore -> glfw
+}

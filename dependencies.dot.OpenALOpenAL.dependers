@@ -1,0 +1,10 @@
+digraph "OpenAL::OpenAL" {
+node [
+  fontsize = "12"
+];
+    "node2" [ label = "OpenAL::OpenAL", shape = septagon ];
+    "node1" [ label = "PianoCore", shape = octagon ];
+    "node1" -> "node2" [ style = dotted ] // PianoCore -> OpenAL::OpenAL
+    "node0" [ label = "PianoApp", shape = egg ];
+    "node0" -> "node1" [ style = dotted ] // PianoApp -> PianoCore
+}

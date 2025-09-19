@@ -45,4 +45,4 @@ public:
         return stride;
     }
 };
-}  // namespace Renderer
+}  // namespace PianoCore

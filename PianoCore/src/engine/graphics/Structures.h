@@ -24,4 +24,4 @@ struct Texture {
     std::string type;
     std::string path;
 };
-}  // namespace Renderer
+}  // namespace PianoCore

@@ -1,0 +1,10 @@
+digraph "glfw" {
+node [
+  fontsize = "12"
+];
+    "node5" [ label = "glfw", shape = doubleoctagon ];
+    "node1" [ label = "PianoCore", shape = octagon ];
+    "node1" -> "node5" [ style = dotted ] // PianoCore -> glfw
+    "node0" [ label = "PianoApp", shape = egg ];
+    "node0" -> "node1" [ style = dotted ] // PianoApp -> PianoCore
+}

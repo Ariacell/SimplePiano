@@ -15,7 +15,7 @@ PianoCore::VertexArray::VertexArray() {
 }
 
 void PianoCore::VertexArray::AddBuffer(const VertexBuffer& data,
-                                      const VertexBufferLayout& layout) {
+                                       const VertexBufferLayout& layout) {
     Bind();
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                           (void*)0);
