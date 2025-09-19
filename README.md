@@ -55,3 +55,12 @@ For now, follow this instructions on the [Assimp project wiki](https://github.co
 ```sh
 cmake CMakeLists.txt -dBUILD_SHARED_LIBS=OFF
 ```
+
+
+### Debugging dependencies
+
+This is a really cool command for visualising CMake project dependencies
+```sh
+cmake --graphviz=dependencies.dot .
+dot -Tpng dependencies.dot -o dependencies.png
+```

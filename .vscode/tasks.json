@@ -10,6 +10,11 @@
                 "--preset debug"
             ],
             "type": "shell"
+        },
+         {
+            "label": "format",
+            "command": "find ./Piano*/ -iname '*.h' -o -iname '*.cpp' | xargs clang-format -i",
+            "type": "shell"
         }
     ]
 }
