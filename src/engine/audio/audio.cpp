@@ -1,18 +1,21 @@
 #include "audio.h"
 
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <engine/core/log.h>
 
-#include <cstdio>
+#include <iostream>
 
 namespace Audio {
+AudioManager::AudioManager() {
+    initAudio();
+    PianoCore::Log::Info("Finished Init Audio\n");
+}
 
 void AudioManager::initAudio() {
     ALCdevice *device;
 
     device = alcOpenDevice(NULL);
     if (!device) {
-        fprintf(stderr, "OpenAL Error: %s\n", "Error here");
+        PianoCore::Log::Error("OpenAL Error: %s\n", "Error here");
     }
 }
 }  // namespace Audio

@@ -27,30 +27,29 @@
 
 class PianoApp {
 public:
-    Audio::AudioManager audioManager;
     DebugUiLayer debugUi;
     RendererFactory rendererFactory;
-
-    PianoCore::ApplicationState appState;
 
     Camera mainSceneCamera;
 
     void run() {
-        PianoCore::Application pianoApp;
+        Ptr<PianoCore::Application> pianoApp = PianoCore::Application::Create();
 
-        Engine::IWindow& window = *pianoApp.GetApplicationState()->mainWindow;
+        Engine::IWindow& window =
+            *pianoApp.get()->GetApplicationState()->mainWindow;
 
         // TODO: This shouldn't be necessary. Very smelly and probably means
         // I've fuckyduckied my interface somewhat.
-        GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(
-            pianoApp.GetApplicationState()->mainWindow->GetNativeHandle());
-        Input::InputManager inputManager(window, mainSceneCamera);
-        audioManager.initAudio();
-        std::cout << ("Finished Init Audio\n");
+        GLFWwindow* glfwWindow =
+            static_cast<GLFWwindow*>(pianoApp.get()
+                                         ->GetApplicationState()
+                                         ->mainWindow->GetNativeHandle());
 
-        auto debugWindowData = &appState.debugState.mainDebugWindowData;
+        auto debugWindowData = &pianoApp.get()
+                                    ->GetApplicationState()
+                                    ->debugState.mainDebugWindowData;
         debugUi.init(glfwWindow, debugWindowData, &mainSceneCamera);
-        inputManager.bindDebugSettings(debugWindowData);
+        pianoApp.get()->GetInput()->bindDebugSettings(debugWindowData);
 
         std::cout << ("Finished Init Input and DebugUi\n");
 
@@ -61,33 +60,11 @@ public:
 
         std::cout << "Starting main application loop\n" << std::endl;
 
-        pianoApp.Start();
+        pianoApp.get()->Start();
 
 #pragma region Temporary setup for scene geometry, to remove once Scene abstraction is ready
-        Shapes shapes;
-
-        // Set up rectangle buffers
-        auto triangle = shapes.getSampleRectangleData();
-        auto cube = shapes.getSampleCubeVerts();
-
-        PianoCore::VertexArray va;
-        PianoCore::VertexBufferData rectVbData;
-        rectVbData.data = (const void*)(triangle.first.data());
-        rectVbData.size = (unsigned int)(sizeof(float) * triangle.first.size());
-
-        PianoCore::IndexBufferData rectIbData;
-        rectIbData.data = triangle.second.data();
-        rectIbData.count = triangle.second.size();
-
-        PianoCore::VertexBufferLayout layout;
-        layout.Push<float>(3);
-        layout.Push<float>(3);
-        layout.Push<float>(2);
-
         Component::GameObject cloudObj;
         Component::GameObject cloudQuadObj;
-        std::shared_ptr<Component::Mesh1> rectMesh(
-            new Component::Mesh1(&va, rectVbData, rectIbData, layout));
         std::shared_ptr<Component::Material> cloudMat(
             new Component::Material(openGlShader, "path"));
 
@@ -104,25 +81,6 @@ public:
             cloudQuadObj.AddComponent<Component::ModelComponent>(
                 quadOpenGlModel, openGlShader);
 
-        PianoCore::VertexArray cubeVa;
-        PianoCore::VertexBufferData cubeVbData;
-        const unsigned int cubeIndices[6 * 6] = {
-            // front and back
-
-            0, 1, 3, 3, 1, 2, 1, 5, 2, 2, 5, 6, 5, 4, 6, 6, 4, 7,
-            4, 0, 7, 7, 0, 3, 3, 2, 7, 7, 2, 6, 4, 5, 0, 0, 5, 1};
-        cubeVbData.data = (const void*)(cube.data());
-        cubeVbData.size = (unsigned int)(sizeof(float) * cube.size());
-
-        PianoCore::IndexBufferData cubeIbData;
-        cubeIbData.data = cubeIndices;
-        cubeIbData.count = 36;
-
-        PianoCore::VertexBufferLayout cubeLayout;
-        cubeLayout.Push<float>(3);
-        cubeLayout.Push<float>(2);
-        Component::GameObject cubeObj;
-
 #pragma endregion
 
         float frameTimeMs = 0.0f;
@@ -130,9 +88,9 @@ public:
         while (!window.ShouldClose()) {
             auto frameStart = std::chrono::steady_clock::now();
             window.PollEvents();
-            pianoApp.UpdateToFrame();
+            pianoApp.get()->UpdateToFrame();
 
-            pianoApp.GetApplicationState()->simulationTimer.TickTimer(
+            pianoApp.get()->GetApplicationState()->simulationTimer.TickTimer(
                 [&]() {
                     // blah
                     //  Do physics/app state things
@@ -146,11 +104,13 @@ public:
             // This probably doesn't need to be on a timer? Just want it to be
             // smooth but not sure if the 3rd person camera should be in app or
             // renderer yet
-            pianoApp.GetApplicationState()->framerateTimer.TickTimer(
+            pianoApp.get()->GetApplicationState()->framerateTimer.TickTimer(
                 [&]() {
                     mainSceneCamera.ProcessInput(
-                        inputManager.GetInputState(),
-                        appState.framerateTimer.GetTickSizeSeconds());
+                        pianoApp.get()->GetInput()->GetInputState(),
+                        pianoApp.get()
+                            ->GetApplicationState()
+                            ->framerateTimer.GetTickSizeSeconds());
                     // std::cout << "Framerate time Ticks so far: "
                     //           << frameRateTimer.GetTickCount() << std::endl;
                 },
@@ -159,9 +119,10 @@ public:
 #pragma region Rendering Logic
             debugUi.beginFrame();
 
-            if (inputManager.isDebugWindowVisible()) {
+            if (pianoApp.get()->GetInput()->isDebugWindowVisible()) {
                 debugUi.renderDebugWindow(glfwWindow, debugWindowData,
-                                          &appState, &inputManager);
+                                          pianoApp.get()->GetApplicationState(),
+                                          pianoApp.get()->GetInput());
             }
 
             renderer->SetWireframeRendering(
@@ -198,14 +159,16 @@ public:
 
             debugUi.endFrame();
             renderer->Present();
-            inputManager.EndFrame();
+            pianoApp.get()->GetInput()->EndFrame();
 
             auto frameEnd = std::chrono::steady_clock::now();
             frameTimeMs =
                 std::chrono::duration<float>(frameEnd - frameStart).count() *
                 1000;
 
-            auto targetFrameTimeMs = pianoApp.GetApplicationState()->framerateTimer.GetTickSizeSeconds();
+            auto targetFrameTimeMs = pianoApp.get()
+                                         ->GetApplicationState()
+                                         ->framerateTimer.GetTickSizeSeconds();
             if (frameTimeMs < targetFrameTimeMs) {
                 float sleepTimeMs = targetFrameTimeMs - frameTimeMs;
                 std::this_thread::sleep_for(

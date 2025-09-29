@@ -3,8 +3,7 @@
 #include <engine/input/InputManager.h>
 
 namespace Input {
-InputManager::InputManager(Engine::IWindow &window, Camera &camera)
-    : currentCamera(camera) {
+InputManager::InputManager(Engine::IWindow &window) {
     // This pattern doesn't explicitly support separate inputs per window yet,
     // probably very busted if trying to split input
     window.SetKeyCallback([this](int key, int action, int mods) {
@@ -51,13 +50,6 @@ void InputManager::mouse_callback(double xpos, double ypos) {
 
 void InputManager::scroll_callback(double xoffset, double yoffset) {
     // Todo, store scroll inputs
-}
-
-Camera &InputManager::bindNewCamera(Camera &cameraToBind) {
-    // This shouldn't be necessary once the decoupled input state is being
-    // passed around the app update loop
-    currentCamera = cameraToBind;
-    return currentCamera;
 }
 
 unsigned int InputManager::bindDebugSettings(

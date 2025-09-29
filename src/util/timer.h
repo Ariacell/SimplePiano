@@ -35,9 +35,9 @@ public:
 
     void Update() {
         time_point currentTime = clock::now();
-        float deltaTime =
-            std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - timeAtLastTick)
-                .count();
+        float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(
+                              currentTime - timeAtLastTick)
+                              .count();
         timeAtLastTick = currentTime;
 
         accumulatedTime += deltaTime;

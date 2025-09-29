@@ -30,3 +30,7 @@ calls input.IsPressed("Action") to confirm status of various inputs to avoid cou
 +--------------------+
 
 The rendering abstraction functions similarly, with the goal of having hotswappable rendering libraries. The IRenderer abstracts away the responsibilities of the rendering library such as clearing each frame and drawing the scene (currently this is just "drawRectangle" as a standin), and the implementations should be responsible for taking the vertex and shader information and actually presenting that to the screen in the designated window.
+
+# ECS and scene management
+
+I really like this article by Austin Morlan on their simple entity component system implementation via a top level coordinator and a bit-based signature system for components. I'm sure there are some drawbacks (out of the gate I'm not sure how much I like the expliciteness of "registering" components up front, but we'll see). https://austinmorlan.com/posts/entity_component_system/

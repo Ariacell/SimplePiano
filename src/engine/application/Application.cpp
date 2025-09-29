@@ -8,24 +8,39 @@
 
 namespace PianoCore {
 
-Application::Application() {
-    // Todo: figure out if this is really the cleanest way to create this
-    // window class...
-    appState.mainWindow = std::make_unique<PianoGLFWWindow>();
-    appState.mainWindow->Create(PianoCore::WINDOW_DEFAULTS::WINDOW_WIDTH,
-                                PianoCore::WINDOW_DEFAULTS::WINDOW_HEIGHT,
-                                "SimplePiano");
-    Log::Info("Finished Init PianoCore Application Window");
-    appState.debugState = Debug::DebugState();
+Ptr<Application> Application::Create() {
+    auto app = std::unique_ptr<Application>(new Application());
 
-    appState.simulationTimer = Util::Timer(
+    app->appState.mainWindow = std::make_unique<PianoGLFWWindow>();
+    app->appState.mainWindow->Create(PianoCore::WINDOW_DEFAULTS::WINDOW_WIDTH,
+                                     PianoCore::WINDOW_DEFAULTS::WINDOW_HEIGHT,
+                                     "SimplePiano");
+    Log::Info("Finished Init PianoCore Application Window");
+    app->appState.debugState = Debug::DebugState();
+
+    app->appState.simulationTimer = Util::Timer(
         PianoCore::APPLICATION_DEFAULTS::TARGET_SIMULATION_TICKS_PER_SECOND);
-    appState.framerateTimer =
+    app->appState.framerateTimer =
         Util::Timer(PianoCore::APPLICATION_DEFAULTS::TARGET_FRAMES_PER_SECOND);
+
+    app->inputManager =
+        std::make_unique<Input::InputManager>(*app->appState.mainWindow);
+
+    app->audioManager = std::make_unique<Audio::AudioManager>();
+
+    return app;
 }
 
 ApplicationState* Application::GetApplicationState() {
     return &appState;
+}
+
+Input::InputManager* Application::GetInput() {
+    return inputManager.get();
+}
+
+Audio::AudioManager* Application::GetAudio() {
+    return audioManager.get();
 }
 
 Application::~Application() {

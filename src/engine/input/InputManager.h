@@ -1,5 +1,5 @@
 #pragma once
-#include <GLFW/glfw3.h>
+
 #include <components/camera/Camera.h>
 #include <engine/IWindow.h>
 #include <engine/core/pointer.h>
@@ -11,12 +11,10 @@
 namespace Input {
 class InputManager {
 public:
-    InputManager(Engine::IWindow &window, Camera &camera);
+    InputManager(Engine::IWindow &window);
     void keyCallback(int key, int action, int mods);
     void mouse_callback(double xpos, double ypos);
     void scroll_callback(double xoffset, double yoffset);
-
-    Camera &bindNewCamera(Camera &cameraToBind);
 
     bool isDebugWindowVisible() const;
 
@@ -44,9 +42,6 @@ private:
 
     // Input State internal so it can only be manipulated by the manager
     Input::InputState inputState;
-
-    // Camera this input manager is currently bound to control
-    Camera &currentCamera;
 
     // Mouse input variables
     glm::vec2 lastMousePosition;
