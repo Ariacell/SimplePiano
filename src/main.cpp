@@ -31,7 +31,7 @@ public:
     DebugUiLayer debugUi;
     RendererFactory rendererFactory;
 
-    PianoCore::ApplicationState appState, priorAppState;
+    PianoCore::ApplicationState appState;
 
     Camera mainSceneCamera;
 
@@ -39,9 +39,11 @@ public:
         PianoCore::Application pianoApp;
 
         Engine::IWindow& window = *pianoApp.GetApplicationState()->mainWindow;
+
         // TODO: This shouldn't be necessary. Very smelly and probably means
         // I've fuckyduckied my interface somewhat.
-        GLFWwindow* glfwWindow = (GLFWwindow*)window.GetNativeHandle();
+        GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(
+            pianoApp.GetApplicationState()->mainWindow->GetNativeHandle());
         Input::InputManager inputManager(window, mainSceneCamera);
         audioManager.initAudio();
         std::cout << ("Finished Init Audio\n");
@@ -59,14 +61,7 @@ public:
 
         std::cout << "Starting main application loop\n" << std::endl;
 
-        Util::Timer appStateTimer;
-        float appStateTickRateMs = 31.25f;
-        appStateTimer.Init(appStateTickRateMs);
-
-        Util::Timer frameRateTimer;
-        float targetFramerate = 70.0f;
-        float targetFrameTimeMs = (1 / targetFramerate) * 1000;
-        frameRateTimer.Init(targetFrameTimeMs);
+        pianoApp.Start();
 
 #pragma region Temporary setup for scene geometry, to remove once Scene abstraction is ready
         Shapes shapes;
@@ -135,11 +130,9 @@ public:
         while (!window.ShouldClose()) {
             auto frameStart = std::chrono::steady_clock::now();
             window.PollEvents();
+            pianoApp.UpdateToFrame();
 
-            appStateTimer.Update();
-            frameRateTimer.Update();
-
-            appStateTimer.TickTimer(
+            pianoApp.GetApplicationState()->simulationTimer.TickTimer(
                 [&]() {
                     // blah
                     //  Do physics/app state things
@@ -153,10 +146,11 @@ public:
             // This probably doesn't need to be on a timer? Just want it to be
             // smooth but not sure if the 3rd person camera should be in app or
             // renderer yet
-            frameRateTimer.TickTimer(
+            pianoApp.GetApplicationState()->framerateTimer.TickTimer(
                 [&]() {
-                    mainSceneCamera.ProcessInput(inputManager.GetInputState(),
-                                                 frameRateTimer.GetTickSize());
+                    mainSceneCamera.ProcessInput(
+                        inputManager.GetInputState(),
+                        appState.framerateTimer.GetTickSizeSeconds());
                     // std::cout << "Framerate time Ticks so far: "
                     //           << frameRateTimer.GetTickCount() << std::endl;
                 },
@@ -196,8 +190,6 @@ public:
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
-            // ourModel.Draw(openGlShader);
-            // cubeOpenGlModel.Draw(openGlShader);
             renderer->DrawObject(&cloudObj);
             renderer->DrawObject(&cloudQuadObj);
             // Cube broken due to vertex order but doesn't really matter, just a
@@ -213,6 +205,7 @@ public:
                 std::chrono::duration<float>(frameEnd - frameStart).count() *
                 1000;
 
+            auto targetFrameTimeMs = pianoApp.GetApplicationState()->framerateTimer.GetTickSizeSeconds();
             if (frameTimeMs < targetFrameTimeMs) {
                 float sleepTimeMs = targetFrameTimeMs - frameTimeMs;
                 std::this_thread::sleep_for(

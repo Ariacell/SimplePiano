@@ -16,14 +16,31 @@ Application::Application() {
                                 PianoCore::WINDOW_DEFAULTS::WINDOW_HEIGHT,
                                 "SimplePiano");
     Log::Info("Finished Init PianoCore Application Window");
-    this->appState.debugState = Debug::DebugState();
+    appState.debugState = Debug::DebugState();
+
+    appState.simulationTimer = Util::Timer(
+        PianoCore::APPLICATION_DEFAULTS::TARGET_SIMULATION_TICKS_PER_SECOND);
+    appState.framerateTimer =
+        Util::Timer(PianoCore::APPLICATION_DEFAULTS::TARGET_FRAMES_PER_SECOND);
 }
 
-const ApplicationState* Application::GetApplicationState() {
+ApplicationState* Application::GetApplicationState() {
     return &appState;
 }
 
 Application::~Application() {
     Log::Info("Destroying underlying PianoCore application class");
+}
+
+void Application::Start() {
+    appState.simulationTimer.Init();
+    appState.framerateTimer.Init();
+}
+
+void Application::UpdateToFrame() {
+    // Update the underlying application state to the current frame as
+    // appropriate
+    appState.simulationTimer.Update();
+    appState.framerateTimer.Update();
 }
 }  // namespace PianoCore

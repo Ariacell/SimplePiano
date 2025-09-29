@@ -8,7 +8,10 @@ public:
     Application();
     ~Application();
 
-    const ApplicationState* GetApplicationState();
+    void Start();
+    void UpdateToFrame();
+
+    ApplicationState* GetApplicationState();
 
 private:
     ApplicationState appState;

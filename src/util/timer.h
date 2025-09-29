@@ -1,3 +1,5 @@
+#pragma once
+
 #include <chrono>
 #include <iostream>
 
@@ -12,13 +14,16 @@ private:
     time_point timeAtLastTick;
 
     float accumulatedTime = 0.0f;
-    float tickSize;
+    float tickSizeMs;
     long timerTicks = 0;
 
 public:
-    void Init(float tickSizeMs, long startTick = 0) {
+    Timer(float targetTicksPerSecond = 60.0f) {
+        tickSizeMs = (1.0f / targetTicksPerSecond) * 1000.0f;
+    }
+
+    void Init(long startTick = 0) {
         startTime = timeAtLastTick = clock::now();
-        tickSize = tickSizeMs / 1000.0f;
         timerTicks = startTick;
     }
 
@@ -31,7 +36,7 @@ public:
     void Update() {
         time_point currentTime = clock::now();
         float deltaTime =
-            std::chrono::duration_cast<duration>(currentTime - timeAtLastTick)
+            std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - timeAtLastTick)
                 .count();
         timeAtLastTick = currentTime;
 
@@ -40,9 +45,9 @@ public:
 
     void TickTimer(std::function<void()> tickCallback, int maxTicks) {
         int _tickCount = 0;
-        while (accumulatedTime >= tickSize && _tickCount < maxTicks) {
+        while (accumulatedTime >= tickSizeMs && _tickCount < maxTicks) {
             tickCallback();
-            accumulatedTime -= tickSize;
+            accumulatedTime -= tickSizeMs;
             _tickCount++;
             timerTicks++;
         }
@@ -56,8 +61,8 @@ public:
         ;
     }
 
-    float GetTickSize() {
-        return tickSize;
+    float GetTickSizeSeconds() {
+        return tickSizeMs / 1000.0f;
     }
 
     long GetTickCount() {
