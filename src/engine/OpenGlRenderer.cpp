@@ -117,7 +117,8 @@ void OpenGlRenderer::DrawRectangle() {
         this->rectangleVAO);  // seeing as we only have a single VAO there's
     // no need to bind it every time, but we'll do
     // so to keep things a bit more organized
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    int numberOfTriangleVerts = 6;
+    glDrawElements(GL_TRIANGLES, numberOfTriangleVerts, GL_UNSIGNED_INT, 0);
     // Do more fun things here once I have time.
 }
 void CheckOpenGlError(std::string callLocation) {
@@ -155,14 +156,16 @@ void OpenGlRenderer::LoadRectangleTexture() {
                     GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
+    int width;
+    int height;
+    int nrChannels;
     std::string texturesPath =
         fs::current_path().string() + std::string("/textures");
     std::string filename = "/sky.jpg";
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(1);
     unsigned char* data = stbi_load((texturesPath + "/" + filename).c_str(),
                                     &width, &height, &nrChannels, 0);
-    if (data) {
+    if (data != nullptr) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                      GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -170,8 +173,9 @@ void OpenGlRenderer::LoadRectangleTexture() {
     } else {
         std::cout << "Failed to load texture " << filename << std::endl;
         std::cout << "Similar textures found: " << std::endl;
-        for (const auto& entry : fs::directory_iterator(texturesPath))
+        for (const auto& entry : fs::directory_iterator(texturesPath)) {
             std::cout << entry.path() << std::endl;
+        }
 
         std::cout << stbi_failure_reason() << std::endl;
     }

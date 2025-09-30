@@ -1,6 +1,5 @@
 #include "triangle.h"
 
-#include <GLES3/gl32.h>
 #include <engine/graphics/IndexBuffer.h>
 #include <engine/graphics/VertexArray.h>
 #include <engine/graphics/VertexBuffer.h>

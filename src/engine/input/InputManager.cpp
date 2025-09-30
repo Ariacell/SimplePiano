@@ -46,6 +46,7 @@ void InputManager::mouse_callback(double xpos, double ypos) {
                              static_cast<float>(lastY - ypos));
     lastX = xpos;
     lastY = ypos;
+    lastMousePosition = {xpos, ypos};
 }
 
 void InputManager::scroll_callback(double xoffset, double yoffset) {

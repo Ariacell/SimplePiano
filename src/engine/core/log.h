@@ -8,6 +8,10 @@ namespace PianoCore {
 
 class Log {
 public:
+// SPC-18: Suppress format security warning as the internal logging library is
+// WIP
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
     template <typename... Args>
     static void Info(const std::string& formatString, Args&&... args) {
         printf("[Info]: ");
@@ -29,6 +33,7 @@ public:
         printf("\n");
     }
 };
+#pragma GCC diagnostic pop
 
 }  // namespace PianoCore
 

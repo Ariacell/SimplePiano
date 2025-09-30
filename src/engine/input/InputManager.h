@@ -25,6 +25,10 @@ public:
         return this->inputState;
     };
 
+    glm::vec2 GetMousePosition() {
+        return lastMousePosition;
+    }
+
     // End a frame for input purposes (clears frame based data such as key
     // presses and mouse deltas)
     void EndFrame() {

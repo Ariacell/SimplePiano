@@ -42,7 +42,7 @@ public:
     }
 
     // constructor for default shapes
-    Model(MeshType type) : gammaCorrection(gamma) {
+    Model(MeshType type, bool gamma = false) : gammaCorrection(gamma) {
         loadModel(type);
     }
 
@@ -129,6 +129,9 @@ private:
                 };
 
                 break;
+            }
+            case MeshType::Model: {
+                // Noop, we don't load models like this
             }
         }
         meshes.push_back(Mesh(vertices, indices, textures));

@@ -9,7 +9,10 @@
                 ".",
                 "--preset debug"
             ],
-            "type": "shell"
+            "type": "shell",
+            "dependsOn":[
+                "format"
+            ]
         },
          {
             "label": "format",

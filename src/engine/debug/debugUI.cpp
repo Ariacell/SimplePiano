@@ -69,14 +69,16 @@ void makeInputDataMenu(Input::InputState inputState) {
             if (!key.second) {
                 continue;
             }
-            ImGui::Text(std::to_string(key.first).c_str());
+            auto str = std::to_string(key.first).c_str();
+            ImGui::Text("%s", str);
         }
         ImGui::EndListBox();
     }
 
     if (ImGui::BeginListBox("Input PRESSED keys")) {
         for (auto key : inputState.GetPressedKeys()) {
-            ImGui::Text(std::to_string(key.first).c_str());
+            auto str = std::to_string(key.first).c_str();
+            ImGui::Text("%s", str);
         }
         ImGui::EndListBox();
     }

@@ -1,6 +1,8 @@
 
 # References for working on this project
 
+See the [building locally section](#building-locally) for some intructions on building and running the project
+
 ## GLFW
 The main input and window management library for the project.
 https://www.glfw.org/GLFWReference276.pdf
@@ -19,6 +21,12 @@ To come once I decide how I want to do hotswapping of the renderer
 To come once I decide how I want to do hotswapping of the renderer
 
 # Building locally
+
+## First time setup
+
+```
+sudo apt install clang-format clang-tidy
+```
 
 ## Requirements
 This project is built via CMake, and requires the following libraries/packages installed to build from source:
