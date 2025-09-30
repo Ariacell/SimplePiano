@@ -1,8 +1,9 @@
 #pragma once
 
+#include <engine/IRenderer.h>
 #include <engine/application/ApplicationState.h>
 #include <engine/audio/audio.h>
-#include <engine/IRenderer.h>
+#include <engine/debug/debugUI.h>
 #include <engine/input/InputManager.h>
 
 namespace PianoCore {
@@ -24,6 +25,7 @@ private:
     Application() = default;
 
     ApplicationState appState;
+    Ptr<DebugUiLayer> debugUI;
     Ptr<Input::InputManager> inputManager;
     Ptr<Audio::AudioManager> audioManager;
     Ptr<Engine::IRenderer> renderer;

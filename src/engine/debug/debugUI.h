@@ -1,5 +1,5 @@
 #pragma once
-
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <components/camera/Camera.h>
 #include <engine/application/ApplicationState.h>
@@ -9,12 +9,12 @@
 #include <glm/vec2.hpp>
 #include <vector>
 
-namespace debugUI {
+namespace PianoCore {
 struct Window {
     glm::vec2 location;
     glm::vec2 size;
 };
-}  // namespace debugUI
+}  // namespace PianoCore
 
 class DebugUiLayer {
 public:

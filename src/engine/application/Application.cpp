@@ -1,5 +1,5 @@
 #include "Application.h"
-
+#define GLFW_INCLUDE_NONE
 #include <engine/GLFWWindow.h>
 #include <engine/RendererFactory.h>
 #include <engine/application/ApplicationConstants.h>
@@ -31,6 +31,8 @@ Ptr<Application> Application::Create() {
 
     app->renderer = RendererFactory::CreateRenderer(RendererType::OpenGL);
 
+    app->debugUI = std::make_unique<DebugUiLayer>();
+
     return app;
 }
 
@@ -55,10 +57,24 @@ Application::~Application() {
 }
 
 void Application::Start() {
+    std::cout << "Starting main application loop\n" << std::endl;
+
     appState.simulationTimer.Init();
     appState.framerateTimer.Init();
 
     renderer->Initialize(*appState.mainWindow);
+
+    // TODO: SP #6 This shouldn't be necessary. Very smelly and probably means
+    // I've fuckyduckied my interface somewhat.
+    GLFWwindow* glfwWindow =
+        static_cast<GLFWwindow*>(appState.mainWindow->GetNativeHandle());
+
+    // TODO: SP #7 Why is appState responsible for some of the startup info for
+    // this layer?
+    debugUI->init(glfwWindow, &appState.debugState.mainDebugWindowData,
+                  nullptr);
+    inputManager->bindDebugSettings(&appState.debugState.mainDebugWindowData);
+    std::cout << ("Finished Init Input and DebugUi\n");
 }
 
 void Application::UpdateToFrame() {
@@ -66,5 +82,23 @@ void Application::UpdateToFrame() {
     // appropriate
     appState.simulationTimer.Update();
     appState.framerateTimer.Update();
+
+    GLFWwindow* glfwWindow =
+        static_cast<GLFWwindow*>(appState.mainWindow->GetNativeHandle());
+    debugUI->beginFrame();
+
+    if (inputManager->isDebugWindowVisible()) {
+        debugUI->renderDebugWindow(glfwWindow,
+                                   &appState.debugState.mainDebugWindowData,
+                                   &appState, inputManager.get());
+    }
+
+    renderer->SetWireframeRendering(
+        appState.debugState.mainDebugWindowData.isWireframeRenderingEnabled);
+    // Note: While SP #7 is in play this call being here is causing the debug
+    // windows to render behind the rest of the scene geometry. Should be fixed
+    // once the rendering loop is properly extracted into application loop
+    // callbacks.
+    debugUI->endFrame();
 }
 }  // namespace PianoCore

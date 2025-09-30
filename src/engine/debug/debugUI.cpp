@@ -161,6 +161,9 @@ void DebugUiLayer::makeGraphicsMenu(
 }
 
 void DebugUiLayer::makeLocationDataMenu(Camera *trackedCamera) {
+    if (trackedCamera == nullptr) {
+        return;
+    }
     if (ImGui::BeginMenu("Location Info")) {
         if (ImGui::BeginTable("Camera Details", 2)) {
             ImGui::TableSetupColumn("Entry",

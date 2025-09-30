@@ -1,11 +1,5 @@
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#include <engine/GLFWWindow.h>
 #include <engine/RendererFactory.h>
-#include <engine/application/ApplicationConstants.h>
-#include <engine/application/ApplicationState.h>
-#include <engine/audio/audio.h>
-#include <engine/debug/debugUI.h>
 #include <engine/graphics/OpenGLLine.h>
 #include <engine/shaders/OpenGlShader.h>
 #include <game/components/Mesh.h>
@@ -22,44 +16,24 @@
 
 #include "engine/application/Application.h"
 #include "engine/graphics/VertexArray.h"
-#include "engine/input/InputManager.h"
 #include "game/components/GameObject.h"
 #include "game/components/Model.h"
 #include "game/components/ModelComponent.h"
 
 class PianoApp {
 public:
-    DebugUiLayer debugUi;
-
     Camera mainSceneCamera;
 
     void run() {
         Ptr<PianoCore::Application> pianoApp = PianoCore::Application::Create();
-
-        Engine::IWindow& window = *pianoApp->GetApplicationState()->mainWindow;
-
-        // TODO: This shouldn't be necessary. Very smelly and probably means
-        // I've fuckyduckied my interface somewhat.
-        GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(
-            pianoApp->GetApplicationState()->mainWindow->GetNativeHandle());
-
-        auto* debugWindowData =
-            &pianoApp->GetApplicationState()->debugState.mainDebugWindowData;
-        debugUi.init(glfwWindow, debugWindowData, &mainSceneCamera);
-        pianoApp->GetInput()->bindDebugSettings(debugWindowData);
-
-        std::cout << ("Finished Init Input and DebugUi\n");
-
-        std::shared_ptr<Shaders::IShader> openGlShader =
-            std::make_shared<Shaders::OpenGlShader>("something", "something");
-
-        std::cout << "Starting main application loop\n" << std::endl;
 
         pianoApp->Start();
 
 #pragma region Temporary setup for scene geometry, to remove once Scene abstraction is ready
         Component::GameObject cloudObj;
         Component::GameObject cloudQuadObj;
+        std::shared_ptr<Shaders::IShader> openGlShader =
+            std::make_shared<Shaders::OpenGlShader>("something", "something");
         std::shared_ptr<Component::Material> cloudMat(
             new Component::Material(openGlShader, "path"));
 
@@ -74,11 +48,11 @@ public:
                                                          openGlShader);
         cloudQuadObj.AddComponent<Component::ModelComponent>(quadOpenGlModel,
                                                              openGlShader);
-
 #pragma endregion
 
         float frameTimeMs = 0.0F;
 
+        Engine::IWindow& window = *pianoApp->GetApplicationState()->mainWindow;
         while (!window.ShouldClose()) {
             auto frameStart = std::chrono::steady_clock::now();
             window.PollEvents();
@@ -110,16 +84,6 @@ public:
                 5);
 
 #pragma region Rendering Logic
-            debugUi.beginFrame();
-
-            if (pianoApp->GetInput()->isDebugWindowVisible()) {
-                debugUi.renderDebugWindow(glfwWindow, debugWindowData,
-                                          pianoApp->GetApplicationState(),
-                                          pianoApp->GetInput());
-            }
-
-            pianoApp->GetRenderer()->SetWireframeRendering(
-                debugWindowData->isWireframeRenderingEnabled);
 
             pianoApp->GetRenderer()->ClearScreen(0.1F, 0.1F, 0.1F, 1.0F);
 
@@ -170,7 +134,6 @@ public:
             // PianoCore::Log::Info(std::format("Raycast to mouse: {0}, {1},
             // {2}", rayMouse.x, rayMouse.y, rayMouse.z));
 
-            debugUi.endFrame();
             pianoApp->GetRenderer()->Present();
             pianoApp->GetInput()->EndFrame();
 

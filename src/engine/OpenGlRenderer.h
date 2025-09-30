@@ -1,4 +1,5 @@
 #pragma once
+#define GLFW_INCLUDE_NONE
 #include <engine/IRenderer.h>
 #include <engine/graphics/IndexBuffer.h>
 #include <engine/graphics/opengl/cube.h>

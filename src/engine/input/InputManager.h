@@ -18,8 +18,7 @@ public:
 
     bool isDebugWindowVisible() const;
 
-    unsigned int bindDebugSettings(
-        Debug::DebugLayerMainWindowData *debugSettings);
+    unsigned int bindDebugSettings(Debug::DebugLayerMainWindowData *debugData);
 
     InputState GetInputState() {
         return this->inputState;
