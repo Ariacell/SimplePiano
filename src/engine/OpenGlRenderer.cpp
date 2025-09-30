@@ -26,7 +26,7 @@ void OpenGlRenderer::Initialize(Engine::IWindow& window) {
     using GLProcAddress = void* (*)(const char*);
     auto loader =
         reinterpret_cast<GLProcAddress>(window.GetWindowProcAddress());
-    if (!gladLoadGLLoader(loader)) {
+    if (gladLoadGLLoader(loader) == 0) {
         throw std::runtime_error("Failed to load OpenGl via Glad for window");
     }
     // this->rectangleVAO =
@@ -45,7 +45,8 @@ void OpenGlRenderer::Initialize(Engine::IWindow& window) {
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(MessageCallback, 0);
 
-    int display_w, display_h;
+    int display_w;
+    int display_h;
     window.GetFrameBufferSize(display_w, display_h);
     glViewport(0, 0, display_w, display_h);
 
@@ -55,8 +56,9 @@ void OpenGlRenderer::Initialize(Engine::IWindow& window) {
     glEnable(GL_DEPTH_TEST);
 }
 
-void OpenGlRenderer::ClearScreen(float r, float g, float b, float a) {
-    glClearColor(r, g, b, a);
+void OpenGlRenderer::ClearScreen(float red, float green, float blue,
+                                 float alpha) {
+    glClearColor(red, green, blue, alpha);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -65,8 +67,6 @@ void OpenGlRenderer::DrawObject(const int& vertexArray,
                                 Shaders::IShader& shader) const {
     glPolygonMode(GL_FRONT_AND_BACK,
                   this->isWireframeRenderingEnabled ? GL_LINE : GL_FILL);
-    GLint isVAO = 0;
-    bool isVAOValid = glIsVertexArray(vertexArray);
     glBindVertexArray(vertexArray);
     indexBuffer.Bind();
     shader.use();
@@ -86,12 +86,12 @@ void OpenGlRenderer::DrawObject(Component::GameObject* objectToDraw) const {
     glPolygonMode(GL_FRONT_AND_BACK,
                   this->isWireframeRenderingEnabled ? GL_LINE : GL_FILL);
 
-    glm::mat4 modelmat = glm::mat4(1.0f);
+    glm::mat4 modelmat = glm::mat4(1.0F);
     // model =
     //     glm::rotate(model, (float)glfwGetTime() *
     //     glm::radians(50.0f),
     // glm::vec3(0.5f, 1.0f, 0.0f));
-    modelmat = glm::rotate(modelmat, 0.0f, glm::vec3(0.5f, 1.0f, 0.0f));
+    modelmat = glm::rotate(modelmat, 0.0F, glm::vec3(0.5F, 1.0F, 0.0F));
     modelmat = glm::translate(modelmat, objectToDraw->GetTransform()->position);
     unsigned int modelLoc =
         glGetUniformLocation(model->GetShader()->GetID(), "model");
@@ -103,7 +103,7 @@ void OpenGlRenderer::DrawObject(Component::GameObject* objectToDraw) const {
     // glDrawElements(GL_TRIANGLES,
     //                model->GetMesh()->GetIndexBuffer()->GetIndiceCount(),
     //                GL_UNSIGNED_INT, 0);
-    model->GetShader().get()->use();
+    model->GetShader()->use();
     model->Draw(model->GetShader());
 }
 
@@ -183,7 +183,7 @@ void OpenGlRenderer::LoadRectangleTexture() {
 }
 
 void OpenGlRenderer::Present() {
-    if (!window) {
+    if (window == nullptr) {
         throw std::runtime_error(
             "Attempted to present OpenGL rendered scene without a handle "
             "to a running window!");

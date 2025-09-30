@@ -43,7 +43,7 @@ public:
         GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(
             pianoApp->GetApplicationState()->mainWindow->GetNativeHandle());
 
-        auto *debugWindowData =
+        auto* debugWindowData =
             &pianoApp->GetApplicationState()->debugState.mainDebugWindowData;
         debugUi.init(glfwWindow, debugWindowData, &mainSceneCamera);
         pianoApp->GetInput()->bindDebugSettings(debugWindowData);
@@ -72,11 +72,10 @@ public:
         std::shared_ptr<Component::Model> quadOpenGlModel(
             new Component::Model(Component::MeshType::Quad));
 
-        auto* cloudCubeModel = cloudObj.AddComponent<Component::ModelComponent>(
-            cubeOpenGlModel, openGlShader);
-        auto* cloudQuadModel =
-            cloudQuadObj.AddComponent<Component::ModelComponent>(
-                quadOpenGlModel, openGlShader);
+        cloudObj.AddComponent<Component::ModelComponent>(cubeOpenGlModel,
+                                                         openGlShader);
+        cloudQuadObj.AddComponent<Component::ModelComponent>(quadOpenGlModel,
+                                                             openGlShader);
 
 #pragma endregion
 

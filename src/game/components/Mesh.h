@@ -22,7 +22,7 @@ enum class MeshType { Cube, Quad, Model };
 
 class Mesh1 {
 public:
-    Mesh1(PianoCore::VertexArray* va,
+    Mesh1(PianoCore::VertexArray* vertexArray,
           PianoCore::VertexBufferData vertexBufferData,
           PianoCore::IndexBufferData indexBufferData,
           PianoCore::VertexBufferLayout layout);

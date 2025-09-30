@@ -1,18 +1,19 @@
 #include "Mesh.h"
 
-Component::Mesh1::Mesh1(PianoCore::VertexArray* va,
+Component::Mesh1::Mesh1(PianoCore::VertexArray* vertexArray,
                         PianoCore::VertexBufferData vertexBufferData,
                         PianoCore::IndexBufferData indexBufferData,
                         PianoCore::VertexBufferLayout layout)
     : vertexBuffer(vertexBufferData),
       indexBuffer(indexBufferData),
       layout(layout) {
-    vertexArray = va;
-    va->Bind();
-    std::cout << "Bound VAO ID: " << va->GetRendererId() << std::endl;
-    va->AddBuffer(vertexBuffer, layout);
+    vertexArray = vertexArray;
+    vertexArray->Bind();
+    std::cout << "Bound VAO ID: " << vertexArray->GetRendererId() << std::endl;
+    vertexArray->AddBuffer(vertexBuffer, layout);
     indexBuffer.Bind();
-    std::cout << "Bound mesh to VAO ID: " << va->GetRendererId() << std::endl;
+    std::cout << "Bound mesh to VAO ID: " << vertexArray->GetRendererId()
+              << std::endl;
 }
 
 PianoCore::VertexArray* Component::Mesh1::GetVertexArray() {
@@ -52,21 +53,22 @@ void Component::Mesh::Draw(const std::shared_ptr<Shaders::IShader>& shader) {
         // retrieve texture number (the N in diffuse_textureN)
         std::string number;
         std::string name = textures[i].type;
-        if (name == "texture_diffuse")
+        if (name == "texture_diffuse") {
             number = std::to_string(diffuseNr++);
-        else if (name == "texture_specular")
+        } else if (name == "texture_specular") {
             number = std::to_string(
                 specularNr++);  // transfer unsigned int to string
-        else if (name == "texture_normal")
+        } else if (name == "texture_normal") {
             number =
                 std::to_string(normalNr++);  // transfer unsigned int to string
-        else if (name == "texture_height")
+        } else if (name == "texture_height") {
             number =
                 std::to_string(heightNr++);  // transfer unsigned int to string
+        }
 
         // now set the sampler to the correct texture unit
-        glUniform1i(
-            glGetUniformLocation(shader.get()->ID, (name + number).c_str()), i);
+        glUniform1i(glGetUniformLocation(shader->ID, (name + number).c_str()),
+                    i);
         // and finally bind the texture
         glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
@@ -90,11 +92,11 @@ void Component::Mesh::setupMesh() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(PianoCore::Vertex),
-                 &vertices[0], GL_STATIC_DRAW);
+                 vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
-                 &indices[0], GL_STATIC_DRAW);
+                 indices.data(), GL_STATIC_DRAW);
 
     // vertex positions
     glEnableVertexAttribArray(0);
