@@ -1,8 +1,8 @@
 #pragma once
 
-#include <engine/IRenderer.h>
 #include <engine/application/ApplicationState.h>
 #include <engine/audio/audio.h>
+#include <engine/IRenderer.h>
 #include <engine/input/InputManager.h>
 
 namespace PianoCore {
