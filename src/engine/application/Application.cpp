@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include <engine/GLFWWindow.h>
+#include <engine/RendererFactory.h>
 #include <engine/application/ApplicationConstants.h>
 #include <engine/core/log.h>
 
@@ -28,6 +29,8 @@ Ptr<Application> Application::Create() {
 
     app->audioManager = std::make_unique<Audio::AudioManager>();
 
+    app->renderer = RendererFactory::CreateRenderer(RendererType::OpenGL);
+
     return app;
 }
 
@@ -43,6 +46,10 @@ Audio::AudioManager* Application::GetAudio() {
     return audioManager.get();
 }
 
+Engine::IRenderer* Application::GetRenderer() {
+    return renderer.get();
+}
+
 Application::~Application() {
     Log::Info("Destroying underlying PianoCore application class");
 }
@@ -50,6 +57,8 @@ Application::~Application() {
 void Application::Start() {
     appState.simulationTimer.Init();
     appState.framerateTimer.Init();
+
+    renderer->Initialize(*appState.mainWindow);
 }
 
 void Application::UpdateToFrame() {

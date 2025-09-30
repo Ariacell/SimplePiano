@@ -16,10 +16,11 @@ public:
     virtual void PollEvents() = 0;
     virtual bool ShouldClose() const = 0;
     virtual void SwapBuffers() = 0;
-    virtual void GetFrameBufferSize(int &frameWidth, int &frameHeight) = 0;
-    virtual glm::vec2 GetWindowSize() = 0;
+    const virtual void GetFrameBufferSize(int &frameWidth,
+                                          int &frameHeight) = 0;
+    const virtual glm::vec2 GetWindowSize() = 0;
 
-    virtual GLProcAddress GetWindowProcAddress() = 0;
+    virtual const GLProcAddress GetWindowProcAddress() = 0;
     virtual void *GetNativeHandle() = 0;  // platform-specific pointer
 };
 }  // namespace Engine

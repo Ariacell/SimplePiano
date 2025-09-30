@@ -84,11 +84,12 @@ void PianoGLFWWindow::PollEvents() {
     glfwPollEvents();
 }
 
-void PianoGLFWWindow::GetFrameBufferSize(int &frameWidth, int &frameHeight) {
+const void PianoGLFWWindow::GetFrameBufferSize(int &frameWidth,
+                                               int &frameHeight) {
     glfwGetFramebufferSize(window, &frameWidth, &frameHeight);
 }
 
-glm::vec2 PianoGLFWWindow::GetWindowSize() {
+const glm::vec2 PianoGLFWWindow::GetWindowSize() {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     return glm::vec2(width, height);
@@ -112,7 +113,7 @@ void PianoGLFWWindow::SwapBuffers() {
     glfwSwapBuffers(window);
 }
 
-Engine::GLProcAddress PianoGLFWWindow::GetWindowProcAddress() {
+const Engine::GLProcAddress PianoGLFWWindow::GetWindowProcAddress() {
     return (Engine::GLProcAddress)glfwGetProcAddress;
 }
 

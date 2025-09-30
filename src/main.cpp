@@ -50,8 +50,6 @@ public:
 
         std::cout << ("Finished Init Input and DebugUi\n");
 
-        auto renderer = RendererFactory::CreateRenderer(RendererType::OpenGL);
-        renderer->Initialize(window);
         std::shared_ptr<Shaders::IShader> openGlShader =
             std::make_shared<Shaders::OpenGlShader>("something", "something");
 
@@ -120,10 +118,10 @@ public:
                                           pianoApp->GetInput());
             }
 
-            renderer->SetWireframeRendering(
+            pianoApp->GetRenderer()->SetWireframeRendering(
                 debugWindowData->isWireframeRenderingEnabled);
 
-            renderer->ClearScreen(0.1F, 0.1F, 0.1F, 1.0F);
+            pianoApp->GetRenderer()->ClearScreen(0.1F, 0.1F, 0.1F, 1.0F);
 
             auto current_window_size = window.GetWindowSize();
 
@@ -146,8 +144,8 @@ public:
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
-            renderer->DrawObject(&cloudObj);
-            renderer->DrawObject(&cloudQuadObj);
+            pianoApp->GetRenderer()->DrawObject(&cloudObj);
+            pianoApp->GetRenderer()->DrawObject(&cloudQuadObj);
 
             // Playing with debug lines to start experimenting with raycasting
             // to the quad
@@ -173,7 +171,7 @@ public:
             // {2}", rayMouse.x, rayMouse.y, rayMouse.z));
 
             debugUi.endFrame();
-            renderer->Present();
+            pianoApp->GetRenderer()->Present();
             pianoApp->GetInput()->EndFrame();
 
             auto frameEnd = std::chrono::steady_clock::now();
