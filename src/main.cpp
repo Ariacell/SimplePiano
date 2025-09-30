@@ -1,4 +1,5 @@
 #define GLFW_INCLUDE_NONE
+#include <GameLayer.h>
 #include <engine/RendererFactory.h>
 #include <engine/graphics/OpenGLLine.h>
 #include <engine/shaders/OpenGlShader.h>
@@ -20,12 +21,14 @@
 #include "game/components/Model.h"
 #include "game/components/ModelComponent.h"
 
-class PianoApp {
+class Game {
 public:
     Camera mainSceneCamera;
 
     void run() {
         Ptr<PianoCore::Application> pianoApp = PianoCore::Application::Create();
+
+        pianoApp->PushLayer(std::make_shared<PianoApp::PianoAppGameLayer>());
 
         pianoApp->Start();
 
@@ -156,6 +159,6 @@ public:
 };
 
 int main() {
-    PianoApp app;
-    app.run();
+    Game game;
+    game.run();
 }
