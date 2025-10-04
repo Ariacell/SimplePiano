@@ -21,12 +21,6 @@ PianoAppGameLayer::PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
     PianoCore::Log::Info("Constructing PianoAppGameLayer");
     simulationTimer = Util::Timer(
         PianoCore::APPLICATION_DEFAULTS::TARGET_SIMULATION_TICKS_PER_SECOND);
-}
-
-void PianoAppGameLayer::Init() {
-    PianoCore::Log::Info("Begin init Game Layer");
-    simulationTimer.Init();
-
     openGlShader = std::make_shared<Shaders::OpenGlShader>(
         "./shaders/base.vert", "./shaders/base.frag");
     std::shared_ptr<Component::Material> cloudMat(
@@ -43,6 +37,11 @@ void PianoAppGameLayer::Init() {
     cloudObj.AddComponent<Component::ModelComponent>(ourModel, openGlShader);
     cloudQuadObj.AddComponent<Component::ModelComponent>(quadOpenGlModel,
                                                          openGlShader);
+}
+
+void PianoAppGameLayer::Init() {
+    PianoCore::Log::Info("Begin init Game Layer");
+    simulationTimer.Init();
 
     PianoCore::Log::Info("Finished init Game Layer");
 }
