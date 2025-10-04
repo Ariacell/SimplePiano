@@ -2,6 +2,7 @@
 
 #include <GLES3/gl32.h>
 #include <GLFW/glfw3.h>
+#include <engine/core/log.h>
 
 #include <fstream>
 #include <iostream>
@@ -12,22 +13,32 @@
 
 namespace Shaders {
 
-unsigned int OpenGlShader::loadShader() {
+unsigned int OpenGlShader::loadShader(const char* vertexPath,
+                                      const char* fragmentPath) {
     std::cout << "Compiling Vertex Shaders\n" << std::endl;
-    auto vertexShader = OpenGlShader::compileVertexShaders();
+    auto vertexShader = OpenGlShader::compileVertexShaders(vertexPath);
     std::cout << "Compiling Fragment Shaders\n" << std::endl;
-    auto fragmentShader = OpenGlShader::compileFragmentShaders();
+    auto fragmentShader = OpenGlShader::compileFragmentShaders(fragmentPath);
     std::cout << "Linking Shaders...\n" << std::endl;
     auto shaderProgram = OpenGlShader::LinkShader(vertexShader, fragmentShader);
     return shaderProgram;
 }
 
-OpenGlShader::OpenGlShader(const char* vertexPath, const char* fragmentPath) {
-    this->ID = loadShader();
+OpenGlShader::OpenGlShader(const char* vertexPath, const char* fragmentPath)
+    : vertFilePath(vertexPath), fragFilePath(fragmentPath) {
+    this->ID = loadShader(vertFilePath, fragFilePath);
 }
 
 void OpenGlShader::use() {
     glUseProgram(ID);
+}
+
+void OpenGlShader::reload() {
+    GLuint newID = loadShader(vertFilePath, fragFilePath);
+    if (!newID) {
+        PianoCore::Log::Error("Unable to reload shader!");
+    }
+    ID = newID;
 }
 
 void OpenGlShader::setFloat(const std::string& name, float value) const {
@@ -52,11 +63,12 @@ std::string LoadShaderAsString(const std::string& filename) {
     return result;
 }
 
-unsigned int OpenGlShader::compileVertexShaders() {
+unsigned int OpenGlShader::compileVertexShaders(
+    const char* vertexShaderFilePath) {
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
     const std::string vertShaderSources[] = {
-        LoadShaderAsString("./shaders/base.vert")};
+        LoadShaderAsString(vertexShaderFilePath)};
     return OpenGlShader::CompileShader(GL_VERTEX_SHADER, vertShaderSources[0]);
 }
 
@@ -88,11 +100,12 @@ GLuint OpenGlShader::CompileShader(GLuint type, const std::string& source) {
     return shaderObject;
 }
 
-unsigned int OpenGlShader::compileFragmentShaders() {
+unsigned int OpenGlShader::compileFragmentShaders(
+    const char* fragmentShaderFilePath) {
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
     const std::string fragShaderSources[] = {
-        LoadShaderAsString("./shaders/base.frag")};
+        LoadShaderAsString(fragmentShaderFilePath)};
     return OpenGlShader::CompileShader(GL_FRAGMENT_SHADER,
                                        fragShaderSources[0]);
 }

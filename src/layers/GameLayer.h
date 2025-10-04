@@ -15,6 +15,8 @@ class PianoAppGameLayer : public PianoCore::IAppLayer {
 public:
     PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
                       PianoCore::Application &parentApplication);
+    ~PianoAppGameLayer();
+
     void Init() override;
 
     void Update(Input::InputManager &input) override;

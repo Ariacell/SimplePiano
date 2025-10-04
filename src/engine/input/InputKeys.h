@@ -33,6 +33,7 @@ enum AppKey {
     APP_KEY_Q,
     APP_KEY_W,
     APP_KEY_E,
+    APP_KEY_R,
     APP_KEY_A,
     APP_KEY_S,
     APP_KEY_D,

@@ -57,7 +57,7 @@ Application::~Application() {
 }
 
 void Application::Start() {
-    std::cout << "Starting main application loop\n" << std::endl;
+    Log::Info("Starting main application loop");
 
     m_AppState.framerateTimer.Init();
 
@@ -67,6 +67,8 @@ void Application::Start() {
     while (!m_AppState.mainWindow->ShouldClose()) {
         UpdateToFrame();
     }
+
+    Log::Info("Exiting main application loop");
 }
 
 void Application::UpdateToFrame() {

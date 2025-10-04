@@ -1,6 +1,7 @@
 #define GLFW_INCLUDE_NONE
 #include <engine/IRenderer.h>
 #include <engine/core/log.h>
+#include <engine/input/InputKeys.h>
 #include <game/components/Material.h>
 #include <game/components/Model.h>
 #include <glad/glad.h>
@@ -23,11 +24,11 @@ PianoAppGameLayer::PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
 }
 
 void PianoAppGameLayer::Init() {
+    PianoCore::Log::Info("Begin init Game Layer");
     simulationTimer.Init();
 
-#pragma region Temporary setup for scene geometry, to remove once Scene abstraction is ready
-    openGlShader =
-        std::make_shared<Shaders::OpenGlShader>("something", "something");
+    openGlShader = std::make_shared<Shaders::OpenGlShader>(
+        "./shaders/base.vert", "./shaders/base.frag");
     std::shared_ptr<Component::Material> cloudMat(
         new Component::Material(openGlShader, "path"));
 
@@ -42,22 +43,28 @@ void PianoAppGameLayer::Init() {
     cloudObj.AddComponent<Component::ModelComponent>(ourModel, openGlShader);
     cloudQuadObj.AddComponent<Component::ModelComponent>(quadOpenGlModel,
                                                          openGlShader);
-#pragma endregion
+
+    PianoCore::Log::Info("Finished init Game Layer");
 }
 
 void PianoAppGameLayer::Update(Input::InputManager &input) {
-    PianoCore::Log::Info("Update called for PianoAppGameLayer");
     simulationTimer.Update();
 
     simulationTimer.TickTimer(
         [&]() {
             // blah
-            //  Do physics/app state things
-            // std::cout << "Application Ticks so far: "
-            //           << appStateTimer.GetTickCount() << std::endl;
-            cloudObj.GetTransform()->translate(glm::vec3(.05F, .0F, .0F));
+            // Do physics/app state things
+            // cloudObj.GetTransform()->translate(glm::vec3(.05F, .0F, .0F));
+            cloudObj.GetTransform()->rotate(
+                glm::quat(glm::highp_vec3(.0F, .0F, .05F)));
         },
         5);
+    if (input.GetInputState().WasKeyPressed(Input::APP_KEY_R) &&
+        input.GetInputState().IsKeyDown(Input::APP_KEY_LCTRL)) {
+        // Reload shader
+        PianoCore::Log::Info("Reloading shader!");
+        openGlShader->reload();
+    }
 
     mainCamera.ProcessInput(input.GetInputState(),
                             parentApplication.GetApplicationState()
@@ -65,8 +72,6 @@ void PianoAppGameLayer::Update(Input::InputManager &input) {
 }
 
 void PianoAppGameLayer::Render() {
-    PianoCore::Log::Info("Render called for PianoAppGameLayer");
-
     Engine::IWindow &window =
         *parentApplication.GetApplicationState()->mainWindow;
 
@@ -75,8 +80,7 @@ void PianoAppGameLayer::Render() {
     auto current_window_size = window.GetWindowSize();
 
     glm::mat4 view = glm::mat4(1.0F);
-    view = glm::lookAt(mainCamera.Position,
-                       mainCamera.Position + mainCamera.Front, mainCamera.Up);
+    view = mainCamera.GetViewMatrix();
     glm::mat4 projection = glm::mat4(1.0F);
     projection = glm::perspective(
         glm::radians(45.0F),
@@ -122,5 +126,9 @@ void PianoAppGameLayer::Render() {
 }
 void PianoAppGameLayer::Suspend() {
     PianoCore::Log::Info("Suspending PianoAppGameLayer");
+}
+
+PianoAppGameLayer::~PianoAppGameLayer() {
+    PianoCore::Log::Info("Calling Destructor for PianoAppGameLayer");
 }
 }  // namespace PianoApp

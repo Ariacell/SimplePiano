@@ -43,6 +43,8 @@ AppKey AppKeyFromGlfwKey(int glfwKey) {
             return AppKey::APP_KEY_E;
         case GLFW_KEY_W:
             return AppKey::APP_KEY_W;
+        case GLFW_KEY_R:
+            return AppKey::APP_KEY_R;
         case GLFW_KEY_A:
             return AppKey::APP_KEY_A;
         case GLFW_KEY_S:

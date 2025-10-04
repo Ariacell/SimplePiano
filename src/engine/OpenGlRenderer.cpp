@@ -5,6 +5,7 @@
 
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <iostream>
 
 #include "graphics/VertexArray.h"
@@ -91,7 +92,7 @@ void OpenGlRenderer::DrawObject(Component::GameObject* objectToDraw) const {
     //     glm::rotate(model, (float)glfwGetTime() *
     //     glm::radians(50.0f),
     // glm::vec3(0.5f, 1.0f, 0.0f));
-    modelmat = glm::rotate(modelmat, 0.0F, glm::vec3(0.5F, 1.0F, 0.0F));
+    modelmat = modelmat * glm::toMat4(objectToDraw->GetTransform()->rotation);
     modelmat = glm::translate(modelmat, objectToDraw->GetTransform()->position);
     unsigned int modelLoc =
         glGetUniformLocation(model->GetShader()->GetID(), "model");
