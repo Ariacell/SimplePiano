@@ -1,7 +1,7 @@
 #include <components/camera/Camera.h>
 #include <engine/input/InputKeys.h>
 
-Camera::Camera(glm::vec3 position, glm::vec3 up)
+PerspectiveCamera::PerspectiveCamera(glm::vec3 position, glm::vec3 up)
     : Front(glm::vec3(0.0f, 0.0f, -1.0f)),
       MovementSpeed(2.5f),
       MouseSensitivity(0.001f),
@@ -13,11 +13,12 @@ Camera::Camera(glm::vec3 position, glm::vec3 up)
     updateCameraVectors();
 }
 
-glm::mat4 Camera::GetViewMatrix() {
+glm::mat4 PerspectiveCamera::GetViewMatrix() {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
-void Camera::ProcessInput(Input::InputState inputState, float deltaTime) {
+void PerspectiveCamera::ProcessInput(Input::InputState inputState,
+                                     float deltaTime) {
     float velocity = MovementSpeed * deltaTime;
     glm::vec3 movementVector = glm::vec3(0, 0, 0);
     if (inputState.IsKeyDown(Input::APP_KEY_W))
@@ -37,8 +38,9 @@ void Camera::ProcessInput(Input::InputState inputState, float deltaTime) {
     ProcessPitchYawRoll(inputState, deltaTime, true);
 }
 
-void Camera::ProcessPitchYawRoll(Input::InputState inputState, float deltaTime,
-                                 bool constrainPitch) {
+void PerspectiveCamera::ProcessPitchYawRoll(Input::InputState inputState,
+                                            float deltaTime,
+                                            bool constrainPitch) {
     if (inputState.IsKeyDown(Input::APP_KEY_E))
         ApplyRoll(RollSpeed);
     if (inputState.IsKeyDown(Input::APP_KEY_Q))
@@ -69,12 +71,12 @@ void Camera::ProcessPitchYawRoll(Input::InputState inputState, float deltaTime,
     updateCameraVectors();
 }
 
-void Camera::ApplyRoll(float deltaRoll) {
+void PerspectiveCamera::ApplyRoll(float deltaRoll) {
     glm::mat4 rollRotation = glm::rotate(glm::mat4(1.0f), deltaRoll, Front);
     Orientation = rollRotation * Orientation;
 }
 
-void Camera::ProcessMouseScroll(float yoffset) {
+void PerspectiveCamera::ProcessMouseScroll(float yoffset) {
     Zoom -= yoffset;
     if (Zoom < 1.0f)
         Zoom = 1.0f;
@@ -82,7 +84,7 @@ void Camera::ProcessMouseScroll(float yoffset) {
         Zoom = 45.0f;
 }
 
-void Camera::updateCameraVectors() {
+void PerspectiveCamera::updateCameraVectors() {
     Right = glm::normalize(glm::vec3(Orientation[0]));
     Up = glm::normalize(glm::vec3(Orientation[1]));
     Front = glm::normalize(-glm::vec3(Orientation[2]));

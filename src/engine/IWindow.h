@@ -15,6 +15,7 @@ public:
         std::function<void(double xpos, double ypos)> callback) = 0;
     virtual void PollEvents() = 0;
     virtual bool ShouldClose() const = 0;
+    virtual void SignalShouldClose() = 0;
     virtual void SwapBuffers() = 0;
     const virtual void GetFrameBufferSize(int &frameWidth,
                                           int &frameHeight) = 0;

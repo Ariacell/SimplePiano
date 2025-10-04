@@ -31,6 +31,7 @@ public:
         std::function<void(double xpos, double ypos)> callback) override;
     void PollEvents() override;
     bool ShouldClose() const override;
+    void SignalShouldClose() override;
     void SwapBuffers() override;
     const void GetFrameBufferSize(int &frameWidth, int &frameHeight) override;
     const glm::vec2 GetWindowSize() override;

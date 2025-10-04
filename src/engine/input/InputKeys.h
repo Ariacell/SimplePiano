@@ -28,6 +28,7 @@ enum AppKey {
 
     APP_KEY_SPACE,
     APP_KEY_LCTRL,
+    APP_KEY_ESCAPE,
 
     APP_KEY_Q,
     APP_KEY_W,

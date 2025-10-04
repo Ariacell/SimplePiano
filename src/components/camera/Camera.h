@@ -5,10 +5,11 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 enum Camera_Movement { FORWARD, BACKWARD, LEFT, RIGHT };
 
-class Camera {
+class PerspectiveCamera {
 public:
     glm::vec3 Position;
     glm::vec3 Front;
@@ -32,8 +33,11 @@ public:
     float MouseSensitivity;
     float Zoom;
 
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f),
-           glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f));
+    PerspectiveCamera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f),
+                      glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f));
+    ~PerspectiveCamera() {
+        std::cout << "Destroying PerspetiveCamera" << std::endl;
+    }
 
     glm::mat4 GetViewMatrix();
     void ProcessInput(Input::InputState inputState, float deltaTime);

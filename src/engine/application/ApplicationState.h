@@ -11,7 +11,6 @@ class ApplicationState {
 public:
     Debug::DebugState debugState;
     Ptr<Engine::IWindow> mainWindow;
-    Util::Timer simulationTimer;
     Util::Timer framerateTimer;
 
     ApplicationState() = default;

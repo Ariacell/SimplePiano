@@ -14,9 +14,11 @@
 #include <iostream>
 #include <vector>
 
-void DebugUiLayer::init(GLFWwindow *window,
-                        Debug::DebugLayerMainWindowData *debugWindowData,
-                        Camera *camera) {
+namespace PianoCore {
+
+void DebugUi::init(GLFWwindow *window,
+                   Debug::DebugLayerMainWindowData *debugWindowData_,
+                   Input::InputManager &inputMgr, PerspectiveCamera *camera) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImPlot::CreateContext();
@@ -28,22 +30,36 @@ void DebugUiLayer::init(GLFWwindow *window,
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
-    this->debugWindowData = debugWindowData;
-    this->cameraToTrack = camera;
+    mainWindow = window;
+    debugWindowData = debugWindowData_;
+    cameraToTrack = camera;
+    inputManagerReference = &inputMgr;
     // Initialise empty frame rate data times
     for (int i = 0; i < 60; ++i) {
         debugWindowData->frameTimeData.push_back(0.f);
     }
 }
 
+GLFWwindow &DebugUi::GetMainWindow() {
+    return *mainWindow;
+}
+
+Debug::DebugLayerMainWindowData &DebugUi::GetDebugWindowData() {
+    return *debugWindowData;
+}
+
+Input::InputManager &DebugUi::GetInputManagerRef() {
+    return *inputManagerReference;
+}
+
 /// @brief Starts a new frame for the Imgui library ecosystem
-void DebugUiLayer::beginFrame() {
+void DebugUi::beginFrame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
 
-void DebugUiLayer::endFrame() {
+void DebugUi::endFrame() {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     ImGuiIO &io = ImGui::GetIO();
@@ -56,7 +72,7 @@ void DebugUiLayer::endFrame() {
     }
 }
 
-void DebugUiLayer::shutdown() {
+void DebugUi::shutdown() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImPlot::DestroyContext();
@@ -84,9 +100,8 @@ void makeInputDataMenu(Input::InputState inputState) {
     }
 }
 
-void DebugUiLayer::renderDebugWindow(
-    GLFWwindow *window, Debug::DebugLayerMainWindowData *debugWindowData,
-    PianoCore::ApplicationState *appState, Input::InputManager *inputMgr) {
+void DebugUi::renderDebugWindow(
+    GLFWwindow *window, Debug::DebugLayerMainWindowData *debugWindowData) {
     IM_ASSERT(ImGui::GetCurrentContext() != NULL &&
               "Missing Dear ImGui context. Refer to examples app!");
     // const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
@@ -110,17 +125,17 @@ void DebugUiLayer::renderDebugWindow(
     ImGui::Text("F1 toggled this debug window.");
     makeGraphicsMenu(this->debugWindowData);
     makeLocationDataMenu(this->cameraToTrack);
-    makeInputDataMenu(inputMgr->GetInputState());
+    makeInputDataMenu(inputManagerReference->GetInputState());
     makeDebugWindowMenu(this->debugWindowData);
-    DebugUiLayer::drawDot(windowWidth / 2, windowHeight / 2);
+    DebugUi::drawDot(windowWidth / 2, windowHeight / 2);
     ImGui::End();
     ImGui::Begin("Utility Info");
-    DebugUiLayer::drawUtilityGraphWidget(windowWidth, windowHeight, deltaTime);
+    DebugUi::drawUtilityGraphWidget(windowWidth, windowHeight, deltaTime);
     ImGui::End();
 }
 
-void DebugUiLayer::drawUtilityGraphWidget(int windowHeight, int windowWidth,
-                                          float deltaTime) {
+void DebugUi::drawUtilityGraphWidget(int windowHeight, int windowWidth,
+                                     float deltaTime) {
     // Todo: Dock this to the upper right corner and improve the styling
     if (ImPlot::BeginSubplots("Graphed Data", 1, 1,
                               ImVec2(windowWidth / 4, windowHeight / 4))) {
@@ -142,16 +157,16 @@ void DebugUiLayer::drawUtilityGraphWidget(int windowHeight, int windowWidth,
     }
 }
 
-void DebugUiLayer::drawDot(double x, double y) {
+void DebugUi::drawDot(double x, double y) {
     auto draw = ImGui::GetBackgroundDrawList();
     draw->AddCircle(ImVec2(x, y), 5, IM_COL32(255, 255, 255, 255), 100, 2.f);
 }
 
-bool DebugUiLayer::getIsWireframeDrawingEnabled() {
+bool DebugUi::getIsWireframeDrawingEnabled() {
     return this->debugWindowData->isWireframeRenderingEnabled;
 }
 
-void DebugUiLayer::makeGraphicsMenu(
+void DebugUi::makeGraphicsMenu(
     Debug::DebugLayerMainWindowData *debugWindowData) {
     if (ImGui::BeginMenu("Graphics")) {
         ImGui::Checkbox("Wireframe Rendering",
@@ -160,7 +175,7 @@ void DebugUiLayer::makeGraphicsMenu(
     }
 }
 
-void DebugUiLayer::makeLocationDataMenu(Camera *trackedCamera) {
+void DebugUi::makeLocationDataMenu(PerspectiveCamera *trackedCamera) {
     if (trackedCamera == nullptr) {
         return;
     }
@@ -189,7 +204,7 @@ void DebugUiLayer::makeLocationDataMenu(Camera *trackedCamera) {
     }
 }
 
-void DebugUiLayer::makeDebugWindowMenu(
+void DebugUi::makeDebugWindowMenu(
     Debug::DebugLayerMainWindowData *debugWindowData) {
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
@@ -218,7 +233,9 @@ void DebugUiLayer::makeDebugWindowMenu(
     }
 }
 
-void DebugUiLayer::setWireframeMode(bool shouldUseWireframeMode) {
-    DebugUiLayer::debugWindowData->isWireframeRenderingEnabled =
+void DebugUi::setWireframeMode(bool shouldUseWireframeMode) {
+    DebugUi::debugWindowData->isWireframeRenderingEnabled =
         shouldUseWireframeMode;
 }
+
+}  // namespace PianoCore

@@ -34,6 +34,8 @@ AppKey AppKeyFromGlfwKey(int glfwKey) {
             return AppKey::APP_KEY_SPACE;
         case GLFW_KEY_LEFT_CONTROL:
             return APP_KEY_LCTRL;
+        case GLFW_KEY_ESCAPE:
+            return APP_KEY_ESCAPE;
 
         case GLFW_KEY_Q:
             return AppKey::APP_KEY_Q;

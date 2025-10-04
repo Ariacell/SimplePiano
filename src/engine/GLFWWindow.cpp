@@ -99,6 +99,10 @@ bool PianoGLFWWindow::ShouldClose() const {
     return glfwWindowShouldClose(window);
 }
 
+void PianoGLFWWindow::SignalShouldClose() {
+    glfwSetWindowShouldClose(window, 1);
+}
+
 void PianoGLFWWindow::SetKeyCallback(
     std::function<void(int, int, int)> callback) {
     keyCallback_ = callback;

@@ -4,8 +4,10 @@
 #include <engine/RendererFactory.h>
 #include <engine/application/ApplicationConstants.h>
 #include <engine/core/log.h>
+#include <engine/input/InputKeys.h>
 
 #include <memory>
+#include <thread>
 
 namespace PianoCore {
 
@@ -19,8 +21,6 @@ Ptr<Application> Application::Create() {
     Log::Info("Finished Init PianoCore Application Window");
     app->m_AppState.debugState = Debug::DebugState();
 
-    app->m_AppState.simulationTimer = Util::Timer(
-        PianoCore::APPLICATION_DEFAULTS::TARGET_SIMULATION_TICKS_PER_SECOND);
     app->m_AppState.framerateTimer =
         Util::Timer(PianoCore::APPLICATION_DEFAULTS::TARGET_FRAMES_PER_SECOND);
 
@@ -29,9 +29,9 @@ Ptr<Application> Application::Create() {
 
     app->audioManager = std::make_unique<Audio::AudioManager>();
 
-    app->renderer = RendererFactory::CreateRenderer(RendererType::OpenGL);
-
-    app->debugUI = std::make_unique<DebugUiLayer>();
+    app->m_ApplicationRenderer =
+        RendererFactory::CreateRenderer(RendererType::OpenGL);
+    app->m_ApplicationRenderer->Initialize(*app->m_AppState.mainWindow.get());
 
     return app;
 }
@@ -49,7 +49,7 @@ Audio::AudioManager* Application::GetAudio() {
 }
 
 Engine::IRenderer* Application::GetRenderer() {
-    return renderer.get();
+    return m_ApplicationRenderer.get();
 }
 
 Application::~Application() {
@@ -59,55 +59,57 @@ Application::~Application() {
 void Application::Start() {
     std::cout << "Starting main application loop\n" << std::endl;
 
-    m_AppState.simulationTimer.Init();
     m_AppState.framerateTimer.Init();
 
-    renderer->Initialize(*m_AppState.mainWindow);
-
-    // TODO: SP #6 This shouldn't be necessary. Very smelly and probably means
-    // I've fuckyduckied my interface somewhat.
-    GLFWwindow* glfwWindow =
-        static_cast<GLFWwindow*>(m_AppState.mainWindow->GetNativeHandle());
-
-    // TODO: SP #7 Why is appState responsible for some of the startup info for
-    // this layer?
-    debugUI->init(glfwWindow, &m_AppState.debugState.mainDebugWindowData,
-                  nullptr);
-    inputManager->bindDebugSettings(&m_AppState.debugState.mainDebugWindowData);
-    std::cout << ("Finished Init Input and DebugUi\n");
+    for (auto& layer : m_AppLayers) {
+        layer->Init();
+    };
+    while (!m_AppState.mainWindow->ShouldClose()) {
+        UpdateToFrame();
+    }
 }
 
 void Application::UpdateToFrame() {
-    // Update the underlying application state to the current frame as
-    // appropriate
-    m_AppState.simulationTimer.Update();
-    m_AppState.framerateTimer.Update();
+    auto frameStart = std::chrono::steady_clock::now();
+    m_AppState.mainWindow->PollEvents();
 
-    for (auto& layer : m_AppLayers) {
-        layer->SimulationMove();
-    };
-
-    for (auto& layer : m_AppLayers) {
-        layer->FrameMove();
-    };
-
-    /* Render debug information last on top of the rest of the frame*/
-    GLFWwindow* glfwWindow =
-        static_cast<GLFWwindow*>(m_AppState.mainWindow->GetNativeHandle());
-    debugUI->beginFrame();
-
-    if (inputManager->isDebugWindowVisible()) {
-        debugUI->renderDebugWindow(glfwWindow,
-                                   &m_AppState.debugState.mainDebugWindowData,
-                                   &m_AppState, inputManager.get());
+    if (inputManager->GetInputState().WasKeyPressed(Input::APP_KEY_ESCAPE)) {
+        m_AppState.mainWindow->SignalShouldClose();
     }
 
-    renderer->SetWireframeRendering(
+    m_AppState.framerateTimer.Update();
+
+    // Update layers based on application observed inputs TODO: add time back
+    // into this as an optional observable for each layer to di the time
+    for (auto& layer : m_AppLayers) {
+        layer->Update(*inputManager);
+    };
+
+    // Render all layers
+    m_ApplicationRenderer->ClearScreen(0.1F, 0.1F, 0.1F, 1.0F);
+    m_ApplicationRenderer->SetWireframeRendering(
         m_AppState.debugState.mainDebugWindowData.isWireframeRenderingEnabled);
-    // Note: While SP #7 is in play this call being here is causing the debug
-    // windows to render behind the rest of the scene geometry. Should be fixed
-    // once the rendering loop is properly extracted into application loop
-    // callbacks.
-    debugUI->endFrame();
+    for (auto& layer : m_AppLayers) {
+        layer->Render();
+    };
+    m_ApplicationRenderer->Present();
+
+    inputManager->EndFrame();
+
+    CapFrameRate(frameStart, m_AppState.framerateTimer.GetTickSizeSeconds());
+}
+
+void Application::CapFrameRate(
+    std::chrono::_V2::steady_clock::time_point frameStartTime,
+    float targetFrameTimeMs) {
+    auto frameEnd = std::chrono::steady_clock::now();
+    float frameTimeMs =
+        std::chrono::duration<float>(frameEnd - frameStartTime).count() * 1000;
+
+    if (frameTimeMs < targetFrameTimeMs) {
+        float sleepTimeMs = targetFrameTimeMs - frameTimeMs;
+        std::this_thread::sleep_for(
+            std::chrono::duration<float, milli>(sleepTimeMs));
+    }
 }
 }  // namespace PianoCore

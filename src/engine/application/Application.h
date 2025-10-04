@@ -33,12 +33,14 @@ public:
 private:
     Application() = default;
 
+    void CapFrameRate(std::chrono::_V2::steady_clock::time_point frameStartTime,
+                      float targetFrameTimeMs);
+
     std::vector<Ref<IAppLayer>> m_AppLayers = {};
 
     ApplicationState m_AppState;
-    Ptr<DebugUiLayer> debugUI;
+    Ptr<Engine::IRenderer> m_ApplicationRenderer;
     Ptr<Input::InputManager> inputManager;
     Ptr<Audio::AudioManager> audioManager;
-    Ptr<Engine::IRenderer> renderer;
 };
 }  // namespace PianoCore
