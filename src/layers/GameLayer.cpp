@@ -87,12 +87,7 @@ void PianoAppGameLayer::Update(Input::InputManager &input) {
             mainCamera.GetViewMatrix(), projection,
             glm::vec4(0, 0, windowSize.x, windowSize.y));
         glm::vec3 rayMouse = glm::normalize(worldPos - mainCamera.Position);
-        std::string logMsg = std::format(
-            "Checking for collisions with the bounding quad along "
-            "vector: %s, %s, %s, starting from camera position %s, %s, %s",
-            rayMouse.x, rayMouse.y, rayMouse.z, mainCamera.Position.x,
-            mainCamera.Position.y, mainCamera.Position.z);
-        // PianoCore::Log::Info(logMsg);
+
         float hitDistance = 0.0F;
         PianoPhysics::Ray ray(mainCamera.Position, rayMouse);
         if (PianoPhysics::CheckRayToAABBIntersection(
@@ -102,7 +97,7 @@ void PianoAppGameLayer::Update(Input::InputManager &input) {
                 cloudQuadObj.GetComponent<Component::BoundingBoxComponent>()
                     ->GetMaxExtents(),
                 hitDistance)) {
-            PianoCore::Log::Info("INTERSECTION!");
+            PianoCore::Log::Info("INTERSECTION at depth %4.2f", hitDistance);
             cloudQuadObj.GetComponent<Component::SelectableComponent>()
                 ->SetSelected(true);
         } else {
@@ -144,7 +139,7 @@ void PianoAppGameLayer::Render() {
         cloudObj.GetComponent<Component::SelectableComponent>()->IsSelected()
             ? 1
             : 0);
-    renderer.DrawObject(&cloudObj);
+    // renderer.DrawObject(&cloudObj);
     glUniform1i(selectedLoc,
                 cloudQuadObj.GetComponent<Component::SelectableComponent>()
                         ->IsSelected()
@@ -152,12 +147,9 @@ void PianoAppGameLayer::Render() {
                     : 0);
     renderer.DrawObject(&cloudQuadObj);
 
-    // Debug line to draw the bounding box 
+    // Debug line to draw the bounding box
     auto bb = cloudQuadObj.GetComponent<Component::BoundingBoxComponent>();
-    auto line = Line(bb->GetMinExtents(), bb->GetMaxExtents());
-    line.setMVP(projection * view);
-    line.draw();
-
+    bb->DrawDebug(projection, view);
 }
 void PianoAppGameLayer::Suspend() {
     PianoCore::Log::Info("Suspending PianoAppGameLayer");
