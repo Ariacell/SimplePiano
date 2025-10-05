@@ -5,7 +5,15 @@ set(EXECUTABLE_OUTPUT_PATH "bin")
 
 set(CMAKE_CXX_STANDARD 20)
 option(CMAKE_COMPILE_WARNING_AS_ERROR "Compile warnings as errors" ON)
-set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=blah-*)
+# set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=blah-*)
+
+include(FetchContent)
+
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt
+  GIT_TAG        e69e5f977d458f2650bb346dadf2ad30c5320281) # 10.2.1
+FetchContent_MakeAvailable(fmt)
 
 #Enforce GLFW present for window management
 find_package(glfw3 3.3 REQUIRED)
@@ -44,6 +52,7 @@ glfw
 OpenAL::OpenAL
 assimp
 ZLIB::ZLIB
+fmt::fmt
 )
 
 # Copying shaders and textures into the build directory for runtime compiling
