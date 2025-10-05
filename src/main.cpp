@@ -1,22 +1,8 @@
 #define GLFW_INCLUDE_NONE
-#include <engine/RendererFactory.h>
-#include <engine/graphics/OpenGLLine.h>
-#include <game/components/Mesh.h>
+
+#include <engine/application/Application.h>
+#include <layers/DebugLayer.h>
 #include <layers/GameLayer.h>
-#include <stb_image/stb_image.h>
-#include <util/timer.h>
-
-#include <filesystem>
-#include <format>
-#include <glm/gtc/type_ptr.hpp>
-#include <iostream>
-#include <thread>
-#include <vector>
-
-#include "engine/application/Application.h"
-#include "engine/graphics/VertexArray.h"
-#include "glad/glad.h"
-#include "layers/DebugLayer.h"
 
 class Game {
 public:

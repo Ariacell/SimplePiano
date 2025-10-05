@@ -1,9 +1,13 @@
 #define GLFW_INCLUDE_NONE
 #include <engine/IRenderer.h>
 #include <engine/core/log.h>
+#include <engine/graphics/OpenGLLine.h>
 #include <engine/input/InputKeys.h>
+#include <engine/physics/Raycasting.h>
+#include <game/components/BoundingBoxComponent.h>
 #include <game/components/Material.h>
 #include <game/components/Model.h>
+#include <game/components/SelectableComponent.h>
 #include <glad/glad.h>
 #include <layers/GameLayer.h>
 
@@ -35,8 +39,13 @@ PianoAppGameLayer::PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
         new Component::Model(Component::MeshType::Quad));
 
     cloudObj.AddComponent<Component::ModelComponent>(ourModel, openGlShader);
+    cloudObj.AddComponent<Component::SelectableComponent>();
+
     cloudQuadObj.AddComponent<Component::ModelComponent>(quadOpenGlModel,
                                                          openGlShader);
+    cloudQuadObj.AddComponent<Component::SelectableComponent>();
+    cloudQuadObj.AddComponent<Component::BoundingBoxComponent>(
+        *quadOpenGlModel);
 }
 
 void PianoAppGameLayer::Init() {
@@ -65,6 +74,43 @@ void PianoAppGameLayer::Update(Input::InputManager &input) {
         openGlShader->reload();
     }
 
+    // Object selection
+    if (input.GetInputState().WasKeyPressed(Input::APP_KEY_MOUSE_1)) {
+        glm::vec2 windowSize = parentApplication.GetApplicationState()
+                                   ->mainWindow->GetWindowSize();
+        glm::mat4 projection = glm::perspective(
+            glm::radians(45.0F), (float)windowSize.x / (float)windowSize.y,
+            0.1F, 100.0F);
+        glm::vec3 worldPos = glm::unProject(
+            glm::vec3(input.GetMousePosition().x,
+                      windowSize.y - input.GetMousePosition().y, 0.0),
+            mainCamera.GetViewMatrix(), projection,
+            glm::vec4(0, 0, windowSize.x, windowSize.y));
+        glm::vec3 rayMouse = glm::normalize(worldPos - mainCamera.Position);
+        std::string logMsg = std::format(
+            "Checking for collisions with the bounding quad along "
+            "vector: %s, %s, %s, starting from camera position %s, %s, %s",
+            rayMouse.x, rayMouse.y, rayMouse.z, mainCamera.Position.x,
+            mainCamera.Position.y, mainCamera.Position.z);
+        // PianoCore::Log::Info(logMsg);
+        float hitDistance = 0.0F;
+        PianoPhysics::Ray ray(mainCamera.Position, rayMouse);
+        if (PianoPhysics::CheckRayToAABBIntersection(
+                ray,
+                cloudQuadObj.GetComponent<Component::BoundingBoxComponent>()
+                    ->GetMinExtents(),
+                cloudQuadObj.GetComponent<Component::BoundingBoxComponent>()
+                    ->GetMaxExtents(),
+                hitDistance)) {
+            PianoCore::Log::Info("INTERSECTION!");
+            cloudQuadObj.GetComponent<Component::SelectableComponent>()
+                ->SetSelected(true);
+        } else {
+            cloudQuadObj.GetComponent<Component::SelectableComponent>()
+                ->SetSelected(false);
+        }
+    }
+
     mainCamera.ProcessInput(input.GetInputState(),
                             parentApplication.GetApplicationState()
                                 ->framerateTimer.GetTickSizeSeconds());
@@ -73,8 +119,6 @@ void PianoAppGameLayer::Update(Input::InputManager &input) {
 void PianoAppGameLayer::Render() {
     Engine::IWindow &window =
         *parentApplication.GetApplicationState()->mainWindow;
-
-#pragma region Rendering Logic
 
     auto current_window_size = window.GetWindowSize();
 
@@ -93,35 +137,27 @@ void PianoAppGameLayer::Render() {
         glGetUniformLocation(openGlShader->GetID(), "projection");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
-
+    unsigned int selectedLoc =
+        glGetUniformLocation(openGlShader->GetID(), "isSelected");
+    glUniform1i(
+        selectedLoc,
+        cloudObj.GetComponent<Component::SelectableComponent>()->IsSelected()
+            ? 1
+            : 0);
     renderer.DrawObject(&cloudObj);
+    glUniform1i(selectedLoc,
+                cloudQuadObj.GetComponent<Component::SelectableComponent>()
+                        ->IsSelected()
+                    ? 1
+                    : 0);
     renderer.DrawObject(&cloudQuadObj);
 
-    // // Playing with debug lines to start experimenting with raycasting
-    // // to the quad
-    // glm::vec2 windowSize =
-    //     parentApplication.GetApplicationState()->mainWindow->GetWindowSize();
-    // glm::vec3 worldPos = glm::unProject(
-    //     glm::vec3(pianoApp->GetInput()->GetMousePosition().x,
-    //               windowSize.y - pianoApp->GetInput()->GetMousePosition().y,
-    //               0.0),
-    //     view, projection, glm::vec4(0, 0, windowSize.x, windowSize.y));
-    // glm::vec3 rayMouse = glm::normalize(worldPos - mainSceneCamera.Position);
+    // Debug line to draw the bounding box 
+    auto bb = cloudQuadObj.GetComponent<Component::BoundingBoxComponent>();
+    auto line = Line(bb->GetMinExtents(), bb->GetMaxExtents());
+    line.setMVP(projection * view);
+    line.draw();
 
-    // auto line = Line(mainSceneCamera.Position, worldPos);
-    // auto line2 = Line(worldPos, cloudQuadObj.GetTransform()->position);
-    // line.setMVP(projection * view);
-    // line.draw();
-    // line2.setMVP(projection * view);
-    // line2.draw();
-
-    // PianoCore::Log::Info(std::format("Raycast to mouse: {0}, {1}, {2}",
-    // rayMouse.x, rayMouse.y, rayMouse.z));
-
-    // We don't present here anymore as there is now a single top level buffer
-    // swap happening after all layers have written their content to the buffer.
-    // renderer.Present();
-#pragma endregion Rendering Logic
 }
 void PianoAppGameLayer::Suspend() {
     PianoCore::Log::Info("Suspending PianoAppGameLayer");

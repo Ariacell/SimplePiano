@@ -35,5 +35,4 @@ private:
     PerspectiveCamera &mainCamera;
     PianoCore::Application &parentApplication;
 };
-
 }  // namespace PianoApp
