@@ -22,50 +22,6 @@ find_package(OpenGL REQUIRED)
 find_package(ZLIB REQUIRED)
 add_definitions(-D GLM_ENABLE_EXPERIMENTAL)
 
-
-include_directories(
-    ${OPENGL_INCLUDE_DIRS}
-    ${PROJECT_SOURCE_DIR}/inc
-    ${PROJECT_SOURCE_DIR}/lib/imgui
-    ${PROJECT_SOURCE_DIR}/lib
-    ${PROJECT_SOURCE_DIR}/src
-    )
-message(OpenGlIncludeDir="${OPENGL_INCLUDE_DIRS}")
-
-file(GLOB_RECURSE SRC_FILES
-    "${PROJECT_SOURCE_DIR}/lib/imgui/**" 
-    "${PROJECT_SOURCE_DIR}/src/*.cpp"
-    "${PROJECT_SOURCE_DIR}/lib/glad.c"
-)
-
-link_directories(
-    ${CMAKE_SOURCE_DIR}/lib
-    ${CMAKE_SOURCE_DIR}/lib/assimp
-    ${PROJECT_SOURCE_DIR}/glm
-)
-
-add_executable(SimplePiano ${SRC_FILES})
-
-target_link_libraries(SimplePiano
-OpenGL::OpenGL
-glfw
-OpenAL::OpenAL
-assimp
-ZLIB::ZLIB
-fmt::fmt
-)
-
-# Copying shaders and textures into the build directory for runtime compiling
-add_custom_command(
-         TARGET SimplePiano POST_BUILD
-         COMMAND ${CMAKE_COMMAND} -E copy_directory              
-             ${CMAKE_SOURCE_DIR}/resources/shaders $<TARGET_FILE_DIR:SimplePiano>/shaders
-         COMMENT "Copying shaders" VERBATIM
-         )
-
-add_custom_command(
-    TARGET SimplePiano POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory              
-        ${CMAKE_SOURCE_DIR}/resources/textures $<TARGET_FILE_DIR:SimplePiano>/textures
-    COMMENT "Copying textures" VERBATIM
-    )
+# Add the pianocore library and the sample game environment
+add_subdirectory(PianoCore)
+add_subdirectory(PianoGame)
