@@ -1,7 +1,5 @@
 #include "shaders/OpenGlShader.h"
 
-#include <GLES3/gl32.h>
-#include <GLFW/glfw3.h>
 #include "core/log.h"
 
 #include <fstream>

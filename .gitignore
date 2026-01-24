@@ -10,3 +10,8 @@ build
 
 fmodstudioapi20309linux/
 lib/assimp
+
+
+PianoCore/lib/assimp/
+PianoCore/vendor/assimp/
+PianoCore/vendor/glm/

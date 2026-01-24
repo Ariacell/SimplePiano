@@ -15,16 +15,10 @@ FetchContent_Declare(
   GIT_TAG        e69e5f977d458f2650bb346dadf2ad30c5320281) # 10.2.1
 FetchContent_MakeAvailable(fmt)
 
-#Enforce GLFW present for window management
-# find_package(glfw3 3.3 REQUIRED)
-# find_package(OpenAL REQUIRED)
-# find_package(OpenGL REQUIRED)
-# find_package(ZLIB REQUIRED)
-# add_definitions(-D GLM_ENABLE_EXPERIMENTAL)
 
 file(GLOB_RECURSE SRC_FILES
-    "${PROJECT_SOURCE_DIR}/lib/imgui/**" 
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/systems/*.cpp"
 )
 
 
@@ -35,8 +29,8 @@ target_include_directories(PianoGame PUBLIC
     ${PROJECT_SOURCE_DIR}/lib/imgui
     ${PROJECT_SOURCE_DIR}/lib
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/systems
     )
-message(OpenGlIncludeDir="${OPENGL_INCLUDE_DIRS}")
 
 target_link_libraries(PianoGame
 PianoCore
@@ -47,15 +41,6 @@ PianoCore
 # add_library(PianoGameLib
 #     ${SRC_FILES}
 # )
-# target_link_libraries(PianoGameLib
-# OpenGL::OpenGL
-# glfw
-# OpenAL::OpenAL
-# assimp
-# ZLIB::ZLIB
-# fmt::fmt
-# )
-
 
 # Copying shaders and textures into the build directory for runtime compiling
 add_custom_command(

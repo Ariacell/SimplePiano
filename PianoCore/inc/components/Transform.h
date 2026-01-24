@@ -9,8 +9,10 @@ struct Transform {
     glm::quat rotation;
     glm::vec3 scale;
 
-    Transform()
-        : position(0.0f), rotation(1.0f, 0.0f, 0.0f, 0.0f), scale(1.0f) {
+    Transform( glm::vec3 _position = glm::vec3(0.0f),
+    glm::quat _rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
+    glm::vec3 _scale = glm::vec3(1.0f))
+        : position(_position), rotation(_rotation), scale(_scale) {
     }
 
     void translate(const glm::vec3& translation) {

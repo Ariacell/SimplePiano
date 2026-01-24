@@ -14,7 +14,6 @@ FetchContent_Declare(
   GIT_TAG        e69e5f977d458f2650bb346dadf2ad30c5320281) # 10.2.1
 FetchContent_MakeAvailable(fmt)
 
-#Enforce GLFW present for window management
 find_package(glfw3 3.3 REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -42,7 +41,7 @@ link_directories(
 )
 
 
-# # Creating a library for integrating with Google Test, eventually this probably becomes a separate library that the main game imports...
+## Creating a library for integrating with Google Test, eventually this probably becomes a separate library that the main game imports...
 add_library(PianoCore STATIC
     ${SRC_FILES}
 )
@@ -83,6 +82,7 @@ target_include_directories(PianoCore
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+
 target_link_libraries(PianoCore
 PUBLIC
 OpenGL::OpenGL
@@ -90,5 +90,4 @@ glfw
 OpenAL::OpenAL
 ZLIB::ZLIB
 fmt::fmt
-
 )

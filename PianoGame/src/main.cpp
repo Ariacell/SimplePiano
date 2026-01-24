@@ -4,6 +4,8 @@
 #include "layers/DebugLayer.h"
 #include "layers/GameLayer.h"
 
+World gWorld;
+
 class Game {
 public:
     PerspectiveCamera mainSceneCamera;

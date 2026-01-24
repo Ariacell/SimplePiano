@@ -3,9 +3,11 @@
 
 #include <application/Application.h>
 #include <application/IAppLayer.h>
+#include <ecs/World.h>
 #include <input/InputManager.h>
 #include <shaders/OpenGlShader.h>
 #include <util/timer.h>
+#include <RenderSystem.h>
 
 namespace PianoApp {
 
@@ -24,6 +26,8 @@ public:
     void Suspend() override;
 
 private:
+    std::shared_ptr<RenderSystem> mRenderSystem;
+    
     PianoAppGameData gameData;
     Util::Timer simulationTimer;
     Engine::IRenderer &renderer;

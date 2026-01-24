@@ -13,7 +13,7 @@ PerspectiveCamera::PerspectiveCamera(glm::vec3 position, glm::vec3 up)
     updateCameraVectors();
 }
 
-glm::mat4 PerspectiveCamera::GetViewMatrix() {
+const glm::mat4 PerspectiveCamera::GetViewMatrix() const {
     return glm::lookAt(Position, Position + Front, Up);
 }
 

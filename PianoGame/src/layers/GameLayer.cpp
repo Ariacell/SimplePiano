@@ -14,6 +14,15 @@
 #include <RendererFactory.h>
 #include <application/ApplicationConstants.h>
 #include <components/ModelComponent.h>
+#include <components/Transform.h>
+#include "../components/Gravity.h"
+#include "../components/Rigidbody.h"
+#include "../components/Renderable.h"
+#include <random>
+#include <systems/RenderSystem.h>
+
+
+extern World gWorld;
 
 namespace PianoApp {
 
@@ -46,6 +55,72 @@ PianoAppGameLayer::PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
     cloudQuadObj.AddComponent<Component::SelectableComponent>();
     cloudQuadObj.AddComponent<Component::BoundingBoxComponent>(
         *quadOpenGlModel);
+
+    gWorld.Init();
+    
+	// gWorld.RegisterComponent<Component::SelectableComponent>();
+	// gWorld.RegisterComponent<Component::ModelComponent>();
+	// gWorld.RegisterComponent<Player>();
+	gWorld.RegisterComponent<Renderable>();
+	gWorld.RegisterComponent<Gravity>();
+	gWorld.RegisterComponent<RigidBody>();
+	// gWorld.RegisterComponent<Thrust>();
+	gWorld.RegisterComponent<Component::Transform>();
+
+	mRenderSystem = gWorld.RegisterSystem<RenderSystem>(mainCamera);
+	{
+		Signature signature;
+		signature.set(gWorld.GetComponentType<Renderable>());
+		signature.set(gWorld.GetComponentType<Component::Transform>());
+		gWorld.SetSystemSignature<RenderSystem>(signature);
+	}
+
+	mRenderSystem->Init();
+
+
+	std::default_random_engine generator;
+	std::uniform_real_distribution<float> randPosition(-100.0f, 100.0f);
+	std::uniform_real_distribution<float> randRotation(0.0f, 3.0f);
+	std::uniform_real_distribution<float> randScale(3.0f, 5.0f);
+	std::uniform_real_distribution<float> randColor(0.0f, 1.0f);
+	std::uniform_real_distribution<float> randGravity(-10.0f, -1.0f);
+
+
+	std::vector<Entity> entities(MAX_ENTITIES - 1);
+    float scale = randScale(generator);
+
+    	for (auto& entity : entities)
+	{
+		entity = gWorld.CreateEntity();
+
+		gWorld.AddComponent<Gravity>(
+			entity,
+			{glm::vec3(0.0f, 9.8f, 0.0f)});
+
+		gWorld.AddComponent(
+			entity,
+			RigidBody{
+				.velocity = glm::vec3(0.0f, 0.0f, 0.0f),
+				.acceleration = glm::vec3(0.0f, 0.0f, 0.0f)
+			});
+
+		gWorld.AddComponent(
+			entity,
+			Component::Transform(
+				glm::vec3(randPosition(generator), randPosition(generator), randPosition(generator)),
+				glm::quat(randRotation(generator), randRotation(generator), randRotation(generator), 0.0f),
+				glm::vec3(scale, scale, scale)
+			)
+        );
+
+		gWorld.AddComponent(
+			entity,
+			Renderable{
+				.color = glm::vec3(randColor(generator), randColor(generator), randColor(generator))
+			});
+	}
+
+
 }
 
 void PianoAppGameLayer::Init() {
@@ -73,6 +148,9 @@ void PianoAppGameLayer::Update(Input::InputManager &input) {
         PianoCore::Log::Info("Reloading shader!");
         openGlShader->reload();
     }
+
+
+    
 
     // Object selection
     if (input.GetInputState().WasKeyPressed(Input::APP_KEY_MOUSE_1)) {
@@ -124,6 +202,9 @@ void PianoAppGameLayer::Render() {
         glm::radians(45.0F),
         (float)current_window_size.x / (float)current_window_size.y, 0.1F,
         100.0F);
+
+
+    mRenderSystem->Update(0.05);
 
     // retrieve the matrix uniform locations and set up shaders
     openGlShader->use();
