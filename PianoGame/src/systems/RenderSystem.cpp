@@ -19,7 +19,7 @@ void RenderSystem::Init()
 	// gWorld.AddEventListener(METHOD_LISTENER(Events::Window::RESIZED, RenderSystem::WindowSizeListener));
 
 	shader = std::make_shared<Shaders::OpenGlShader>(
-        "./shaders/base.vert", "./shaders/base.frag");
+        "./shaders/cube.vert", "./shaders/cube.frag");
 	std::vector<glm::vec3> vertices =
 		{
 			glm::vec3(-0.5f, -0.5f, -0.5f),
@@ -100,6 +100,7 @@ void RenderSystem::Init()
 			glm::vec3(0.0f, 1.0f, 0.0)
 		};
 
+		
 
 	glGenVertexArrays(1, &mVao);
 	glBindVertexArray(mVao);
@@ -149,7 +150,7 @@ void RenderSystem::Update(float dt)
         100.0F);
 
 
-         unsigned int viewLoc = glGetUniformLocation(shader->GetID(), "view");
+		unsigned int viewLoc = glGetUniformLocation(shader->GetID(), "view");
         unsigned int projLoc =
         glGetUniformLocation(shader->GetID(), "projection");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &viewMatrix[0][0]);
@@ -159,7 +160,6 @@ void RenderSystem::Update(float dt)
 		// shader->SetUniform<glm::mat4>("uModel", model);
 		// shader->SetUniform<glm::mat4>("uView", view);
 		// shader->SetUniform<glm::mat4>("uProjection", projection);
-		// shader->SetUniform<glm::vec3>("uColor", renderable.color);
 
         unsigned int modelLoc =
         glGetUniformLocation(shader->GetID(), "model");
