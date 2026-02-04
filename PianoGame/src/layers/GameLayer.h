@@ -8,6 +8,8 @@
 #include <shaders/OpenGlShader.h>
 #include <util/timer.h>
 #include <RenderSystem.h>
+#include <BobbleSystem.h>
+#include <PhysicsSystem.h>
 
 namespace PianoApp {
 
@@ -27,7 +29,9 @@ public:
 
 private:
     std::shared_ptr<RenderSystem> mRenderSystem;
-    
+    std::shared_ptr<BobbleSystem> mBobbleSystem;
+    std::shared_ptr<PhysicsSystem> mPhysicsSystem;
+
     PianoAppGameData gameData;
     Util::Timer simulationTimer;
     Engine::IRenderer &renderer;

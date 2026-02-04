@@ -1,4 +1,14 @@
 
+# The piano Project
+
+This project is intended as a c++ learning experience, a game engine API design exercise, and potentially a small game PoC if I decide it's worthwhile/feel inspired.
+
+The components consist of the PianoCore library - the core engine, and PianoGame - a simple smoke testing environment validate the behaviour of the engine.
+
+CURRENT UP NEXT: Ideally PianoCore includes unit tests now that I've split it from the smoke testing game project
+
+[Roadmap](./docs/)
+
 # References for working on this project
 
 See the [building locally section](#building-locally) for some intructions on building and running the project
@@ -72,3 +82,20 @@ This is a really cool command for visualising CMake project dependencies
 cmake --graphviz=dependencies.dot .
 dot -Tpng dependencies.dot -o dependencies.png
 ```
+
+
+## Learning record
+
+Since the goal of this project is also a lot about (re)learning c++ and systems level concepts I haven't had the chance to use much in my day-to-day, I'll record some of the tricky things I encounter along the way to help lock in learning as I go :D
+
+Some stuff that ate up debugging time:
+
+VSCode not working super great ootb the C++ includes paths, still refining this but seems much better with CMake extensions so far, was able to successfully split the repo into the core library and the PoC game layer I'm using on top
+
+learn opengl tutorial apparently uses an older API based on my research after going through the first sections of the tutorial, could probably simplify my life by updating the pattern used for binding VAO/VBOs to use index buffers
+
+General basic c++ concepts such as object lifetimes and ownership. I've worked for so long in more functional paradigms (e.g. Typescript, Kotlin, F#) that worrying about stateful systems is something I've had to get used to again, but I think I'm back at a reasonable level of comfort now (outside of fancier move/implicit cast shenanigans)
+
+Argument forwarding and default constructors 
+
+smart pointers -> I think I'm forming the opinion that I agree with the position that std::shared_ptr is *usually* a smell, in the sense that I don't see many cases where an object has a legitimate reason for shared ownership outside of very special cases, but perhaps again that's just more bias against mutable state. Blurring the boundaries of ownership of an object seems to be just asking for trouble unless that object is sufficiently large or cumbersome to pass around as to warrant this loss of determinism on the ownership side.

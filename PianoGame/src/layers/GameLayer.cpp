@@ -20,6 +20,7 @@
 #include "../components/Renderable.h"
 #include <random>
 #include <systems/RenderSystem.h>
+#include <systems/BobbleSystem.h>
 
 
 extern World gWorld;
@@ -74,8 +75,24 @@ PianoAppGameLayer::PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
 		signature.set(gWorld.GetComponentType<Component::Transform>());
 		gWorld.SetSystemSignature<RenderSystem>(signature);
 	}
+    mRenderSystem->Init();
 
-	mRenderSystem->Init();
+    mBobbleSystem = gWorld.RegisterSystem<BobbleSystem>();
+    {
+        Signature signature;
+        signature.set(gWorld.GetComponentType<Component::Transform>());
+        signature.set(gWorld.GetComponentType<RigidBody>());
+        gWorld.SetSystemSignature<BobbleSystem>(signature);
+    }
+
+    mPhysicsSystem = gWorld.RegisterSystem<PhysicsSystem>();
+    {
+        Signature signature;
+        signature.set(gWorld.GetComponentType<Component::Transform>());
+        signature.set(gWorld.GetComponentType<RigidBody>());
+        gWorld.SetSystemSignature<PhysicsSystem>(signature);
+    }
+
 
 
 	std::default_random_engine generator;
@@ -100,7 +117,7 @@ PianoAppGameLayer::PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
 		gWorld.AddComponent(
 			entity,
 			RigidBody{
-				.velocity = glm::vec3(0.0f, 0.0f, 0.0f),
+				.velocity = glm::vec3(0.0f, -1.0f, 0.0f),
 				.acceleration = glm::vec3(0.0f, 0.0f, 0.0f)
 			});
 
@@ -140,6 +157,9 @@ void PianoAppGameLayer::Update(Input::InputManager &input) {
             // cloudObj.GetTransform()->translate(glm::vec3(.05F, .0F, .0F));
             cloudObj.GetTransform()->rotate(
                 glm::quat(glm::highp_vec3(.0F, .0F, .05F)));
+                
+            mBobbleSystem->Update(0.05);
+            mPhysicsSystem->Update(0.05);
         },
         5);
     if (input.GetInputState().WasKeyPressed(Input::APP_KEY_R) &&
@@ -148,9 +168,6 @@ void PianoAppGameLayer::Update(Input::InputManager &input) {
         PianoCore::Log::Info("Reloading shader!");
         openGlShader->reload();
     }
-
-
-    
 
     // Object selection
     if (input.GetInputState().WasKeyPressed(Input::APP_KEY_MOUSE_1)) {
