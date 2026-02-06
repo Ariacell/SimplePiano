@@ -9,7 +9,7 @@
 
 namespace PianoPhysics {
 
-bool CheckRayToAABBIntersection(Ray ray, const glm::vec3 &aabbMin,
+inline bool CheckRayToAABBIntersection(Ray ray, const glm::vec3 &aabbMin,
                                 const glm::vec3 &aabbMax, float &tHit) {
     PianoCore::Log::Info("Checking for intersect!");
 

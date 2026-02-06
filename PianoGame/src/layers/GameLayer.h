@@ -10,6 +10,7 @@
 #include <RenderSystem.h>
 #include <BobbleSystem.h>
 #include <PhysicsSystem.h>
+#include <InputSystem.h>
 
 namespace PianoApp {
 
@@ -31,6 +32,7 @@ private:
     std::shared_ptr<RenderSystem> mRenderSystem;
     std::shared_ptr<BobbleSystem> mBobbleSystem;
     std::shared_ptr<PhysicsSystem> mPhysicsSystem;
+    std::shared_ptr<InputSystem> mInputSystem;
 
     PianoAppGameData gameData;
     Util::Timer simulationTimer;

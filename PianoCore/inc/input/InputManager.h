@@ -19,11 +19,11 @@ public:
 
     unsigned int bindDebugSettings(Debug::DebugLayerMainWindowData *debugData);
 
-    InputState GetInputState() {
+    const InputState GetInputState() const {
         return this->inputState;
     };
 
-    glm::vec2 GetMousePosition() {
+    glm::vec2 GetMousePosition() const {
         return lastMousePosition;
     }
 

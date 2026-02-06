@@ -27,4 +27,5 @@ private:
 	GLuint mVao{};
 	GLuint mVboVertices{};
 	GLuint mVboNormals{};
+	GLuint mVbocolours{};
 };

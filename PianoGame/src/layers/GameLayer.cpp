@@ -67,6 +67,8 @@ PianoAppGameLayer::PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
 	gWorld.RegisterComponent<RigidBody>();
 	// gWorld.RegisterComponent<Thrust>();
 	gWorld.RegisterComponent<Component::Transform>();
+	gWorld.RegisterComponent<Component::SelectableComponent>();
+	gWorld.RegisterComponent<Component::BoundingBoxComponent>();
 
 	mRenderSystem = gWorld.RegisterSystem<RenderSystem>(mainCamera);
 	{
@@ -93,6 +95,16 @@ PianoAppGameLayer::PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
         gWorld.SetSystemSignature<PhysicsSystem>(signature);
     }
 
+    // Maybe this should be evented instead and live outside the ECS?
+    mInputSystem = gWorld.RegisterSystem<InputSystem>(*parentApp.GetInput(), mainCamera, parentApp);
+    {
+        Signature signature;
+        signature.set(gWorld.GetComponentType<Component::Transform>());
+        signature.set(gWorld.GetComponentType<Component::SelectableComponent>());
+        signature.set(gWorld.GetComponentType<Component::BoundingBoxComponent>());
+        gWorld.SetSystemSignature<InputSystem>(signature);
+    }
+
 
 
 	std::default_random_engine generator;
@@ -113,6 +125,14 @@ PianoAppGameLayer::PianoAppGameLayer(PerspectiveCamera &mainGameCamera,
 		gWorld.AddComponent<Gravity>(
 			entity,
 			{glm::vec3(0.0f, 9.8f, 0.0f)});
+
+        auto selectableComp = Component::SelectableComponent();
+        gWorld.AddComponent<Component::SelectableComponent>(
+			entity, std::move(selectableComp));
+        
+        auto bbComponent = Component::BoundingBoxComponent(glm::vec3(1.0f, 1.0f, 1.0f));
+        gWorld.AddComponent<Component::BoundingBoxComponent>(
+			entity, std::move(bbComponent));
 
 		gWorld.AddComponent(
 			entity,
@@ -170,36 +190,7 @@ void PianoAppGameLayer::Update(Input::InputManager &input) {
     }
 
     // Object selection
-    if (input.GetInputState().WasKeyPressed(Input::APP_KEY_MOUSE_1)) {
-        glm::vec2 windowSize = parentApplication.GetApplicationState()
-                                   ->mainWindow->GetWindowSize();
-        glm::mat4 projection = glm::perspective(
-            glm::radians(45.0F), (float)windowSize.x / (float)windowSize.y,
-            0.1F, 100.0F);
-        glm::vec3 worldPos = glm::unProject(
-            glm::vec3(input.GetMousePosition().x,
-                      windowSize.y - input.GetMousePosition().y, 0.0),
-            mainCamera.GetViewMatrix(), projection,
-            glm::vec4(0, 0, windowSize.x, windowSize.y));
-        glm::vec3 rayMouse = glm::normalize(worldPos - mainCamera.Position);
-
-        float hitDistance = 0.0F;
-        PianoPhysics::Ray ray(mainCamera.Position, rayMouse);
-        if (PianoPhysics::CheckRayToAABBIntersection(
-                ray,
-                cloudQuadObj.GetComponent<Component::BoundingBoxComponent>()
-                    ->GetMinExtents(),
-                cloudQuadObj.GetComponent<Component::BoundingBoxComponent>()
-                    ->GetMaxExtents(),
-                hitDistance)) {
-            PianoCore::Log::Info("INTERSECTION at depth %4.2f", hitDistance);
-            cloudQuadObj.GetComponent<Component::SelectableComponent>()
-                ->SetSelected(true);
-        } else {
-            cloudQuadObj.GetComponent<Component::SelectableComponent>()
-                ->SetSelected(false);
-        }
-    }
+    mInputSystem->Update(0.05);
 
     mainCamera.ProcessInput(input.GetInputState(),
                             parentApplication.GetApplicationState()

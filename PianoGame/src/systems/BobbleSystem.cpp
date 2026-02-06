@@ -11,7 +11,7 @@ extern World gWorld;
 // Little toy system to make everything bobble at 0 height
 void BobbleSystem::Update(float dt)
 {
-    std::cout << "Updating Bobble System" << std::endl;
+    // std::cout << "Updating Bobble System" << std::endl;
 
 	for (auto const& entity : mEntities)
 	{

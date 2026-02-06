@@ -30,11 +30,11 @@ Component::BoundingBoxComponent::BoundingBoxComponent(
     : minBounds(glm::vec3(0.0F)), maxBounds(heightWidthDepth) {
 }
 
-glm::vec3 Component::BoundingBoxComponent::GetMinExtents() {
+glm::vec3 Component::BoundingBoxComponent::GetMinExtents() const {
     return minBounds;
 }
 
-glm::vec3 Component::BoundingBoxComponent::GetMaxExtents() {
+glm::vec3 Component::BoundingBoxComponent::GetMaxExtents() const{
     return maxBounds;
 }
 
